@@ -30,6 +30,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import AppIcon from "@/components/ui/AppIcon";
+import InstallLaCuraButton from "@/components/InstallLaCuraButton";
 
 type Feature = {
   title: string;
@@ -354,6 +355,8 @@ export default function Home() {
                 >
                   Explore Services
                 </a>
+
+                <InstallLaCuraButton />
               </div>
             </div>
           </div>
