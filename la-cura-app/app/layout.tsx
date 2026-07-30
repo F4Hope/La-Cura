@@ -18,9 +18,20 @@ import OfflineSync from "@/components/OfflineSync";
 config.autoAddCss = false;
 
 export const metadata: Metadata = {
-  title: "La-Cura",
+  metadataBase: new URL(
+    "https://la-cura.vercel.app"
+  ),
+
+  title: {
+    default: "La-Cura Healthcare",
+    template: "%s | La-Cura",
+  },
+
   description:
-    "Healthcare Management System",
+    "Compassionate nursing care, elderly care, healthcare technology, and medical products in Cameroon.",
+
+  applicationName: "La-Cura",
+
   manifest: "/manifest.json",
 
   appleWebApp: {
@@ -30,8 +41,36 @@ export const metadata: Metadata = {
   },
 
   icons: {
-    icon: "/logo.png",
-    apple: "/logo.png",
+    icon: [
+      {
+        url: "/icon.png",
+        type: "image/png",
+      },
+    ],
+
+    apple: [
+      {
+        url: "/apple-icon.png",
+        type: "image/png",
+      },
+    ],
+  },
+
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://la-cura.vercel.app",
+    siteName: "La-Cura Healthcare",
+    title: "La-Cura Healthcare",
+    description:
+      "Compassionate care for every life. Nursing care, elderly care, healthcare technology, and medical products.",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "La-Cura Healthcare",
+    description:
+      "Compassionate care for every life.",
   },
 };
 
