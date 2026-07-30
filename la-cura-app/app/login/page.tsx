@@ -1,9 +1,13 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import type { FormEvent } from "react";
+
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 import {
+  faArrowLeft,
   faEnvelope,
   faEye,
   faEyeSlash,
@@ -15,6 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import AppIcon from "@/components/ui/AppIcon";
+
 import { signIn } from "@/lib/auth";
 
 export default function LoginPage() {
@@ -22,11 +27,16 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [showPassword, setShowPassword] =
     useState(false);
+
   const [rememberMe, setRememberMe] =
     useState(false);
-  const [loading, setLoading] = useState(false);
+
+  const [loading, setLoading] =
+    useState(false);
+
   const [error, setError] = useState("");
 
   async function handleLogin(
@@ -42,10 +52,11 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const { error: signInError } = await signIn(
-        email.trim(),
-        password
-      );
+      const { error: signInError } =
+        await signIn(
+          email.trim(),
+          password
+        );
 
       if (signInError) {
         setError(signInError.message);
@@ -66,7 +77,10 @@ export default function LoginPage() {
       router.replace("/dashboard");
       router.refresh();
     } catch (caughtError) {
-      console.error("Login failed:", caughtError);
+      console.error(
+        "Login failed:",
+        caughtError
+      );
 
       setError(
         caughtError instanceof Error
@@ -106,7 +120,8 @@ export default function LoginPage() {
           </h2>
 
           <p className="mt-2 text-gray-500">
-            Sign in with your staff account to continue
+            Sign in with your staff account
+            to continue
           </p>
         </div>
 
@@ -161,13 +176,17 @@ export default function LoginPage() {
               <input
                 id="password"
                 type={
-                  showPassword ? "text" : "password"
+                  showPassword
+                    ? "text"
+                    : "password"
                 }
                 autoComplete="current-password"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(event) =>
-                  setPassword(event.target.value)
+                  setPassword(
+                    event.target.value
+                  )
                 }
                 required
                 disabled={loading}
@@ -178,7 +197,8 @@ export default function LoginPage() {
                 type="button"
                 onClick={() =>
                   setShowPassword(
-                    (currentValue) => !currentValue
+                    (currentValue) =>
+                      !currentValue
                   )
                 }
                 disabled={loading}
@@ -269,10 +289,24 @@ export default function LoginPage() {
         </form>
 
         <p className="mt-8 text-center text-xs leading-5 text-gray-400">
-          Authorized La-Cura staff access only.
-          Clinical information is confidential.
+          Authorized La-Cura staff access
+          only. Clinical information is
+          confidential.
         </p>
       </div>
+
+      <Link
+        href="/"
+        aria-label="Return to La-Cura home page"
+        className="fixed bottom-4 left-4 z-20 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-4 py-2.5 text-sm font-bold text-white shadow-lg backdrop-blur-md transition hover:bg-white/25 focus:outline-none focus:ring-4 focus:ring-white/20 sm:bottom-7 sm:left-7 sm:px-5 sm:py-3"
+      >
+        <AppIcon
+          icon={faArrowLeft}
+          className="text-sm"
+        />
+
+        Back to Home
+      </Link>
     </main>
   );
 }
