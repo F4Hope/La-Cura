@@ -1,20 +1,17 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import {
-  Download,
-  FileText,
-  Loader2,
-  Search,
-  User,
-  X,
-} from "lucide-react";
+  faDownload,
+  faFileLines,
+  faMagnifyingGlass,
+  faSpinner,
+  faUser,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
 
+import AppIcon from "@/components/ui/AppIcon";
 import { getResidents } from "@/lib/getResidents";
 import { getResidentTimeline } from "@/lib/residentTimeline";
 import {
@@ -31,11 +28,7 @@ type ResidentListItem = {
   age?: string | number | null;
 };
 
-type ReportingPeriod =
-  | "30"
-  | "90"
-  | "365"
-  | "all";
+type ReportingPeriod = "30" | "90" | "365" | "all";
 
 export type ResidentReportGeneratedData = {
   residentName: string;
@@ -45,15 +38,10 @@ export type ResidentReportGeneratedData = {
 type Props = {
   open: boolean;
   onClose: () => void;
-  onGenerated?: (
-    report: ResidentReportGeneratedData
-  ) => void;
+  onGenerated?: (report: ResidentReportGeneratedData) => void;
 };
 
-const reportingPeriodLabels: Record<
-  ReportingPeriod,
-  string
-> = {
+const reportingPeriodLabels: Record<ReportingPeriod, string> = {
   "30": "Last 30 days",
   "90": "Last 90 days",
   "365": "Last 12 months",
@@ -64,19 +52,12 @@ function filterTimeline(
   timeline: ResidentTimelinePdfItem[],
   reportingPeriod: ReportingPeriod
 ): ResidentTimelinePdfItem[] {
-  const sortedTimeline = [...timeline].sort(
-    (first, second) => {
-      const firstDate = new Date(
-        String(first.date ?? 0)
-      ).getTime();
+  const sortedTimeline = [...timeline].sort((first, second) => {
+    const firstDate = new Date(String(first.date ?? 0)).getTime();
+    const secondDate = new Date(String(second.date ?? 0)).getTime();
 
-      const secondDate = new Date(
-        String(second.date ?? 0)
-      ).getTime();
-
-      return secondDate - firstDate;
-    }
-  );
+    return secondDate - firstDate;
+  });
 
   if (reportingPeriod === "all") {
     return sortedTimeline;
@@ -86,9 +67,7 @@ function filterTimeline(
   const cutoffDate = new Date();
 
   cutoffDate.setHours(0, 0, 0, 0);
-  cutoffDate.setDate(
-    cutoffDate.getDate() - numberOfDays
-  );
+  cutoffDate.setDate(cutoffDate.getDate() - numberOfDays);
 
   return sortedTimeline.filter((item) => {
     if (!item.date) {
@@ -111,24 +90,13 @@ export default function ResidentClinicalReportModal({
   onGenerated,
 }: Props) {
   const [mounted, setMounted] = useState(false);
-
-  const [residents, setResidents] = useState<
-    ResidentListItem[]
-  >([]);
-
-  const [
-    selectedResidentId,
-    setSelectedResidentId,
-  ] = useState("");
-
+  const [residents, setResidents] = useState<ResidentListItem[]>([]);
+  const [selectedResidentId, setSelectedResidentId] = useState("");
   const [reportingPeriod, setReportingPeriod] =
     useState<ReportingPeriod>("30");
-
   const [search, setSearch] = useState("");
-  const [loadingResidents, setLoadingResidents] =
-    useState(false);
-  const [generating, setGenerating] =
-    useState(false);
+  const [loadingResidents, setLoadingResidents] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -155,32 +123,20 @@ export default function ResidentClinicalReportModal({
       return;
     }
 
-    const previousOverflow =
-      document.body.style.overflow;
+    const previousOverflow = document.body.style.overflow;
 
     function handleEscape(event: KeyboardEvent) {
-      if (
-        event.key === "Escape" &&
-        !generating
-      ) {
+      if (event.key === "Escape" && !generating) {
         onClose();
       }
     }
 
     document.body.style.overflow = "hidden";
-    window.addEventListener(
-      "keydown",
-      handleEscape
-    );
+    window.addEventListener("keydown", handleEscape);
 
     return () => {
-      document.body.style.overflow =
-        previousOverflow;
-
-      window.removeEventListener(
-        "keydown",
-        handleEscape
-      );
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
     };
   }, [open, generating, onClose]);
 
@@ -196,26 +152,18 @@ export default function ResidentClinicalReportModal({
       setError("");
 
       try {
-        const residentData =
-          await getResidents();
+        const residentData = await getResidents();
 
         if (!isActive) {
           return;
         }
 
-        setResidents(
-          (residentData ?? []) as ResidentListItem[]
-        );
+        setResidents((residentData ?? []) as ResidentListItem[]);
       } catch (caughtError) {
-        console.error(
-          "Unable to load residents:",
-          caughtError
-        );
+        console.error("Unable to load residents:", caughtError);
 
         if (isActive) {
-          setError(
-            "Residents could not be loaded. Please try again."
-          );
+          setError("Residents could not be loaded. Please try again.");
         }
       } finally {
         if (isActive) {
@@ -232,9 +180,7 @@ export default function ResidentClinicalReportModal({
   }, [open]);
 
   const filteredResidents = useMemo(() => {
-    const normalizedSearch = search
-      .trim()
-      .toLowerCase();
+    const normalizedSearch = search.trim().toLowerCase();
 
     if (!normalizedSearch) {
       return residents;
@@ -246,24 +192,16 @@ export default function ResidentClinicalReportModal({
         resident.room,
         resident.age,
       ]
-        .filter(
-          (value) =>
-            value !== null &&
-            value !== undefined
-        )
+        .filter((value) => value !== null && value !== undefined)
         .join(" ")
         .toLowerCase();
 
-      return searchableText.includes(
-        normalizedSearch
-      );
+      return searchableText.includes(normalizedSearch);
     });
   }, [residents, search]);
 
   const selectedResident = residents.find(
-    (resident) =>
-      String(resident.id) ===
-      selectedResidentId
+    (resident) => String(resident.id) === selectedResidentId
   );
 
   function handleClose() {
@@ -273,11 +211,7 @@ export default function ResidentClinicalReportModal({
   }
 
   async function handleDownload() {
-    if (
-      !selectedResidentId ||
-      !selectedResident ||
-      generating
-    ) {
+    if (!selectedResidentId || !selectedResident || generating) {
       return;
     }
 
@@ -285,20 +219,13 @@ export default function ResidentClinicalReportModal({
     setError("");
 
     try {
-      const residentId = Number(
-        selectedResidentId
-      );
+      const residentId = Number(selectedResidentId);
 
       if (Number.isNaN(residentId)) {
-        throw new Error(
-          "The selected resident ID is invalid."
-        );
+        throw new Error("The selected resident ID is invalid.");
       }
 
-      const {
-        data: resident,
-        error: residentError,
-      } = await supabase
+      const { data: resident, error: residentError } = await supabase
         .from("residents")
         .select("*")
         .eq("id", residentId)
@@ -309,17 +236,13 @@ export default function ResidentClinicalReportModal({
       }
 
       if (!resident) {
-        throw new Error(
-          "The resident record was not found."
-        );
+        throw new Error("The resident record was not found.");
       }
 
-      const timelineData =
-        await getResidentTimeline(residentId);
+      const timelineData = await getResidentTimeline(residentId);
 
       const timeline = filterTimeline(
-        (timelineData ??
-          []) as ResidentTimelinePdfItem[],
+        (timelineData ?? []) as ResidentTimelinePdfItem[],
         reportingPeriod
       );
 
@@ -329,24 +252,18 @@ export default function ResidentClinicalReportModal({
       await generateResidentClinicalPdf({
         resident: resident as ResidentPdfData,
         timeline,
-        reportingPeriod:
-          reportingPeriodLabel,
+        reportingPeriod: reportingPeriodLabel,
         generatedBy: "La-Cura Staff",
       });
 
       onGenerated?.({
-        residentName:
-          selectedResident.full_name,
-        reportingPeriod:
-          reportingPeriodLabel,
+        residentName: selectedResident.full_name,
+        reportingPeriod: reportingPeriodLabel,
       });
 
       onClose();
     } catch (caughtError) {
-      console.error(
-        "Resident report generation failed:",
-        caughtError
-      );
+      console.error("Resident report generation failed:", caughtError);
 
       setError(
         caughtError instanceof Error
@@ -371,16 +288,14 @@ export default function ResidentClinicalReportModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="resident-report-modal-title"
-        onMouseDown={(event) =>
-          event.stopPropagation()
-        }
+        onMouseDown={(event) => event.stopPropagation()}
         className="my-auto w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl"
       >
         <header className="bg-gradient-to-r from-green-800 to-green-700 px-6 py-6 text-white sm:px-8">
           <div className="flex items-start justify-between gap-5">
             <div className="flex items-center gap-4">
               <div className="rounded-2xl bg-white/15 p-3 ring-1 ring-white/20">
-                <FileText size={28} />
+                <AppIcon icon={faFileLines} className="text-2xl" />
               </div>
 
               <div>
@@ -396,8 +311,7 @@ export default function ResidentClinicalReportModal({
                 </h2>
 
                 <p className="mt-1 text-sm text-green-100">
-                  Select a resident and download
-                  their La-Cura clinical report.
+                  Select a resident and download their La-Cura clinical report.
                 </p>
               </div>
             </div>
@@ -409,7 +323,7 @@ export default function ResidentClinicalReportModal({
               aria-label="Close resident report"
               className="shrink-0 rounded-xl bg-white/15 p-2 transition hover:bg-white/25 disabled:opacity-50"
             >
-              <X size={21} />
+              <AppIcon icon={faXmark} />
             </button>
           </div>
         </header>
@@ -424,8 +338,8 @@ export default function ResidentClinicalReportModal({
             </label>
 
             <div className="relative">
-              <Search
-                size={19}
+              <AppIcon
+                icon={faMagnifyingGlass}
                 className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
               />
 
@@ -433,12 +347,8 @@ export default function ResidentClinicalReportModal({
                 id="resident-report-search"
                 type="search"
                 value={search}
-                onChange={(event) =>
-                  setSearch(event.target.value)
-                }
-                disabled={
-                  loadingResidents || generating
-                }
+                onChange={(event) => setSearch(event.target.value)}
+                disabled={loadingResidents || generating}
                 placeholder="Search by resident name, room, or age..."
                 className="w-full rounded-xl border border-slate-300 py-3.5 pl-11 pr-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:bg-slate-100"
               />
@@ -456,53 +366,33 @@ export default function ResidentClinicalReportModal({
             <select
               id="resident-report-resident"
               value={selectedResidentId}
-              onChange={(event) =>
-                setSelectedResidentId(
-                  event.target.value
-                )
-              }
-              disabled={
-                loadingResidents || generating
-              }
+              onChange={(event) => setSelectedResidentId(event.target.value)}
+              disabled={loadingResidents || generating}
               className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-slate-900 outline-none transition focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:bg-slate-100"
             >
               <option value="">
-                {loadingResidents
-                  ? "Loading residents..."
-                  : "Choose a resident"}
+                {loadingResidents ? "Loading residents..." : "Choose a resident"}
               </option>
 
-              {filteredResidents.map(
-                (resident) => (
-                  <option
-                    key={resident.id}
-                    value={String(resident.id)}
-                  >
-                    {resident.full_name}
-                    {resident.room
-                      ? ` — Room ${resident.room}`
-                      : ""}
-                  </option>
-                )
-              )}
+              {filteredResidents.map((resident) => (
+                <option key={resident.id} value={String(resident.id)}>
+                  {resident.full_name}
+                  {resident.room ? ` — Room ${resident.room}` : ""}
+                </option>
+              ))}
             </select>
 
-            {!loadingResidents &&
-              filteredResidents.length === 0 && (
-                <p className="mt-2 text-sm text-slate-500">
-                  No residents matched your
-                  search.
-                </p>
-              )}
+            {!loadingResidents && filteredResidents.length === 0 && (
+              <p className="mt-2 text-sm text-slate-500">
+                No residents matched your search.
+              </p>
+            )}
           </section>
 
           {selectedResident && (
             <section className="flex items-center gap-4 rounded-2xl border border-green-200 bg-green-50 p-5">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-100">
-                <User
-                  size={24}
-                  className="text-green-700"
-                />
+                <AppIcon icon={faUser} className="text-xl text-green-700" />
               </div>
 
               <div>
@@ -511,13 +401,9 @@ export default function ResidentClinicalReportModal({
                 </p>
 
                 <p className="mt-1 text-sm text-slate-600">
-                  Room{" "}
-                  {selectedResident.room ??
-                    "Not documented"}
+                  Room {selectedResident.room ?? "Not documented"}
                   {" • "}
-                  Age{" "}
-                  {selectedResident.age ??
-                    "not documented"}
+                  Age {selectedResident.age ?? "not documented"}
                 </p>
               </div>
             </section>
@@ -535,44 +421,25 @@ export default function ResidentClinicalReportModal({
               id="resident-report-period"
               value={reportingPeriod}
               onChange={(event) =>
-                setReportingPeriod(
-                  event.target
-                    .value as ReportingPeriod
-                )
+                setReportingPeriod(event.target.value as ReportingPeriod)
               }
               disabled={generating}
               className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-slate-900 outline-none transition focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:bg-slate-100"
             >
-              <option value="30">
-                Last 30 days
-              </option>
-
-              <option value="90">
-                Last 90 days
-              </option>
-
-              <option value="365">
-                Last 12 months
-              </option>
-
-              <option value="all">
-                Complete clinical history
-              </option>
+              <option value="30">Last 30 days</option>
+              <option value="90">Last 90 days</option>
+              <option value="365">Last 12 months</option>
+              <option value="all">Complete clinical history</option>
             </select>
           </section>
 
           <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-            <p className="font-bold text-slate-800">
-              Report contents
-            </p>
+            <p className="font-bold text-slate-800">Report contents</p>
 
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              The PDF includes the La-Cura
-              logo, resident demographics,
-              available diagnoses, allergies,
-              clinical timeline, generation
-              date, confidentiality notice, and
-              page numbers.
+              The PDF includes the La-Cura logo, resident demographics,
+              available diagnoses, allergies, clinical timeline, generation
+              date, confidentiality notice, and page numbers.
             </p>
           </section>
 
@@ -599,24 +466,17 @@ export default function ResidentClinicalReportModal({
           <button
             type="button"
             onClick={handleDownload}
-            disabled={
-              !selectedResidentId ||
-              loadingResidents ||
-              generating
-            }
+            disabled={!selectedResidentId || loadingResidents || generating}
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-6 py-3 font-bold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {generating ? (
               <>
-                <Loader2
-                  size={18}
-                  className="animate-spin"
-                />
+                <AppIcon icon={faSpinner} spin />
                 Creating PDF...
               </>
             ) : (
               <>
-                <Download size={18} />
+                <AppIcon icon={faDownload} />
                 Download Patient PDF
               </>
             )}

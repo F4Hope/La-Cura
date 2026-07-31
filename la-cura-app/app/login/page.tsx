@@ -4,14 +4,18 @@ import type { FormEvent } from "react";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import {
   faArrowLeft,
-  faEnvelope,
+  faCircleInfo,
   faEye,
   faEyeSlash,
   faHeartPulse,
+  faIdCard,
   faLock,
   faRightToBracket,
   faSpinner,
@@ -19,17 +23,32 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import AppIcon from "@/components/ui/AppIcon";
-
 import { signIn } from "@/lib/auth";
+
+const REMEMBERED_CODE_KEY =
+  "la-cura-remembered-staff-code";
+
+function normalizeStaffCode(
+  value: string
+): string {
+  return value
+    .toUpperCase()
+    .replace(/\s+/g, "");
+}
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [staffCode, setStaffCode] =
+    useState("");
 
-  const [showPassword, setShowPassword] =
-    useState(false);
+  const [password, setPassword] =
+    useState("");
+
+  const [
+    showPassword,
+    setShowPassword,
+  ] = useState(false);
 
   const [rememberMe, setRememberMe] =
     useState(false);
@@ -37,7 +56,20 @@ export default function LoginPage() {
   const [loading, setLoading] =
     useState(false);
 
-  const [error, setError] = useState("");
+  const [error, setError] =
+    useState("");
+
+  useEffect(() => {
+    const rememberedCode =
+      window.localStorage.getItem(
+        REMEMBERED_CODE_KEY
+      );
+
+    if (rememberedCode) {
+      setStaffCode(rememberedCode);
+      setRememberMe(true);
+    }
+  }, []);
 
   async function handleLogin(
     event: FormEvent<HTMLFormElement>
@@ -48,33 +80,44 @@ export default function LoginPage() {
       return;
     }
 
+    const normalizedCode =
+      normalizeStaffCode(staffCode);
+
     setLoading(true);
     setError("");
 
     try {
-      const { error: signInError } =
-        await signIn(
-          email.trim(),
-          password
-        );
+      const result = await signIn(
+        normalizedCode,
+        password
+      );
 
-      if (signInError) {
-        setError(signInError.message);
+      if (result.error) {
+        setError(result.error.message);
         return;
       }
 
       if (rememberMe) {
         window.localStorage.setItem(
-          "la-cura-remembered-email",
-          email.trim()
+          REMEMBERED_CODE_KEY,
+          normalizedCode
         );
       } else {
         window.localStorage.removeItem(
-          "la-cura-remembered-email"
+          REMEMBERED_CODE_KEY
         );
       }
 
-      router.replace("/dashboard");
+      if (
+        result.mustChangePassword
+      ) {
+        router.replace(
+          "/change-password"
+        );
+      } else {
+        router.replace("/dashboard");
+      }
+
       router.refresh();
     } catch (caughtError) {
       console.error(
@@ -120,8 +163,7 @@ export default function LoginPage() {
           </h2>
 
           <p className="mt-2 text-gray-500">
-            Sign in with your staff account
-            to continue
+            Sign in using your staff code
           </p>
         </div>
 
@@ -131,30 +173,36 @@ export default function LoginPage() {
         >
           <div>
             <label
-              htmlFor="email"
+              htmlFor="staff-code"
               className="mb-2 block font-medium text-gray-700"
             >
-              Email
+              Staff Code
             </label>
 
             <div className="relative">
               <AppIcon
-                icon={faEnvelope}
+                icon={faIdCard}
                 className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
               />
 
               <input
-                id="email"
-                type="email"
-                autoComplete="email"
-                placeholder="Enter your email"
-                value={email}
+                id="staff-code"
+                type="text"
+                autoComplete="username"
+                autoCapitalize="characters"
+                spellCheck={false}
+                placeholder="LC-NUR-000002"
+                value={staffCode}
                 onChange={(event) =>
-                  setEmail(event.target.value)
+                  setStaffCode(
+                    normalizeStaffCode(
+                      event.target.value
+                    )
+                  )
                 }
                 required
                 disabled={loading}
-                className="w-full rounded-xl border border-gray-300 py-3.5 pl-12 pr-4 text-gray-800 outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:bg-gray-100"
+                className="w-full rounded-xl border border-gray-300 py-3.5 pl-12 pr-4 font-mono uppercase tracking-wider text-gray-800 outline-none transition placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-gray-400 focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:bg-gray-100"
               />
             </div>
           </div>
@@ -221,29 +269,33 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4">
-            <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(event) =>
-                  setRememberMe(
-                    event.target.checked
-                  )
-                }
-                disabled={loading}
-                className="h-4 w-4 accent-green-700"
-              />
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-600">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(event) =>
+                setRememberMe(
+                  event.target.checked
+                )
+              }
+              disabled={loading}
+              className="h-4 w-4 accent-green-700"
+            />
 
-              Remember Me
-            </label>
+            Remember staff code
+          </label>
 
-            <button
-              type="button"
-              className="text-sm font-semibold text-green-700 transition hover:text-green-800 hover:underline"
-            >
-              Forgot Password?
-            </button>
+          <div className="flex items-start gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm leading-5 text-blue-700">
+            <AppIcon
+              icon={faCircleInfo}
+              className="mt-0.5 shrink-0"
+            />
+
+            <span>
+              Contact your administrator if
+              you have forgotten your password
+              or staff code.
+            </span>
           </div>
 
           {error && (
@@ -252,7 +304,9 @@ export default function LoginPage() {
               className="flex items-start gap-3 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700"
             >
               <AppIcon
-                icon={faTriangleExclamation}
+                icon={
+                  faTriangleExclamation
+                }
                 className="mt-0.5 shrink-0"
               />
 
@@ -278,7 +332,9 @@ export default function LoginPage() {
             ) : (
               <>
                 <AppIcon
-                  icon={faRightToBracket}
+                  icon={
+                    faRightToBracket
+                  }
                   className="text-lg"
                 />
 
