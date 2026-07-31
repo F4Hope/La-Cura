@@ -5,8 +5,13 @@ export async function getResidents() {
     .from("residents")
     .select("*");
 
-  console.log("RESIDENT DATA:", data);
-  console.log("RESIDENT ERROR:", error);
+  if (error) {
+    console.error(
+      "Unable to load residents."
+    );
 
-  return data || [];
+    return [];
+  }
+
+  return data ?? [];
 }
