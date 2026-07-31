@@ -12,8 +12,10 @@ import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
   faBuilding,
   faEnvelope,
+  faIdCard,
   faMagnifyingGlass,
   faPenToSquare,
+  faPhone,
   faShieldHalved,
   faStethoscope,
   faUserGear,
@@ -31,18 +33,24 @@ import { getStaff } from "@/lib/staff";
 
 export type StaffMember = {
   id: number;
+  auth_user_id?: string | null;
   full_name: string;
-  email: string;
+  email?: string | null;
   phone?: string | null;
   role: string;
   department?: string | null;
   license_number?: string | null;
   shift?: string | null;
   employment_date?: string | null;
-  active: boolean;
+  active?: boolean | null;
+  staff_code: string;
+  must_change_password?: boolean;
+  credentials_created_at?: string | null;
 };
 
-function normalize(value: unknown): string {
+function normalize(
+  value: unknown
+): string {
   return typeof value === "string"
     ? value.toLowerCase().trim()
     : "";
@@ -53,10 +61,14 @@ export default function StaffPage() {
     StaffMember[]
   >([]);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] =
+    useState("");
+
   const [loading, setLoading] =
     useState(true);
-  const [error, setError] = useState("");
+
+  const [error, setError] =
+    useState("");
 
   const [addOpen, setAddOpen] =
     useState(false);
@@ -64,79 +76,109 @@ export default function StaffPage() {
   const [editOpen, setEditOpen] =
     useState(false);
 
-  const [selectedStaff, setSelectedStaff] =
-    useState<StaffMember | null>(null);
+  const [
+    selectedStaff,
+    setSelectedStaff,
+  ] = useState<StaffMember | null>(
+    null
+  );
 
-  const loadStaff = useCallback(async () => {
-    setLoading(true);
-    setError("");
+  const loadStaff =
+    useCallback(async () => {
+      setLoading(true);
+      setError("");
 
-    try {
-      const data = await getStaff();
+      try {
+        const data = await getStaff();
 
-      setStaff(
-        Array.isArray(data)
-          ? (data as StaffMember[])
-          : []
-      );
-    } catch (caughtError) {
-      console.error(
-        "Unable to load staff:",
-        caughtError
-      );
+        setStaff(
+          Array.isArray(data)
+            ? (data as StaffMember[])
+            : []
+        );
+      } catch (caughtError) {
+        console.error(
+          "Unable to load staff:",
+          caughtError
+        );
 
-      setError(
-        caughtError instanceof Error
-          ? caughtError.message
-          : "Unable to load staff members."
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+        setError(
+          caughtError instanceof Error
+            ? caughtError.message
+            : "Unable to load staff members."
+        );
+      } finally {
+        setLoading(false);
+      }
+    }, []);
 
   useEffect(() => {
     void loadStaff();
   }, [loadStaff]);
 
-  const filteredStaff = useMemo(() => {
-    const query = normalize(search);
+  const filteredStaff =
+    useMemo(() => {
+      const query =
+        normalize(search);
 
-    if (!query) {
-      return staff;
-    }
+      if (!query) {
+        return staff;
+      }
 
-    return staff.filter((person) => {
-      return [
-        person.full_name,
-        person.email,
-        person.role,
-        person.department,
-        person.phone,
-      ].some((value) =>
-        normalize(value).includes(query)
+      return staff.filter(
+        (person) => {
+          return [
+            person.full_name,
+            person.staff_code,
+            person.email,
+            person.phone,
+            person.role,
+            person.department,
+            person.license_number,
+            person.shift,
+          ].some((value) =>
+            normalize(value).includes(
+              query
+            )
+          );
+        }
       );
-    });
-  }, [staff, search]);
+    }, [staff, search]);
 
   const statistics = useMemo(() => {
+    const activeStaff = staff.filter(
+      (person) =>
+        person.active === true
+    );
+
     return {
-      nurses: staff.filter(
-        (person) =>
-          normalize(person.role) === "nurse"
-      ).length,
+      total: staff.length,
 
-      physicians: staff.filter(
+      active:
+        activeStaff.length,
+
+      nurses: activeStaff.filter(
         (person) =>
           normalize(person.role) ===
-          "physician"
+          "nurse"
       ).length,
 
-      administrators: staff.filter(
-        (person) =>
-          normalize(person.role) ===
-          "administrator"
-      ).length,
+      physicians:
+        activeStaff.filter(
+          (person) =>
+            normalize(
+              person.role
+            ) === "physician"
+        ).length,
+
+      administrators:
+        activeStaff.filter(
+          (person) =>
+            normalize(
+              person.role
+            ) ===
+            "administrator"
+        ).length,
     };
   }, [staff]);
 
@@ -177,9 +219,10 @@ export default function StaffPage() {
               </h1>
 
               <p className="mt-5 max-w-2xl text-lg leading-8 text-green-100 sm:text-xl sm:leading-9">
-                Manage administrators, nurses,
-                and physicians responsible for
-                delivering exceptional care.
+                Create staff accounts,
+                issue secure login codes,
+                reset passwords, and manage
+                access to La-Cura.
               </p>
             </div>
 
@@ -187,7 +230,9 @@ export default function StaffPage() {
               <div className="grid grid-cols-2 gap-7">
                 <StaffMetric
                   icon={faUsers}
-                  value={staff.length}
+                  value={
+                    statistics.total
+                  }
                   label="Total Staff"
                 />
 
@@ -201,13 +246,17 @@ export default function StaffPage() {
 
                 <StaffMetric
                   icon={faShieldHalved}
-                  value={statistics.nurses}
+                  value={
+                    statistics.nurses
+                  }
                   label="Nurses"
                 />
 
                 <StaffMetric
                   icon={faStethoscope}
-                  value={statistics.physicians}
+                  value={
+                    statistics.physicians
+                  }
                   label="Physicians"
                 />
               </div>
@@ -218,7 +267,7 @@ export default function StaffPage() {
 
       <main className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
         <div className="mb-10 flex flex-col items-stretch justify-between gap-5 lg:flex-row lg:items-center">
-          <div className="relative w-full lg:max-w-[470px]">
+          <div className="relative w-full lg:max-w-[500px]">
             <AppIcon
               icon={faMagnifyingGlass}
               className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
@@ -228,16 +277,20 @@ export default function StaffPage() {
               type="search"
               value={search}
               onChange={(event) =>
-                setSearch(event.target.value)
+                setSearch(
+                  event.target.value
+                )
               }
-              placeholder="Search staff by name, email, role, or department..."
+              placeholder="Search by name, staff code, role, phone, or department..."
               className="h-16 w-full rounded-2xl border border-gray-200 bg-white pl-14 pr-6 text-gray-900 shadow-lg outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:ring-4 focus:ring-green-100"
             />
           </div>
 
           <button
             type="button"
-            onClick={() => setAddOpen(true)}
+            onClick={() =>
+              setAddOpen(true)
+            }
             className="flex h-16 items-center justify-center gap-3 rounded-2xl bg-green-700 px-8 font-bold text-white shadow-xl transition hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-200"
           >
             <AppIcon
@@ -245,9 +298,32 @@ export default function StaffPage() {
               className="text-xl"
             />
 
-            Add Staff
+            Create Staff Account
           </button>
         </div>
+
+        <section className="mb-8 grid gap-4 sm:grid-cols-2">
+          <div className="rounded-2xl border border-green-200 bg-green-50 px-5 py-4">
+            <p className="text-sm font-semibold text-green-700">
+              Active staff accounts
+            </p>
+
+            <p className="mt-1 text-3xl font-black text-green-900">
+              {statistics.active}
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4">
+            <p className="text-sm font-semibold text-blue-700">
+              Account creation method
+            </p>
+
+            <p className="mt-1 font-black text-blue-900">
+              Staff code and temporary
+              password
+            </p>
+          </div>
+        </section>
 
         {error && (
           <div
@@ -266,7 +342,8 @@ export default function StaffPage() {
               Loading staff directory...
             </p>
           </div>
-        ) : filteredStaff.length === 0 ? (
+        ) : filteredStaff.length ===
+          0 ? (
           <div className="rounded-[30px] bg-white py-24 text-center shadow-xl">
             <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-green-100">
               <AppIcon
@@ -280,106 +357,169 @@ export default function StaffPage() {
             </h2>
 
             <p className="mt-4 text-lg text-gray-500">
-              No staff members match the current
-              search.
+              No staff members match the
+              current search.
             </p>
           </div>
         ) : (
           <div className="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
-            {filteredStaff.map((person) => (
-              <article
-                key={person.id}
-                className="group overflow-hidden rounded-[30px] bg-white shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
-              >
-                <div className="h-2 bg-green-600" />
+            {filteredStaff.map(
+              (person) => {
+                const isActive =
+                  person.active ===
+                  true;
 
-                <div className="p-7">
-                  <div className="flex min-w-0 items-center gap-5">
-                    <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-green-700 to-green-500 text-3xl font-black text-white">
-                      {person.full_name
-                        ?.trim()
-                        .charAt(0)
-                        .toUpperCase() || "S"}
-                    </div>
+                return (
+                  <article
+                    key={person.id}
+                    className="group overflow-hidden rounded-[30px] bg-white shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                  >
+                    <div
+                      className={`h-2 ${
+                        isActive
+                          ? "bg-green-600"
+                          : "bg-red-500"
+                      }`}
+                    />
 
-                    <div className="min-w-0">
-                      <h2 className="truncate text-2xl font-black text-gray-900">
-                        {person.full_name}
-                      </h2>
+                    <div className="p-7">
+                      <div className="flex min-w-0 items-center gap-5">
+                        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-green-700 to-green-500 text-3xl font-black text-white">
+                          {person.full_name
+                            ?.trim()
+                            .charAt(0)
+                            .toUpperCase() ||
+                            "S"}
+                        </div>
 
-                      <div className="mt-2 flex min-w-0 items-center gap-2 text-gray-500">
-                        <AppIcon
-                          icon={faEnvelope}
-                          className="shrink-0 text-sm"
-                        />
+                        <div className="min-w-0">
+                          <h2 className="truncate text-2xl font-black text-gray-900">
+                            {
+                              person.full_name
+                            }
+                          </h2>
 
-                        <span className="truncate">
-                          {person.email}
+                          <div className="mt-2 flex min-w-0 items-center gap-2 text-green-700">
+                            <AppIcon
+                              icon={
+                                faIdCard
+                              }
+                              className="shrink-0 text-sm"
+                            />
+
+                            <span className="truncate font-mono text-sm font-bold tracking-wide">
+                              {
+                                person.staff_code
+                              }
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 space-y-3">
+                        {person.phone && (
+                          <StaffDetail
+                            icon={faPhone}
+                            value={
+                              person.phone
+                            }
+                          />
+                        )}
+
+                        {person.email && (
+                          <StaffDetail
+                            icon={
+                              faEnvelope
+                            }
+                            value={
+                              person.email
+                            }
+                          />
+                        )}
+
+                        {person.department && (
+                          <StaffDetail
+                            icon={
+                              faBuilding
+                            }
+                            value={
+                              person.department
+                            }
+                          />
+                        )}
+                      </div>
+
+                      <div className="mt-7 flex flex-wrap items-center justify-between gap-3">
+                        <span className="rounded-full bg-blue-100 px-4 py-2 font-semibold text-blue-700">
+                          {person.role}
+                        </span>
+
+                        <span
+                          className={`rounded-full px-4 py-2 font-semibold ${
+                            isActive
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {isActive
+                            ? "Active"
+                            : "Inactive"}
                         </span>
                       </div>
+
+                      {person.must_change_password && (
+                        <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+                          Temporary password
+                          active — password
+                          change required
+                        </div>
+                      )}
+
+                      <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            openEditModal(
+                              person
+                            )
+                          }
+                          className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200"
+                        >
+                          <AppIcon
+                            icon={
+                              faPenToSquare
+                            }
+                          />
+
+                          Edit
+                        </button>
+
+                        <ResetPasswordButton
+                          staffId={
+                            person.id
+                          }
+                          fullName={
+                            person.full_name
+                          }
+                          staffCode={
+                            person.staff_code
+                          }
+                        />
+                      </div>
+
+                      <div className="mt-3">
+                        <DeactivateStaffButton
+                          id={person.id}
+                          active={
+                            isActive
+                          }
+                        />
+                      </div>
                     </div>
-                  </div>
-
-                  {person.department && (
-                    <div className="mt-6 flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
-                      <AppIcon
-                        icon={faBuilding}
-                        className="text-green-700"
-                      />
-
-                      <span>
-                        {person.department}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="mt-7 flex flex-wrap items-center justify-between gap-3">
-                    <span className="rounded-full bg-blue-100 px-4 py-2 font-semibold text-blue-700">
-                      {person.role}
-                    </span>
-
-                    <span
-                      className={`rounded-full px-4 py-2 font-semibold ${
-                        person.active
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {person.active
-                        ? "Active"
-                        : "Inactive"}
-                    </span>
-                  </div>
-
-                  <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        openEditModal(person)
-                      }
-                      className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200"
-                    >
-                      <AppIcon
-                        icon={faPenToSquare}
-                      />
-
-                      Edit
-                    </button>
-
-                    <ResetPasswordButton
-                      email={person.email}
-                    />
-                  </div>
-
-                  <div className="mt-3">
-                    <DeactivateStaffButton
-                      id={person.id}
-                      active={person.active}
-                    />
-                  </div>
-                </div>
-              </article>
-            ))}
+                  </article>
+                );
+              }
+            )}
           </div>
         )}
       </main>
@@ -423,6 +563,29 @@ function StaffMetric({
       <p className="mt-1 text-green-100">
         {label}
       </p>
+    </div>
+  );
+}
+
+type StaffDetailProps = {
+  icon: IconDefinition;
+  value: string;
+};
+
+function StaffDetail({
+  icon,
+  value,
+}: StaffDetailProps) {
+  return (
+    <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+      <AppIcon
+        icon={icon}
+        className="shrink-0 text-green-700"
+      />
+
+      <span className="truncate">
+        {value}
+      </span>
     </div>
   );
 }
