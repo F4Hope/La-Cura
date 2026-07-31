@@ -42,3 +42,7 @@ next-env.d.ts
 .env.local
 .vscode/
 .env*.local
+
+# Local environment secrets
+.env.local
+.env*.local
