@@ -18,14 +18,12 @@ import {
   faCircleXmark,
   faClipboardList,
   faClockRotateLeft,
-  faDroplet,
   faFileMedical,
   faHeartPulse,
   faIdCard,
   faNotesMedical,
   faPhone,
   faPills,
-  faPlus,
   faShieldHeart,
   faStethoscope,
   faTemperatureHalf,
@@ -423,7 +421,10 @@ export default async function ResidentPage({
       .select(
         "temperature, pulse, systolic, diastolic, oxygen_saturation, pain_score, recorded_at, recorded_by"
       )
-      .eq("resident_id", residentId)
+      .eq(
+        "resident_id",
+        residentId
+      )
       .order("recorded_at", {
         ascending: false,
       })
@@ -496,6 +497,9 @@ export default async function ResidentPage({
         .toLowerCase()
         .includes("incident")
     ).length;
+
+  const residentQuery =
+    `?residentId=${resident.id}`;
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900">
@@ -746,29 +750,39 @@ export default async function ResidentPage({
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              Record or review resident
-              clinical information.
+              Record or review clinical
+              information for{" "}
+              <span className="font-semibold text-slate-700">
+                {residentName}
+              </span>
+              .
             </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
             <ActionLink
-              href="/add-vitals"
+              href={`/add-vitals${residentQuery}`}
               icon={faHeartPulse}
               label="Record Vitals"
               primary
             />
 
             <ActionLink
-              href="/add-medication"
+              href={`/add-medication${residentQuery}`}
               icon={faPills}
               label="Add Medication"
             />
 
             <ActionLink
-              href="/add-nursing-note"
+              href={`/add-nursing-note${residentQuery}`}
               icon={faNotesMedical}
               label="Nursing Note"
+            />
+
+            <ActionLink
+              href={`/add-incident-report${residentQuery}`}
+              icon={faCircleExclamation}
+              label="Incident Report"
             />
 
             <ActionLink
@@ -1395,16 +1409,9 @@ function SectionHeader({
   title,
   subtitle,
   action,
-  compact = false,
 }: SectionHeaderProps) {
   return (
-    <header
-      className={`flex flex-col justify-between gap-3 border-b border-slate-200 bg-white sm:flex-row sm:items-center ${
-        compact
-          ? "px-5 py-4"
-          : "px-5 py-4"
-      }`}
-    >
+    <header className="flex flex-col justify-between gap-3 border-b border-slate-200 bg-white px-5 py-4 sm:flex-row sm:items-center">
       <div className="flex items-start gap-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-700">
           <AppIcon icon={icon} />
