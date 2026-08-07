@@ -390,7 +390,7 @@ export default function AddVitalsPage() {
           staff?.full_name ||
           "Offline Staff",
 
-        created_at: now,
+        recorded_at: now,
       };
 
       if (!isOnline()) {

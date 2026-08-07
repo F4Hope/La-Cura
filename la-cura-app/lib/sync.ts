@@ -1,45 +1,100 @@
 import { supabase } from "@/lib/supabase/client";
 
-export async function syncOfflineData() {
+type OfflineVitalRecord = Record<
+  string,
+  unknown
+>;
 
-  if (!navigator.onLine) {
+function normalizeVitalRecord(
+  record: OfflineVitalRecord
+): OfflineVitalRecord {
+  const {
+    created_at,
+    ...rest
+  } = record;
+
+  return {
+    ...rest,
+
+    recorded_at:
+      rest.recorded_at ??
+      created_at ??
+      new Date().toISOString(),
+  };
+}
+
+export async function syncOfflineData() {
+  if (
+    typeof window === "undefined" ||
+    !navigator.onLine
+  ) {
     return;
   }
 
-  const key = "offline_vital_signs";
+  const key =
+    "offline_vital_signs";
 
-  const stored = JSON.parse(
-    localStorage.getItem(key) || "[]"
-  );
+  let stored:
+    OfflineVitalRecord[] = [];
 
+  try {
+    const raw =
+      localStorage.getItem(key);
+
+    if (!raw) {
+      return;
+    }
+
+    const parsed =
+      JSON.parse(raw);
+
+    if (!Array.isArray(parsed)) {
+      localStorage.removeItem(
+        key
+      );
+
+      return;
+    }
+
+    stored =
+      parsed as OfflineVitalRecord[];
+  } catch {
+    return;
+  }
 
   if (stored.length === 0) {
     return;
   }
 
+  /*
+   * Backward compatibility:
+   *
+   * Older offline vital records may
+   * contain `created_at`.
+   *
+   * The vital_signs table uses
+   * `recorded_at`, so normalize old
+   * queued records before syncing.
+   */
+  const normalized =
+    stored.map(
+      normalizeVitalRecord
+    );
 
-  const { error } = await supabase
+  const {
+    error,
+  } = await supabase
     .from("vital_signs")
-    .insert(stored);
-
+    .insert(normalized);
 
   if (error) {
-
-    console.log(
-      "Sync failed:",
+    console.error(
+      "Offline vital-sign sync failed:",
       error.message
     );
 
     return;
-
   }
 
-
   localStorage.removeItem(key);
-
-
-  console.log(
-    "Offline data synced successfully"
-  );
-
 }
