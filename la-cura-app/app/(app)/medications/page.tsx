@@ -1,40 +1,50 @@
 import Link from "next/link";
-import { Search, Plus, Pill, Clock } from "lucide-react";
-import { supabase } from "@/lib/supabase/client";
+
+import {
+  Clock,
+  Pill,
+  Plus,
+  Search,
+} from "lucide-react";
+
+import {
+  createClient,
+} from "@/lib/supabase/server";
 
 export default async function MedicationsPage() {
+  const supabase =
+    await createClient();
 
-  const { data: medications } = await supabase
+  const {
+    data: medications,
+    error,
+  } = await supabase
     .from("medications")
     .select("*")
     .order("resident_name");
 
+  if (error) {
+    console.error(
+      "Unable to load medications:",
+      error.message
+    );
+  }
+
   return (
-
     <div className="min-h-screen bg-gray-100">
-
-      <header className="bg-green-700 text-white p-6">
-
-        <h1 className="text-2xl md:text-4xl font-bold">
-
+      <header className="bg-green-700 p-6 text-white">
+        <h1 className="text-2xl font-bold md:text-4xl">
           Medications
-
         </h1>
 
-        <p className="text-green-100 mt-2">
-
+        <p className="mt-2 text-green-100">
           Medication Records
-
         </p>
-
       </header>
 
       <section className="p-4 md:p-8">
-
-        <div className="flex flex-col md:flex-row gap-4 justify-between mb-6">
-
+        <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row">
           <div className="relative w-full md:w-96">
-
             <Search
               className="absolute left-4 top-3 text-gray-400"
               size={20}
@@ -42,146 +52,116 @@ export default async function MedicationsPage() {
 
             <input
               placeholder="Search medications..."
-              className="w-full rounded-xl border pl-12 pr-4 py-3"
+              className="w-full rounded-xl border py-3 pl-12 pr-4"
             />
-
           </div>
 
-          <Link href="/add-medication">
+          <Link
+            href="/add-medication"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-green-700 px-6 py-3 text-white transition hover:bg-green-800 md:w-auto"
+          >
+            <Plus size={20} />
 
-            <button className="w-full md:w-auto bg-green-700 hover:bg-green-800 text-white rounded-xl px-6 py-3 flex justify-center items-center gap-2">
-
-              <Plus size={20}/>
-
-              Add Medication
-
-            </button>
-
+            Add Medication
           </Link>
-
         </div>
 
         <div className="grid gap-5">
-
-          {medications?.length === 0 && (
-
-            <div className="bg-white rounded-2xl shadow p-10 text-center">
-
-              No Medications Found
-
+          {error && (
+            <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+              Medication records could
+              not be loaded.
             </div>
-
           )}
 
-          {medications?.map((med)=>(
-
-            <div
-              key={med.id}
-              className="bg-white rounded-2xl shadow p-5"
-            >
-
-              <div className="flex justify-between items-start">
-
-                <div>
-
-                  <h2 className="text-xl font-bold text-green-700">
-
-                    {med.resident_name}
-
-                  </h2>
-
-                  <p className="text-gray-500">
-
-                    {med.medication_name}
-
-                  </p>
-
-                </div>
-
-                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full">
-
-                  Active
-
-                </span>
-
+          {!error &&
+            (!medications ||
+              medications.length ===
+                0) && (
+              <div className="rounded-2xl bg-white p-10 text-center shadow">
+                No Medications Found
               </div>
+            )}
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5">
+          {!error &&
+            medications?.map(
+              (medication) => (
+                <article
+                  key={
+                    medication.id
+                  }
+                  className="rounded-2xl bg-white p-5 shadow"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h2 className="text-xl font-bold text-green-700">
+                        {medication.resident_name ||
+                          "Resident"}
+                      </h2>
 
-                <div>
+                      <p className="text-gray-500">
+                        {medication.medication_name ||
+                          "Medication"}
+                      </p>
+                    </div>
 
-                  <p className="text-gray-500 text-sm">
+                    <span className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">
+                      Active
+                    </span>
+                  </div>
 
-                    Dosage
+                  <div className="mt-5 grid grid-cols-2 gap-4 md:grid-cols-4">
+                    <div>
+                      <p className="text-sm text-gray-500">
+                        Dosage
+                      </p>
 
-                  </p>
+                      <strong>
+                        {medication.dosage ||
+                          "—"}
+                      </strong>
+                    </div>
 
-                  <strong>
+                    <div>
+                      <p className="text-sm text-gray-500">
+                        Frequency
+                      </p>
 
-                    {med.dosage}
+                      <strong>
+                        {medication.frequency ||
+                          "—"}
+                      </strong>
+                    </div>
 
-                  </strong>
+                    <div className="flex items-center gap-2">
+                      <Clock
+                        size={18}
+                        className="text-red-600"
+                      />
 
-                </div>
+                      <strong>
+                        {medication.time_to_take ||
+                          "—"}
+                      </strong>
+                    </div>
 
-                <div>
+                    <div className="flex items-center gap-2">
+                      <Pill
+                        size={18}
+                        className="text-orange-600"
+                      />
 
-                  <p className="text-gray-500 text-sm">
-
-                    Frequency
-
-                  </p>
-
-                  <strong>
-
-                    {med.frequency}
-
-                  </strong>
-
-                </div>
-
-                <div className="flex items-center gap-2">
-
-                  <Clock
-                    size={18}
-                    className="text-red-600"
-                  />
-
-                  <strong>
-
-                    {med.time_to_take}
-
-                  </strong>
-
-                </div>
-
-                <div className="flex items-center gap-2">
-
-                  <Pill
-                    size={18}
-                    className="text-orange-600"
-                  />
-
-                  <strong>
-
-                    {med.medication_name}
-
-                  </strong>
-
-                </div>
-
-              </div>
-
-            </div>
-
-          ))}
-
+                      <strong>
+                        {medication.medication_name ||
+                          "—"}
+                      </strong>
+                    </div>
+                  </div>
+                </article>
+              )
+            )}
         </div>
-
       </section>
-
     </div>
-
   );
-
 }

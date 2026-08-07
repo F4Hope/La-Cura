@@ -1,13 +1,27 @@
-import { supabase } from "@/lib/supabase/client";
+import {
+  createClient,
+} from "@/lib/supabase/server";
 
 type VitalAlertRow = {
   id: number;
   resident_id: number | null;
   temperature: number | string | null;
-  oxygen_saturation: number | string | null;
-  pain_score: number | string | null;
-  systolic: number | string | null;
-  diastolic: number | string | null;
+  oxygen_saturation:
+    | number
+    | string
+    | null;
+  pain_score:
+    | number
+    | string
+    | null;
+  systolic:
+    | number
+    | string
+    | null;
+  diastolic:
+    | number
+    | string
+    | null;
   recorded_at: string | null;
 };
 
@@ -24,7 +38,10 @@ export type ClinicalAlert = {
 };
 
 function toNumber(
-  value: number | string | null
+  value:
+    | number
+    | string
+    | null
 ): number | null {
   if (
     value === null ||
@@ -33,9 +50,12 @@ function toNumber(
     return null;
   }
 
-  const parsedValue = Number(value);
+  const parsedValue =
+    Number(value);
 
-  return Number.isFinite(parsedValue)
+  return Number.isFinite(
+    parsedValue
+  )
     ? parsedValue
     : null;
 }
@@ -43,7 +63,13 @@ function toNumber(
 export async function getClinicalAlerts(): Promise<
   ClinicalAlert[]
 > {
-  const { data, error } = await supabase
+  const supabase =
+    await createClient();
+
+  const {
+    data,
+    error,
+  } = await supabase
     .from("vital_signs")
     .select(
       "id, resident_id, temperature, oxygen_saturation, pain_score, systolic, diastolic, recorded_at"
@@ -55,7 +81,8 @@ export async function getClinicalAlerts(): Promise<
 
   if (error) {
     console.error(
-      "Unable to load clinical alerts."
+      "Unable to load clinical alerts:",
+      error.message
     );
 
     return [];
@@ -67,38 +94,56 @@ export async function getClinicalAlerts(): Promise<
   const residentIds = [
     ...new Set(
       vitalRows
-        .map((vital) => vital.resident_id)
+        .map(
+          (vital) =>
+            vital.resident_id
+        )
         .filter(
-          (residentId): residentId is number =>
-            typeof residentId === "number"
+          (
+            residentId
+          ): residentId is number =>
+            typeof residentId ===
+            "number"
         )
     ),
   ];
 
-  const residentNames = new Map<
-    number,
-    string | null
-  >();
+  const residentNames =
+    new Map<
+      number,
+      string | null
+    >();
 
-  if (residentIds.length > 0) {
+  if (
+    residentIds.length > 0
+  ) {
     const {
       data: residentData,
       error: residentError,
     } = await supabase
       .from("residents")
-      .select("id, full_name")
-      .in("id", residentIds);
+      .select(
+        "id, full_name"
+      )
+      .in(
+        "id",
+        residentIds
+      );
 
     if (residentError) {
       console.error(
-        "Unable to resolve resident names for clinical alerts."
+        "Unable to resolve resident names for clinical alerts:",
+        residentError.message
       );
     } else {
       const residents =
         (residentData ??
           []) as ResidentNameRow[];
 
-      for (const resident of residents) {
+      for (
+        const resident
+        of residents
+      ) {
         residentNames.set(
           resident.id,
           resident.full_name
@@ -107,31 +152,41 @@ export async function getClinicalAlerts(): Promise<
     }
   }
 
-  const alerts: ClinicalAlert[] = [];
+  const alerts:
+    ClinicalAlert[] = [];
 
-  for (const vital of vitalRows) {
-    const temperature = toNumber(
-      vital.temperature
-    );
+  for (
+    const vital
+    of vitalRows
+  ) {
+    const temperature =
+      toNumber(
+        vital.temperature
+      );
 
-    const oxygenSaturation = toNumber(
-      vital.oxygen_saturation
-    );
+    const oxygenSaturation =
+      toNumber(
+        vital.oxygen_saturation
+      );
 
-    const painScore = toNumber(
-      vital.pain_score
-    );
+    const painScore =
+      toNumber(
+        vital.pain_score
+      );
 
-    const systolic = toNumber(
-      vital.systolic
-    );
+    const systolic =
+      toNumber(
+        vital.systolic
+      );
 
-    const diastolic = toNumber(
-      vital.diastolic
-    );
+    const diastolic =
+      toNumber(
+        vital.diastolic
+      );
 
     const residentName =
-      vital.resident_id === null
+      vital.resident_id ===
+      null
         ? null
         : residentNames.get(
             vital.resident_id
@@ -142,22 +197,28 @@ export async function getClinicalAlerts(): Promise<
       temperature > 38
     ) {
       alerts.push({
-        type: "High Temperature",
+        type:
+          "High Temperature",
         color: "red",
-        resident: residentName,
-        message: `${temperature}°C`,
+        resident:
+          residentName,
+        message:
+          `${temperature}°C`,
       });
     }
 
     if (
-      oxygenSaturation !== null &&
+      oxygenSaturation !==
+        null &&
       oxygenSaturation < 92
     ) {
       alerts.push({
         type: "Low Oxygen",
         color: "red",
-        resident: residentName,
-        message: `${oxygenSaturation}%`,
+        resident:
+          residentName,
+        message:
+          `${oxygenSaturation}%`,
       });
     }
 
@@ -168,8 +229,10 @@ export async function getClinicalAlerts(): Promise<
       alerts.push({
         type: "Severe Pain",
         color: "orange",
-        resident: residentName,
-        message: `${painScore}/10`,
+        resident:
+          residentName,
+        message:
+          `${painScore}/10`,
       });
     }
 
@@ -181,7 +244,8 @@ export async function getClinicalAlerts(): Promise<
         type:
           "Critical Blood Pressure",
         color: "red",
-        resident: residentName,
+        resident:
+          residentName,
         message:
           diastolic === null
             ? `${systolic}`

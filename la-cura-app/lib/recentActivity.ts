@@ -1,4 +1,6 @@
-import { supabase } from "@/lib/supabase/client";
+import {
+  createClient,
+} from "@/lib/supabase/server";
 
 type VitalActivityRow = {
   id: number;
@@ -13,24 +15,40 @@ type ResidentNameRow = {
 };
 
 export async function getRecentMedicationActivity() {
-  const { data, error } = await supabase
-    .from("medication_administration")
+  const supabase =
+    await createClient();
+
+  const {
+    data,
+    error,
+  } = await supabase
+    .from(
+      "medication_administration"
+    )
     .select(`
       id,
       status,
       administered_at,
       administered_by,
-      residents(full_name),
-      medications(medication_name)
+      residents (
+        full_name
+      ),
+      medications (
+        medication_name
+      )
     `)
-    .order("administered_at", {
-      ascending: false,
-    })
+    .order(
+      "administered_at",
+      {
+        ascending: false,
+      }
+    )
     .limit(5);
 
   if (error) {
     console.error(
-      "Unable to load recent medication activity."
+      "Unable to load recent medication activity:",
+      error.message
     );
 
     return [];
@@ -40,7 +58,13 @@ export async function getRecentMedicationActivity() {
 }
 
 export async function getRecentVitalActivity() {
-  const { data, error } = await supabase
+  const supabase =
+    await createClient();
+
+  const {
+    data,
+    error,
+  } = await supabase
     .from("vital_signs")
     .select(`
       id,
@@ -48,14 +72,18 @@ export async function getRecentVitalActivity() {
       recorded_at,
       recorded_by
     `)
-    .order("recorded_at", {
-      ascending: false,
-    })
+    .order(
+      "recorded_at",
+      {
+        ascending: false,
+      }
+    )
     .limit(5);
 
   if (error) {
     console.error(
-      "Unable to load recent vital-sign activity."
+      "Unable to load recent vital-sign activity:",
+      error.message
     );
 
     return [];
@@ -67,19 +95,29 @@ export async function getRecentVitalActivity() {
   const residentIds = [
     ...new Set(
       vitalRows
-        .map((row) => row.resident_id)
+        .map(
+          (row) =>
+            row.resident_id
+        )
         .filter(
-          (id): id is number =>
-            typeof id === "number"
+          (
+            id
+          ): id is number =>
+            typeof id ===
+            "number"
         )
     ),
   ];
 
-  if (residentIds.length === 0) {
-    return vitalRows.map((row) => ({
-      ...row,
-      residents: null,
-    }));
+  if (
+    residentIds.length === 0
+  ) {
+    return vitalRows.map(
+      (row) => ({
+        ...row,
+        residents: null,
+      })
+    );
   }
 
   const {
@@ -87,41 +125,56 @@ export async function getRecentVitalActivity() {
     error: residentError,
   } = await supabase
     .from("residents")
-    .select("id, full_name")
-    .in("id", residentIds);
+    .select(
+      "id, full_name"
+    )
+    .in(
+      "id",
+      residentIds
+    );
 
   if (residentError) {
     console.error(
-      "Unable to resolve resident names for recent vital-sign activity."
+      "Unable to resolve resident names for recent vital-sign activity:",
+      residentError.message
     );
 
-    return vitalRows.map((row) => ({
-      ...row,
-      residents: null,
-    }));
+    return vitalRows.map(
+      (row) => ({
+        ...row,
+        residents: null,
+      })
+    );
   }
 
   const residents =
-    (residentData ?? []) as ResidentNameRow[];
+    (residentData ??
+      []) as ResidentNameRow[];
 
-  const residentNames = new Map(
-    residents.map((resident) => [
-      resident.id,
-      resident.full_name,
-    ])
+  const residentNames =
+    new Map(
+      residents.map(
+        (resident) => [
+          resident.id,
+          resident.full_name,
+        ]
+      )
+    );
+
+  return vitalRows.map(
+    (row) => ({
+      ...row,
+
+      residents:
+        row.resident_id ===
+        null
+          ? null
+          : {
+              full_name:
+                residentNames.get(
+                  row.resident_id
+                ) ?? null,
+            },
+    })
   );
-
-  return vitalRows.map((row) => ({
-    ...row,
-
-    residents:
-      row.resident_id === null
-        ? null
-        : {
-            full_name:
-              residentNames.get(
-                row.resident_id
-              ) ?? null,
-          },
-  }));
 }

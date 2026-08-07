@@ -40,8 +40,8 @@ import { notFound } from "next/navigation";
 import AppIcon from "@/components/ui/AppIcon";
 
 import { getMedicationHistory } from "@/lib/medicationHistory";
-import { getResidentTimeline } from "@/lib/residentTimeline";
-import { supabase } from "@/lib/supabase/client";
+import { getResidentTimelineServer } from "@/lib/residentTimelineServer";
+import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -396,6 +396,9 @@ export default async function ResidentPage({
     notFound();
   }
 
+  const supabase =
+    await createClient();
+
   const [
     residentResult,
     timelineResult,
@@ -408,7 +411,7 @@ export default async function ResidentPage({
       .eq("id", residentId)
       .maybeSingle(),
 
-    getResidentTimeline(
+    getResidentTimelineServer(
       residentId
     ),
 

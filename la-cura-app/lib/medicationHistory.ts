@@ -1,8 +1,20 @@
-import { supabase } from "@/lib/supabase/client";
+import {
+  createClient,
+} from "@/lib/supabase/server";
 
-export async function getMedicationHistory(residentId: number) {
-  const { data, error } = await supabase
-    .from("medication_administration")
+export async function getMedicationHistory(
+  residentId: number
+) {
+  const supabase =
+    await createClient();
+
+  const {
+    data,
+    error,
+  } = await supabase
+    .from(
+      "medication_administration"
+    )
     .select(`
       *,
       medications (
@@ -10,13 +22,25 @@ export async function getMedicationHistory(residentId: number) {
         dosage
       )
     `)
-    .eq("resident_id", residentId)
-    .order("administered_at", { ascending: false });
+    .eq(
+      "resident_id",
+      residentId
+    )
+    .order(
+      "administered_at",
+      {
+        ascending: false,
+      }
+    );
 
   if (error) {
-    console.log(error);
+    console.error(
+      "Failed to load medication history:",
+      error.message
+    );
+
     return [];
   }
 
-  return data;
+  return data ?? [];
 }
