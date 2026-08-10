@@ -152,35 +152,35 @@ const floatingIcons: Array<{
   {
     icon: faHeartPulse,
     className:
-      "left-[6%] top-[18%]",
+      "right-[35%] top-[16%]",
     delay: "0s",
     duration: "7s",
   },
   {
     icon: faPills,
     className:
-      "left-[18%] top-[66%]",
+      "right-[8%] top-[68%]",
     delay: "1.4s",
     duration: "8.5s",
   },
   {
     icon: faUserNurse,
     className:
-      "right-[13%] top-[16%]",
+      "right-[10%] top-[20%]",
     delay: "0.8s",
     duration: "9s",
   },
   {
     icon: faChartLine,
     className:
-      "right-[4%] top-[58%]",
+      "right-[28%] top-[57%]",
     delay: "2s",
     duration: "7.5s",
   },
   {
     icon: faShieldHalved,
     className:
-      "right-[28%] top-[76%]",
+      "right-[18%] top-[79%]",
     delay: "1.1s",
     duration: "10s",
   },
@@ -215,11 +215,11 @@ export function HeroFloatingIcons() {
         )
       )}
 
-      <div className="landing-float-dot absolute left-[11%] top-[42%] h-3 w-3 rounded-full bg-green-500/40" />
+      <div className="landing-float-dot absolute right-[42%] top-[42%] h-3 w-3 rounded-full bg-green-500/40" />
 
-      <div className="landing-float-dot landing-delay-2 absolute right-[20%] top-[43%] h-2 w-2 rounded-full bg-green-700/30" />
+      <div className="landing-float-dot landing-delay-2 absolute right-[7%] top-[46%] h-2 w-2 rounded-full bg-green-700/30" />
 
-      <div className="landing-float-dot landing-delay-3 absolute bottom-[13%] left-[41%] h-2.5 w-2.5 rounded-full bg-green-600/30" />
+      <div className="landing-float-dot landing-delay-3 absolute bottom-[14%] right-[39%] h-2.5 w-2.5 rounded-full bg-green-600/30" />
 
       <style jsx>{`
         @keyframes landingFloat {

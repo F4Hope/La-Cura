@@ -39,7 +39,6 @@ import {
   AnimatedHeroTitle,
   AnimatedStatistics,
   CareMotionRail,
-  HeroScrollCue,
   MotionSectionHeading,
   PremiumLandingStyles,
 } from "@/components/LandingPremiumMotion";
@@ -368,16 +367,15 @@ export default function Home() {
           </div>
         </div>
 
-        <HeroScrollCue />
       </section>
 
-      <section className="relative z-20 -mt-14 pb-20 lg:-mt-24">
+      <section className="relative z-20 -mt-12 pb-16 lg:-mt-20">
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <div className="grid gap-7 md:grid-cols-3">
             {trustFeatures.map((feature) => (
               <article
                 key={feature.title}
-                className="premium-card rounded-3xl bg-white p-8 shadow-2xl transition duration-300 hover:-translate-y-2"
+                className="premium-card rounded-3xl bg-white p-7 shadow-xl ring-1 ring-slate-100 transition duration-300 hover:-translate-y-2 hover:shadow-2xl lg:p-8"
               >
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
                   <AppIcon
