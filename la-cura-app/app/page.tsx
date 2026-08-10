@@ -31,6 +31,10 @@ import {
 
 import AppIcon from "@/components/ui/AppIcon";
 import InstallLaCuraButton from "@/components/InstallLaCuraButton";
+import {
+  ClinicalWorkspaceTabs,
+  HeroFloatingIcons,
+} from "@/components/LandingMotion";
 
 type Feature = {
   title: string;
@@ -305,6 +309,8 @@ export default function Home() {
 
         <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-white/30" />
 
+        <HeroFloatingIcons />
+
         <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-6">
           <div className="flex min-h-[720px] items-center py-20 lg:min-h-[820px]">
             <div className="max-w-3xl">
@@ -427,6 +433,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <ClinicalWorkspaceTabs />
 
       <section
         id="about"
