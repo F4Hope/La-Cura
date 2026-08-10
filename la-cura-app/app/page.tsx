@@ -35,6 +35,14 @@ import {
   ClinicalWorkspaceTabs,
   HeroFloatingIcons,
 } from "@/components/LandingMotion";
+import {
+  AnimatedHeroTitle,
+  AnimatedStatistics,
+  CareMotionRail,
+  HeroScrollCue,
+  MotionSectionHeading,
+  PremiumLandingStyles,
+} from "@/components/LandingPremiumMotion";
 
 type Feature = {
   title: string;
@@ -207,7 +215,8 @@ const statistics = [
 export default function Home() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-white">
-      <header className="fixed inset-x-0 top-0 z-50 border-b border-green-100 bg-white/95 backdrop-blur-md">
+      <PremiumLandingStyles />
+      <header className="premium-nav fixed inset-x-0 top-0 z-50 border-b border-green-100 bg-white/95 backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <div className="flex h-20 items-center justify-between lg:h-24">
             <Link
@@ -303,7 +312,7 @@ export default function Home() {
             fill
             priority
             sizes="100vw"
-            className="object-cover object-center lg:object-right"
+            className="premium-hero-image object-cover object-center lg:object-right"
           />
         </div>
 
@@ -325,16 +334,7 @@ export default function Home() {
                 </span>
               </div>
 
-              <h1 className="text-5xl font-black leading-[1.08] text-gray-900 sm:text-6xl lg:text-7xl">
-                Compassionate
-                <br />
-                Care for
-                <br />
-
-                <span className="text-green-700">
-                  Every Life
-                </span>
-              </h1>
+              <AnimatedHeroTitle />
 
               <p className="mt-8 max-w-2xl text-lg leading-8 text-gray-600 sm:text-xl lg:text-2xl lg:leading-10">
                 Delivering nursing care, elderly care,
@@ -345,7 +345,7 @@ export default function Home() {
               <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
                 <Link
                   href="/login"
-                  className="inline-flex items-center justify-center gap-3 rounded-2xl bg-green-700 px-8 py-4 text-lg font-bold text-white transition hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-200 sm:px-10 sm:py-5"
+                  className="premium-primary-button inline-flex items-center justify-center gap-3 rounded-2xl bg-green-700 px-8 py-4 text-lg font-bold text-white transition hover:-translate-y-0.5 hover:bg-green-800 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-green-200 sm:px-10 sm:py-5"
                 >
                   Staff Login
 
@@ -367,6 +367,8 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        <HeroScrollCue />
       </section>
 
       <section className="relative z-20 -mt-14 pb-20 lg:-mt-24">
@@ -375,7 +377,7 @@ export default function Home() {
             {trustFeatures.map((feature) => (
               <article
                 key={feature.title}
-                className="rounded-3xl bg-white p-8 shadow-2xl transition duration-300 hover:-translate-y-2"
+                className="premium-card rounded-3xl bg-white p-8 shadow-2xl transition duration-300 hover:-translate-y-2"
               >
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
                   <AppIcon
@@ -397,12 +399,14 @@ export default function Home() {
         </div>
       </section>
 
+      <CareMotionRail />
+
       <section
         id="services"
         className="scroll-mt-24 bg-gradient-to-b from-white to-green-50 py-24 lg:py-28"
       >
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
-          <SectionHeading
+          <MotionSectionHeading
             eyebrow="Our Services"
             title="Healthcare Solutions You Can Trust"
             description="We combine compassionate care with practical healthcare solutions designed to improve lives across Cameroon."
@@ -412,7 +416,7 @@ export default function Home() {
             {services.map((service) => (
               <article
                 key={service.title}
-                className="rounded-3xl bg-white p-8 shadow-xl transition duration-300 hover:-translate-y-3 hover:shadow-2xl lg:p-10"
+                className="premium-card rounded-3xl bg-white p-8 shadow-xl transition duration-300 hover:-translate-y-3 hover:shadow-2xl lg:p-10"
               >
                 <div className="mb-7 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
                   <AppIcon
@@ -447,7 +451,7 @@ export default function Home() {
               alt="La-Cura healthcare services"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover"
+              className="premium-about-image object-cover"
             />
 
             <div className="absolute inset-0 bg-gradient-to-t from-green-950/70 via-transparent to-transparent" />
@@ -516,7 +520,7 @@ export default function Home() {
         className="scroll-mt-24 bg-slate-50 py-24 lg:py-28"
       >
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
-          <SectionHeading
+          <MotionSectionHeading
             eyebrow="Medical Products"
             title="Reliable Products for Better Care"
             description="We provide medical equipment, patient-care supplies, and healthcare technology that support safer and more efficient care."
@@ -526,7 +530,7 @@ export default function Home() {
             {products.map((product) => (
               <article
                 key={product.title}
-                className="group overflow-hidden rounded-[32px] bg-white shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                className="premium-card group overflow-hidden rounded-[32px] bg-white shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
               >
                 <div className="flex h-64 items-center justify-center bg-gradient-to-br from-green-100 to-green-200">
                   <AppIcon
@@ -564,7 +568,7 @@ export default function Home() {
 
       <section className="bg-white py-24 lg:py-28">
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
-          <SectionHeading
+          <MotionSectionHeading
             eyebrow="Testimonials"
             title="Families Trust La-Cura"
             description="The confidence of patients, families, and communities is central to the work we do."
@@ -574,7 +578,7 @@ export default function Home() {
             {testimonials.map((testimonial) => (
               <article
                 key={testimonial.name}
-                className="rounded-[32px] bg-slate-50 p-8 shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl lg:p-10"
+                className="premium-card rounded-[32px] bg-slate-50 p-8 shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl lg:p-10"
               >
                 <AppIcon
                   icon={faQuoteLeft}
@@ -626,7 +630,7 @@ export default function Home() {
         className="scroll-mt-24 bg-gradient-to-b from-green-50 to-white py-24 lg:py-28"
       >
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
-          <SectionHeading
+          <MotionSectionHeading
             eyebrow="Health Tips"
             title="Healthy Living Starts Here"
             description="Small, consistent health habits can support long-term well-being and a better quality of life."
@@ -636,7 +640,7 @@ export default function Home() {
             {healthTips.map((tip) => (
               <article
                 key={tip.title}
-                className="group overflow-hidden rounded-[32px] bg-white shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                className="premium-card group overflow-hidden rounded-[32px] bg-white shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
               >
                 <div className="h-3 bg-green-700" />
 
@@ -692,9 +696,9 @@ export default function Home() {
       </section>
 
       <section className="relative overflow-hidden bg-gradient-to-r from-green-800 via-green-700 to-green-600 py-24 text-center lg:py-28">
-        <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-white/10" />
+        <div className="premium-orbit absolute -right-24 -top-24 h-80 w-80 rounded-full bg-white/10" />
 
-        <div className="absolute -bottom-32 left-1/4 h-96 w-96 rounded-full bg-white/5" />
+        <div className="premium-orbit absolute -bottom-32 left-1/4 h-96 w-96 rounded-full bg-white/5" />
 
         <div className="relative mx-auto max-w-7xl px-5 sm:px-6">
           <h2 className="text-4xl font-black text-white sm:text-5xl">
@@ -722,19 +726,7 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="mt-20 grid gap-10 sm:grid-cols-2 lg:mt-24 lg:grid-cols-4">
-            {statistics.map((statistic) => (
-              <div key={statistic.label}>
-                <p className="text-5xl font-black text-white">
-                  {statistic.value}
-                </p>
-
-                <p className="mt-3 text-green-100">
-                  {statistic.label}
-                </p>
-              </div>
-            ))}
-          </div>
+          <AnimatedStatistics />
         </div>
       </section>
 
@@ -743,7 +735,7 @@ export default function Home() {
         className="scroll-mt-24 bg-white py-24 lg:py-28"
       >
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
-          <SectionHeading
+          <MotionSectionHeading
             eyebrow="Contact Us"
             title="We Would Love to Hear From You"
             description="Contact La-Cura with questions about our healthcare services, medical products, or digital healthcare solutions."
