@@ -50,11 +50,11 @@ export function PremiumLandingStyles() {
       @keyframes premiumHeroImage {
         0%,
         100% {
-          transform: scale(1.02) translate3d(0, 0, 0);
+          transform: scale(1.01) translate3d(0, 0, 0);
         }
 
         50% {
-          transform: scale(1.075) translate3d(-1.25%, -0.6%, 0);
+          transform: scale(1.045) translate3d(-0.6%, -0.3%, 0);
         }
       }
 

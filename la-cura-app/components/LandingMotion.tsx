@@ -143,46 +143,30 @@ const clinicalTabs: ClinicalTab[] = [
   },
 ];
 
-const floatingIcons: Array<{
-  icon: IconDefinition;
-  className: string;
-  delay: string;
-  duration: string;
-}> = [
+const heroSignals = [
   {
     icon: faHeartPulse,
-    className:
-      "right-[35%] top-[16%]",
+    title: "Vitals monitored",
+    subtitle: "Resident context",
+    className: "right-[7%] top-[20%]",
     delay: "0s",
-    duration: "7s",
-  },
-  {
-    icon: faPills,
-    className:
-      "right-[8%] top-[68%]",
-    delay: "1.4s",
-    duration: "8.5s",
-  },
-  {
-    icon: faUserNurse,
-    className:
-      "right-[10%] top-[20%]",
-    delay: "0.8s",
-    duration: "9s",
-  },
-  {
-    icon: faChartLine,
-    className:
-      "right-[28%] top-[57%]",
-    delay: "2s",
-    duration: "7.5s",
+    duration: "8s",
   },
   {
     icon: faShieldHalved,
-    className:
-      "right-[18%] top-[79%]",
-    delay: "1.1s",
-    duration: "10s",
+    title: "Clinical data secured",
+    subtitle: "Role-protected access",
+    className: "right-[30%] top-[55%]",
+    delay: "1.4s",
+    duration: "9.5s",
+  },
+  {
+    icon: faPills,
+    title: "Medication workflow",
+    subtitle: "Connected care",
+    className: "right-[8%] top-[72%]",
+    delay: "2.2s",
+    duration: "8.8s",
   },
 ];
 
@@ -190,101 +174,57 @@ export function HeroFloatingIcons() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-[5] hidden overflow-hidden lg:block"
+      className="pointer-events-none absolute inset-0 z-[5] hidden overflow-hidden xl:block"
     >
-      {floatingIcons.map(
-        (
-          item,
-          index
-        ) => (
-          <div
-            key={index}
-            className={`landing-floating-icon absolute flex h-14 w-14 items-center justify-center rounded-2xl border border-white/70 bg-white/80 text-green-700 shadow-lg shadow-green-950/10 backdrop-blur-md ${item.className}`}
-            style={{
-              animationDelay:
-                item.delay,
-              animationDuration:
-                item.duration,
-            }}
-          >
+      {heroSignals.map((signal) => (
+        <div
+          key={signal.title}
+          className={`landing-signal-float absolute flex min-w-[205px] items-center gap-3 rounded-2xl border border-white/80 bg-white/88 p-3.5 shadow-xl shadow-slate-900/10 backdrop-blur-xl ${signal.className}`}
+          style={{
+            animationDelay: signal.delay,
+            animationDuration: signal.duration,
+          }}
+        >
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-700">
             <AppIcon
-              icon={item.icon}
-              className="text-xl"
+              icon={signal.icon}
+              className="text-lg"
             />
           </div>
-        )
-      )}
 
-      <div className="landing-float-dot absolute right-[42%] top-[42%] h-3 w-3 rounded-full bg-green-500/40" />
+          <div>
+            <p className="text-sm font-bold text-slate-900">
+              {signal.title}
+            </p>
 
-      <div className="landing-float-dot landing-delay-2 absolute right-[7%] top-[46%] h-2 w-2 rounded-full bg-green-700/30" />
-
-      <div className="landing-float-dot landing-delay-3 absolute bottom-[14%] right-[39%] h-2.5 w-2.5 rounded-full bg-green-600/30" />
+            <p className="mt-0.5 text-xs text-slate-500">
+              {signal.subtitle}
+            </p>
+          </div>
+        </div>
+      ))}
 
       <style jsx>{`
-        @keyframes landingFloat {
+        @keyframes clinicalSignalFloat {
           0%,
           100% {
-            transform: translate3d(
-                0,
-                0,
-                0
-              )
-              rotate(-2deg);
+            transform: translate3d(0, 0, 0);
           }
 
           50% {
-            transform: translate3d(
-                0,
-                -18px,
-                0
-              )
-              rotate(2deg);
+            transform: translate3d(0, -10px, 0);
           }
         }
 
-        @keyframes landingDot {
-          0%,
-          100% {
-            transform: translateY(
-              0
-            );
-            opacity: 0.3;
-          }
-
-          50% {
-            transform: translateY(
-              -14px
-            );
-            opacity: 0.7;
-          }
-        }
-
-        .landing-floating-icon {
-          animation-name: landingFloat;
+        .landing-signal-float {
+          animation-name: clinicalSignalFloat;
           animation-timing-function: ease-in-out;
           animation-iteration-count: infinite;
           will-change: transform;
         }
 
-        .landing-float-dot {
-          animation: landingDot
-            6s ease-in-out
-            infinite;
-        }
-
-        .landing-delay-2 {
-          animation-delay: 1.5s;
-        }
-
-        .landing-delay-3 {
-          animation-delay: 2.8s;
-        }
-
-        @media
-          (prefers-reduced-motion: reduce) {
-          .landing-floating-icon,
-          .landing-float-dot {
+        @media (prefers-reduced-motion: reduce) {
+          .landing-signal-float {
             animation: none !important;
           }
         }

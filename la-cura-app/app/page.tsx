@@ -315,13 +315,13 @@ export default function Home() {
           />
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-white/30" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,1)_0%,rgba(255,255,255,0.98)_38%,rgba(255,255,255,0.78)_56%,rgba(255,255,255,0.18)_78%,rgba(255,255,255,0.04)_100%)]" />
 
         <HeroFloatingIcons />
 
         <div className="relative z-10 mx-auto max-w-7xl px-5 sm:px-6">
-          <div className="flex min-h-[720px] items-center py-20 lg:min-h-[820px]">
-            <div className="max-w-3xl">
+          <div className="flex min-h-[760px] items-center py-24 lg:min-h-[860px]">
+            <div className="max-w-[720px]">
               <div className="mb-7 inline-flex items-center gap-3 rounded-full bg-green-100 px-5 py-3 text-green-700 shadow-sm">
                 <AppIcon
                   icon={faHeart}
@@ -335,7 +335,7 @@ export default function Home() {
 
               <AnimatedHeroTitle />
 
-              <p className="mt-8 max-w-2xl text-lg leading-8 text-gray-600 sm:text-xl lg:text-2xl lg:leading-10">
+              <p className="mt-8 max-w-xl text-lg leading-8 text-slate-600 sm:text-xl lg:leading-9">
                 Delivering nursing care, elderly care,
                 healthcare technology, and quality medical
                 products across Cameroon.
@@ -356,7 +356,7 @@ export default function Home() {
 
                 <a
                   href="#services"
-                  className="inline-flex items-center justify-center rounded-2xl border-2 border-green-700 px-8 py-4 text-lg font-bold text-green-700 transition hover:bg-green-700 hover:text-white focus:outline-none focus:ring-4 focus:ring-green-200 sm:px-10 sm:py-5"
+                  className="inline-flex items-center justify-center rounded-2xl border border-slate-300 bg-white/75 px-6 py-4 text-base font-semibold text-slate-700 shadow-sm backdrop-blur transition hover:border-green-300 hover:bg-white hover:text-green-700 focus:outline-none focus:ring-4 focus:ring-green-100 sm:px-7"
                 >
                   Explore Services
                 </a>
@@ -369,7 +369,7 @@ export default function Home() {
 
       </section>
 
-      <section className="relative z-20 -mt-12 pb-16 lg:-mt-20">
+      <section className="relative z-20 -mt-6 pb-20 lg:-mt-10">
         <div className="mx-auto max-w-7xl px-5 sm:px-6">
           <div className="grid gap-7 md:grid-cols-3">
             {trustFeatures.map((feature) => (
