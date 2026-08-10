@@ -213,7 +213,7 @@ const statistics = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-x-hidden bg-white">
+    <main className="min-h-screen overflow-x-hidden bg-[#F7F5EF]">
       <PremiumLandingStyles />
       <header className="premium-nav fixed inset-x-0 top-0 z-50 border-b border-green-100 bg-white/95 backdrop-blur-md">
         <div className="mx-auto max-w-7xl px-5 sm:px-6">

@@ -319,7 +319,7 @@ export function ClinicalWorkspaceTabs() {
   }
 
   return (
-    <section className="relative overflow-hidden bg-slate-950 py-24 text-white lg:py-28">
+    <section className="relative overflow-hidden bg-[#073B2F] py-24 text-white lg:py-28">
       <div
         aria-hidden="true"
         className="absolute -left-36 top-24 h-96 w-96 rounded-full bg-green-700/15 blur-3xl"
@@ -332,7 +332,7 @@ export function ClinicalWorkspaceTabs() {
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-6">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 rounded-full border border-green-500/20 bg-green-500/10 px-4 py-2 text-sm font-semibold text-green-300">
+          <div className="inline-flex items-center gap-2 rounded-full border border-green-500/20 bg-green-500/10 px-4 py-2 text-sm font-semibold text-[#E4C56A]">
             <AppIcon
               icon={
                 faLaptopMedical
@@ -391,7 +391,7 @@ export function ClinicalWorkspaceTabs() {
                     icon={tab.icon}
                     className={
                       active
-                        ? "text-green-400"
+                        ? "text-[#D5A437]"
                         : ""
                     }
                   />
@@ -399,7 +399,7 @@ export function ClinicalWorkspaceTabs() {
                   {tab.label}
 
                   {active && (
-                    <span className="absolute inset-x-0 -bottom-px h-0.5 bg-green-400" />
+                    <span className="absolute inset-x-0 -bottom-px h-0.5 bg-[#D5A437]" />
                   )}
                 </button>
               );
@@ -414,7 +414,7 @@ export function ClinicalWorkspaceTabs() {
           className="landing-tab-enter mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_480px] lg:items-center"
         >
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green-400">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#D5A437]">
               {
                 selectedTab.eyebrow
               }
@@ -439,7 +439,7 @@ export function ClinicalWorkspaceTabs() {
                     key={point}
                     className="flex items-start gap-3"
                   >
-                    <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/15 text-green-400">
+                    <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-500/15 text-[#D5A437]">
                       <AppIcon
                         icon={
                           faCircleCheck
@@ -612,7 +612,7 @@ export function ClinicalWorkspaceTabs() {
                 className={`h-1.5 rounded-full transition-all duration-300 ${
                   tab.id ===
                   selectedTab.id
-                    ? "w-10 bg-green-400"
+                    ? "w-10 bg-[#D5A437]"
                     : "w-4 bg-white/20 hover:bg-white/40"
                 }`}
               />
