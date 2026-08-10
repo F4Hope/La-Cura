@@ -1,6 +1,7 @@
 "use client";
 
 import type {
+  CSSProperties,
   ReactNode,
 } from "react";
 
@@ -21,13 +22,7 @@ import {
 } from "lucide-react";
 
 /* =========================================================
-   LA-CURA PREMIUM PALETTE
-
-   Forest: #073B2F
-   Ivory:  #F7F5EF
-   Gold:   #D5A437
-   Sage:   #E6EEE8
-   Green:  #059669
+   LA-CURA PREMIUM MOTION SYSTEM
    ========================================================= */
 
 export function PremiumLandingStyles() {
@@ -46,27 +41,69 @@ export function PremiumLandingStyles() {
         scroll-behavior: smooth;
       }
 
-      @keyframes premiumHeroEnter {
+      @keyframes premiumLetterEnter {
         from {
           opacity: 0;
-          transform: translateY(32px);
-          filter: blur(7px);
+          transform: translateY(0.72em)
+            rotateX(-45deg);
+          filter: blur(6px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0)
+            rotateX(0deg);
+          filter: blur(0);
+        }
+      }
+
+      @keyframes premiumEyebrowEnter {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+          letter-spacing: 0.45em;
         }
 
         to {
           opacity: 1;
           transform: translateY(0);
-          filter: blur(0);
+          letter-spacing: 0.28em;
         }
       }
 
-      @keyframes premiumShimmer {
+      @keyframes premiumBodyEnter {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes premiumUnderline {
+        from {
+          transform: scaleX(0);
+          transform-origin: left;
+          opacity: 0;
+        }
+
+        to {
+          transform: scaleX(1);
+          transform-origin: left;
+          opacity: 1;
+        }
+      }
+
+      @keyframes premiumGoldSweep {
         0% {
-          background-position: 200% center;
+          background-position: 180% center;
         }
 
         100% {
-          background-position: -200% center;
+          background-position: -180% center;
         }
       }
 
@@ -87,18 +124,6 @@ export function PremiumLandingStyles() {
         }
       }
 
-      @keyframes premiumUnderline {
-        from {
-          transform: scaleX(0);
-          transform-origin: left;
-        }
-
-        to {
-          transform: scaleX(1);
-          transform-origin: left;
-        }
-      }
-
       @keyframes premiumMarquee {
         from {
           transform: translateX(0);
@@ -112,12 +137,12 @@ export function PremiumLandingStyles() {
       @keyframes premiumGlow {
         0%,
         100% {
-          opacity: 0.18;
+          opacity: 0.16;
           transform: scale(0.96);
         }
 
         50% {
-          opacity: 0.38;
+          opacity: 0.4;
           transform: scale(1.05);
         }
       }
@@ -143,6 +168,16 @@ export function PremiumLandingStyles() {
         }
       }
 
+      .premium-letter {
+        display: inline-block;
+        transform-origin: center bottom;
+        backface-visibility: hidden;
+        will-change:
+          opacity,
+          transform,
+          filter;
+      }
+
       .premium-hero-image {
         animation: premiumHeroImage
           19s ease-in-out infinite;
@@ -154,7 +189,7 @@ export function PremiumLandingStyles() {
           247,
           245,
           239,
-          0.95
+          0.96
         ) !important;
 
         border-color: rgba(
@@ -175,8 +210,10 @@ export function PremiumLandingStyles() {
         position: relative;
         isolation: isolate;
         overflow: hidden;
+
         background:
           var(--lacura-forest) !important;
+
         box-shadow:
           0 12px 30px
             rgba(7, 59, 47, 0.18);
@@ -192,9 +229,11 @@ export function PremiumLandingStyles() {
       .premium-primary-button::after {
         content: "";
         position: absolute;
+
         top: -50%;
         bottom: -50%;
         left: -45%;
+
         width: 28%;
 
         background: linear-gradient(
@@ -210,7 +249,10 @@ export function PremiumLandingStyles() {
         );
 
         transform: skewX(-18deg);
-        transition: left 750ms ease;
+
+        transition:
+          left 750ms ease;
+
         pointer-events: none;
       }
 
@@ -228,7 +270,9 @@ export function PremiumLandingStyles() {
         content: "";
         position: absolute;
         inset: 0;
+
         z-index: 2;
+
         pointer-events: none;
 
         background:
@@ -239,7 +283,7 @@ export function PremiumLandingStyles() {
               255,
               255,
               255,
-              0.5
+              0.48
             )
               48%,
             transparent 72%
@@ -284,6 +328,19 @@ export function PremiumLandingStyles() {
         prefers-reduced-motion:
           reduce
       ) {
+        .premium-letter {
+          animation:
+            none !important;
+
+          opacity: 1 !important;
+
+          transform:
+            none !important;
+
+          filter:
+            none !important;
+        }
+
         .premium-hero-image,
         .premium-orbit {
           animation:
@@ -300,11 +357,12 @@ export function PremiumLandingStyles() {
 }
 
 /* =========================================================
-   HERO TITLE
-   Replays whenever it returns to the viewport
+   REPLAYABLE VIEWPORT OBSERVER
    ========================================================= */
 
-export function AnimatedHeroTitle() {
+function useReplayInView(
+  threshold = 0.2
+) {
   const ref =
     useRef<HTMLDivElement | null>(
       null
@@ -313,149 +371,6 @@ export function AnimatedHeroTitle() {
   const [
     active,
     setActive,
-  ] = useState(true);
-
-  useEffect(() => {
-    const node =
-      ref.current;
-
-    if (!node) {
-      return;
-    }
-
-    const reducedMotion =
-      window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      );
-
-    if (reducedMotion.matches) {
-      setActive(true);
-      return;
-    }
-
-    const observer =
-      new IntersectionObserver(
-        ([entry]) => {
-          setActive(
-            entry.isIntersecting
-          );
-        },
-        {
-          threshold: 0.3,
-        }
-      );
-
-    observer.observe(node);
-
-    return () =>
-      observer.disconnect();
-  }, []);
-
-  return (
-    <div ref={ref}>
-      <h1 className="text-5xl font-black leading-[1.06] text-[#101828] sm:text-6xl lg:text-7xl">
-        <span
-          className="block"
-          style={
-            active
-              ? {
-                  animation:
-                    "premiumHeroEnter 720ms cubic-bezier(0.16,1,0.3,1) 80ms both",
-                }
-              : {
-                  opacity: 0,
-                }
-          }
-        >
-          Compassionate
-        </span>
-
-        <span
-          className="block"
-          style={
-            active
-              ? {
-                  animation:
-                    "premiumHeroEnter 720ms cubic-bezier(0.16,1,0.3,1) 210ms both",
-                }
-              : {
-                  opacity: 0,
-                }
-          }
-        >
-          Care for
-        </span>
-
-        <span
-          className="relative mt-1 block w-fit"
-          style={
-            active
-              ? {
-                  animation:
-                    "premiumHeroEnter 720ms cubic-bezier(0.16,1,0.3,1) 340ms both",
-                }
-              : {
-                  opacity: 0,
-                }
-          }
-        >
-          <span
-            className="bg-[length:240%_100%] bg-clip-text text-transparent"
-            style={{
-              backgroundImage:
-                "linear-gradient(90deg,#073B2F 0%,#0D6953 30%,#D5A437 48%,#0D6953 64%,#073B2F 100%)",
-
-              animation: active
-                ? "premiumShimmer 7s linear 1.2s infinite"
-                : "none",
-            }}
-          >
-            Every Life
-          </span>
-
-          <span
-            aria-hidden="true"
-            className="absolute -bottom-2 left-1 h-[4px] w-[70%] rounded-full"
-            style={{
-              background:
-                "linear-gradient(90deg,#073B2F,#D5A437,transparent)",
-
-              animation: active
-                ? "premiumUnderline 850ms cubic-bezier(0.16,1,0.3,1) 850ms both"
-                : "none",
-            }}
-          />
-        </span>
-      </h1>
-    </div>
-  );
-}
-
-/* =========================================================
-   REUSABLE SCROLL REVEAL
-
-   IMPORTANT:
-   It does NOT disconnect after the first appearance.
-   It resets when leaving the viewport.
-   ========================================================= */
-
-type RevealOnScrollProps = {
-  children: ReactNode;
-  delay?: number;
-};
-
-export function RevealOnScroll({
-  children,
-  delay = 0,
-}: RevealOnScrollProps) {
-  const ref =
-    useRef<HTMLDivElement | null>(
-      null
-    );
-
-  const [
-    visible,
-    setVisible,
   ] = useState(false);
 
   useEffect(() => {
@@ -471,48 +386,211 @@ export function RevealOnScroll({
         "(prefers-reduced-motion: reduce)"
       );
 
-    if (reducedMotion.matches) {
-      setVisible(true);
+    if (
+      reducedMotion.matches
+    ) {
+      setActive(true);
       return;
     }
 
     const observer =
       new IntersectionObserver(
         ([entry]) => {
-          setVisible(
+          setActive(
             entry.isIntersecting
           );
         },
         {
-          threshold: 0.14,
+          threshold,
           rootMargin:
-            "20px 0px -50px 0px",
+            "20px 0px -40px 0px",
         }
       );
 
     observer.observe(node);
 
-    return () =>
+    return () => {
       observer.disconnect();
-  }, []);
+    };
+  }, [threshold]);
+
+  return {
+    ref,
+    active,
+  };
+}
+
+/* =========================================================
+   LETTER-BY-LETTER TEXT
+   ========================================================= */
+
+type LetterRevealProps = {
+  text: string;
+  active: boolean;
+  startDelay?: number;
+  letterDelay?: number;
+  duration?: number;
+  className?: string;
+};
+
+function LetterReveal({
+  text,
+  active,
+  startDelay = 0,
+  letterDelay = 28,
+  duration = 520,
+  className = "",
+}: LetterRevealProps) {
+  let characterIndex = 0;
+
+  const words =
+    text.split(" ");
 
   return (
-    <div
-      ref={ref}
-      style={{
-        transitionDelay:
-          `${delay}ms`,
-      }}
-      className={`transition-all duration-700 ease-out ${
-        visible
-          ? "translate-y-0 opacity-100"
-          : "translate-y-8 opacity-0"
-      }`}
+    <span
+      aria-label={text}
+      className={className}
     >
-      {children}
+      {words.map(
+        (
+          word,
+          wordIndex
+        ) => {
+          const letters =
+            word.split("");
+
+          return (
+            <span
+              key={`${word}-${wordIndex}`}
+              aria-hidden="true"
+              className="inline-block whitespace-nowrap"
+            >
+              {letters.map(
+                (
+                  letter,
+                  index
+                ) => {
+                  const delay =
+                    startDelay +
+                    characterIndex *
+                      letterDelay;
+
+                  characterIndex +=
+                    1;
+
+                  const style:
+                    CSSProperties =
+                    active
+                      ? {
+                          animation:
+                            `premiumLetterEnter ${duration}ms cubic-bezier(0.16,1,0.3,1) ${delay}ms both`,
+                        }
+                      : {
+                          opacity:
+                            0,
+                          transform:
+                            "translateY(0.72em) rotateX(-45deg)",
+                          filter:
+                            "blur(6px)",
+                        };
+
+                  return (
+                    <span
+                      key={`${letter}-${index}`}
+                      className="premium-letter"
+                      style={
+                        style
+                      }
+                    >
+                      {letter}
+                    </span>
+                  );
+                }
+              )}
+
+              {wordIndex <
+                words.length -
+                  1 && (
+                <span
+                  aria-hidden="true"
+                  className="inline-block w-[0.27em]"
+                />
+              )}
+            </span>
+          );
+        }
+      )}
+    </span>
+  );
+}
+
+/* =========================================================
+   HERO TITLE
+   ========================================================= */
+
+export function AnimatedHeroTitle() {
+  const {
+    ref,
+    active,
+  } = useReplayInView(
+    0.28
+  );
+
+  return (
+    <div ref={ref}>
+      <h1 className="text-5xl font-black leading-[1.04] tracking-[-0.035em] text-[#10231E] sm:text-6xl lg:text-[72px]">
+        <span className="block">
+          <LetterReveal
+            text="Compassionate"
+            active={active}
+            startDelay={60}
+            letterDelay={28}
+          />
+        </span>
+
+        <span className="block">
+          <LetterReveal
+            text="Care for"
+            active={active}
+            startDelay={360}
+            letterDelay={32}
+          />
+        </span>
+
+        <span className="relative mt-2 block w-fit text-[#073B2F]">
+          <LetterReveal
+            text="Every Life"
+            active={active}
+            startDelay={580}
+            letterDelay={34}
+          />
+
+          <span
+            aria-hidden="true"
+            className="absolute -bottom-3 left-1 h-[4px] w-[72%] rounded-full"
+            style={{
+              background:
+                "linear-gradient(90deg,#D5A437 0%,#D5A437 55%,rgba(213,164,55,0) 100%)",
+
+              animation: active
+                ? "premiumUnderline 900ms cubic-bezier(0.16,1,0.3,1) 1250ms both"
+                : "none",
+
+              opacity: active
+                ? undefined
+                : 0,
+            }}
+          />
+        </span>
+      </h1>
     </div>
   );
 }
+
+/* =========================================================
+   SECTION HEADING
+   EACH SECTION REPLAYS LETTER-BY-LETTER
+   ========================================================= */
 
 type MotionSectionHeadingProps = {
   eyebrow: string;
@@ -525,24 +603,128 @@ export function MotionSectionHeading({
   title,
   description,
 }: MotionSectionHeadingProps) {
+  const {
+    ref,
+    active,
+  } = useReplayInView(
+    0.25
+  );
+
+  const titleCharacterCount =
+    title.replace(
+      /\s/g,
+      ""
+    ).length;
+
+  const descriptionDelay =
+    Math.min(
+      450 +
+        titleCharacterCount *
+          22,
+      1250
+    );
+
   return (
-    <RevealOnScroll>
+    <div ref={ref}>
       <div className="mx-auto max-w-4xl text-center">
-        <span className="font-bold uppercase tracking-[5px] text-[#D5A437]">
+        <span
+          className="inline-block text-xs font-black uppercase text-[#D5A437] sm:text-sm"
+          style={
+            active
+              ? {
+                  animation:
+                    "premiumEyebrowEnter 600ms cubic-bezier(0.16,1,0.3,1) 40ms both",
+                }
+              : {
+                  opacity: 0,
+                  transform:
+                    "translateY(12px)",
+                }
+          }
+        >
           {eyebrow}
         </span>
 
-        <h2 className="mt-5 text-4xl font-black leading-tight text-[#10231E] sm:text-5xl">
-          {title}
+        <h2 className="mt-5 text-4xl font-black leading-[1.08] tracking-[-0.03em] text-[#10231E] sm:text-5xl lg:text-[54px]">
+          <LetterReveal
+            text={title}
+            active={active}
+            startDelay={150}
+            letterDelay={24}
+            duration={500}
+          />
         </h2>
 
-        <div className="mx-auto mt-5 h-1 w-14 rounded-full bg-[#073B2F]" />
+        <div
+          className="mx-auto mt-5 h-[3px] w-16 rounded-full bg-[#D5A437]"
+          style={{
+            animation: active
+              ? `premiumUnderline 700ms cubic-bezier(0.16,1,0.3,1) ${descriptionDelay - 120}ms both`
+              : "none",
 
-        <p className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl sm:leading-9">
+            opacity: active
+              ? undefined
+              : 0,
+          }}
+        />
+
+        <p
+          className="mx-auto mt-6 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl sm:leading-9"
+          style={
+            active
+              ? {
+                  animation:
+                    `premiumBodyEnter 700ms cubic-bezier(0.16,1,0.3,1) ${descriptionDelay}ms both`,
+                }
+              : {
+                  opacity: 0,
+                  transform:
+                    "translateY(20px)",
+                }
+          }
+        >
           {description}
         </p>
       </div>
-    </RevealOnScroll>
+    </div>
+  );
+}
+
+/* =========================================================
+   GENERIC SCROLL REVEAL
+   ========================================================= */
+
+type RevealOnScrollProps = {
+  children: ReactNode;
+  delay?: number;
+};
+
+export function RevealOnScroll({
+  children,
+  delay = 0,
+}: RevealOnScrollProps) {
+  const {
+    ref,
+    active,
+  } = useReplayInView(
+    0.14
+  );
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        transitionDelay:
+          `${delay}ms`,
+      }}
+      className={`transition-all duration-700 ease-out ${
+        active
+          ? "translate-y-0 opacity-100"
+          : "translate-y-8 opacity-0"
+      }`}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -599,7 +781,10 @@ export function CareMotionRail() {
         }}
       >
         {repeated.map(
-          (item, index) => {
+          (
+            item,
+            index
+          ) => {
             const Icon =
               item.icon;
 
@@ -631,7 +816,7 @@ export function CareMotionRail() {
 }
 
 /* =========================================================
-   STATISTICS — ALSO REPLAY
+   REPLAYABLE STATISTICS
    ========================================================= */
 
 const animatedStatistics = [
@@ -730,8 +915,9 @@ function AnimatedStatistic({
 
     observer.observe(node);
 
-    return () =>
+    return () => {
       observer.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -744,12 +930,16 @@ function AnimatedStatistic({
         "(prefers-reduced-motion: reduce)"
       );
 
-    if (reducedMotion.matches) {
+    if (
+      reducedMotion.matches
+    ) {
       setValue(target);
       return;
     }
 
-    const duration = 1100;
+    const duration =
+      1100;
+
     const start =
       performance.now();
 
@@ -778,7 +968,9 @@ function AnimatedStatistic({
         )
       );
 
-      if (progress < 1) {
+      if (
+        progress < 1
+      ) {
         frame =
           requestAnimationFrame(
             animate
@@ -791,10 +983,11 @@ function AnimatedStatistic({
         animate
       );
 
-    return () =>
+    return () => {
       cancelAnimationFrame(
         frame
       );
+    };
   }, [
     active,
     target,
