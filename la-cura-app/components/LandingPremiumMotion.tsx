@@ -107,6 +107,26 @@ export function PremiumLandingStyles() {
         }
       }
 
+      @keyframes premiumGoldFlash {
+        0% {
+          background-position: 180% center;
+          opacity: 0;
+        }
+
+        12% {
+          opacity: 0.9;
+        }
+
+        55% {
+          opacity: 1;
+        }
+
+        100% {
+          background-position: -80% center;
+          opacity: 0;
+        }
+      }
+
       @keyframes premiumHeroImage {
         0%,
         100% {
@@ -564,6 +584,24 @@ export function AnimatedHeroTitle() {
             startDelay={580}
             letterDelay={34}
           />
+
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 whitespace-nowrap bg-clip-text text-transparent"
+            style={{
+              backgroundImage:
+                "linear-gradient(110deg, transparent 30%, transparent 42%, #F9E6A2 48%, #D5A437 52%, #F9E6A2 56%, transparent 63%, transparent 100%)",
+
+              backgroundSize:
+                "260% 100%",
+
+              animation: active
+                ? "premiumGoldFlash 1450ms cubic-bezier(0.16,1,0.3,1) 1180ms both"
+                : "none",
+            }}
+          >
+            Every Life
+          </span>
 
           <span
             aria-hidden="true"

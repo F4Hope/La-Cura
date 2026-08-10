@@ -852,33 +852,67 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="bg-gray-950 pb-10 pt-20 text-white lg:pt-24">
-        <div className="mx-auto max-w-7xl px-5 sm:px-6">
-          <div className="grid gap-14 md:grid-cols-2 lg:grid-cols-4 lg:gap-16">
-            <div>
-              <div className="flex items-center gap-4">
-                <Image
-                  src="/logo.png"
-                  alt="La-Cura logo"
-                  width={60}
-                  height={60}
-                  className="h-15 w-15 object-contain"
-                />
+      <footer className="relative overflow-hidden bg-[#073B2F] text-[#F7F5EF]">
+        <div
+          aria-hidden="true"
+          className="absolute -right-24 -top-40 h-80 w-80 rounded-full border border-white/5"
+        />
 
-                <h2 className="text-4xl font-black text-green-400">
-                  La-Cura
-                </h2>
-              </div>
+        <div
+          aria-hidden="true"
+          className="absolute bottom-0 left-[8%] h-56 w-56 rounded-full bg-[#D5A437]/[0.035] blur-3xl"
+        />
 
-              <p className="mt-8 leading-8 text-gray-400">
-                Delivering compassionate nursing care, elderly
-                care, healthcare technology, and quality medical
-                products for healthier communities.
+        <div className="relative mx-auto max-w-7xl px-5 pb-8 pt-16 sm:px-6 lg:pb-10 lg:pt-20">
+          <div className="grid gap-14 md:grid-cols-2 lg:grid-cols-[1.35fr_0.8fr_0.8fr_1fr] lg:gap-12">
+            <div className="max-w-sm">
+              <Link
+                href="#home"
+                className="inline-flex items-center gap-4"
+                aria-label="La-Cura home"
+              >
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white">
+                  <Image
+                    src="/logo.png"
+                    alt="La-Cura logo"
+                    width={52}
+                    height={52}
+                    className="h-12 w-12 object-contain"
+                  />
+                </div>
+
+                <div>
+                  <p className="text-3xl font-black tracking-[-0.03em] text-white">
+                    La-Cura
+                  </p>
+
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#D5A437]">
+                    Compassionate Care
+                  </p>
+                </div>
+              </Link>
+
+              <p className="mt-7 max-w-sm text-[15px] leading-7 text-[#B6C9C2]">
+                Compassionate nursing care, elderly care,
+                healthcare technology, and reliable medical
+                solutions built around people.
               </p>
+
+              <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3 text-sm text-[#D5E0DC]">
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#D5A437]" />
+                  Cameroon
+                </span>
+
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#D5A437]" />
+                  Available 24/7
+                </span>
+              </div>
             </div>
 
             <FooterColumn
-              title="Services"
+              title="Care"
               links={[
                 {
                   label: "Nursing Care",
@@ -889,25 +923,25 @@ export default function Home() {
                   href: "#services",
                 },
                 {
-                  label: "Healthcare Technology",
-                  href: "#services",
-                },
-                {
                   label: "Medical Products",
                   href: "#products",
+                },
+                {
+                  label: "Health Technology",
+                  href: "#services",
                 },
               ]}
             />
 
             <FooterColumn
-              title="Quick Links"
+              title="Explore"
               links={[
                 {
                   label: "Home",
                   href: "#home",
                 },
                 {
-                  label: "About",
+                  label: "About La-Cura",
                   href: "#about",
                 },
                 {
@@ -922,84 +956,101 @@ export default function Home() {
             />
 
             <div>
-              <h3 className="text-2xl font-bold">
-                Contact
-              </h3>
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#D5A437]">
+                Connect
+              </p>
 
-              <ul className="mt-8 space-y-5 text-gray-400">
-                <li className="flex items-start gap-3">
-                  <AppIcon
-                    icon={faPhone}
-                    className="mt-1 text-green-400"
-                  />
-
+              <ul className="mt-6 space-y-4 text-sm leading-6 text-[#B6C9C2]">
+                <li>
                   <a
                     href="tel:+237675073439"
-                    className="transition hover:text-white"
+                    className="group inline-flex items-start gap-3 transition hover:text-white"
                   >
-                    +237 675 073 439
+                    <AppIcon
+                      icon={faPhone}
+                      className="mt-1 text-[#D5A437]"
+                    />
+
+                    <span>
+                      +237 675 073 439
+                    </span>
                   </a>
                 </li>
 
-                <li className="flex items-start gap-3">
-                  <AppIcon
-                    icon={faEnvelope}
-                    className="mt-1 text-green-400"
-                  />
-
+                <li>
                   <a
                     href="mailto:info@lacurahealth.com"
-                    className="break-all transition hover:text-white"
+                    className="group inline-flex items-start gap-3 transition hover:text-white"
                   >
-                    info@lacurahealth.com
+                    <AppIcon
+                      icon={faEnvelope}
+                      className="mt-1 text-[#D5A437]"
+                    />
+
+                    <span className="break-all">
+                      info@lacurahealth.com
+                    </span>
                   </a>
                 </li>
 
-                <li className="flex items-start gap-3">
-                  <AppIcon
-                    icon={faLocationDot}
-                    className="mt-1 text-green-400"
-                  />
-
-                  <span>Cameroon</span>
-                </li>
-
-                <li className="flex items-start gap-3">
+                <li className="inline-flex items-start gap-3">
                   <AppIcon
                     icon={faClock}
-                    className="mt-1 text-green-400"
+                    className="mt-1 text-[#D5A437]"
                   />
 
-                  <span>Open 24/7</span>
+                  <span>
+                    Healthcare support 24/7
+                  </span>
                 </li>
               </ul>
+
+              <Link
+                href="/login"
+                className="mt-7 inline-flex items-center gap-3 rounded-xl border border-[#D5A437]/35 px-4 py-3 text-sm font-bold text-white transition hover:border-[#D5A437] hover:bg-[#D5A437] hover:text-[#073B2F]"
+              >
+                Staff Login
+
+                <AppIcon
+                  icon={faArrowRight}
+                  className="text-xs"
+                />
+              </Link>
             </div>
           </div>
 
-          <div className="mt-16 flex flex-col items-center justify-between gap-6 border-t border-gray-800 pt-8 md:flex-row lg:mt-20">
-            <p className="text-center text-gray-500">
-              © {new Date().getFullYear()} La-Cura Healthcare.
-              All Rights Reserved.
-            </p>
+          <div className="mt-14 border-t border-white/10 pt-7 lg:mt-16">
+            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
+              <div>
+                <p className="text-sm text-[#8EAAA0]">
+                  © {new Date().getFullYear()} La-Cura Healthcare.
+                  All rights reserved.
+                </p>
 
-            <div className="flex gap-3">
-              <FooterIcon
-                href="tel:+237675073439"
-                label="Call La-Cura"
-                icon={faPhone}
-              />
+                <p className="mt-1 text-xs text-[#6F9185]">
+                  Compassionate Care. Every Life.
+                </p>
+              </div>
 
-              <FooterIcon
-                href="mailto:info@lacurahealth.com"
-                label="Email La-Cura"
-                icon={faEnvelope}
-              />
+              <div className="flex items-center gap-3">
+                <FooterIcon
+                  href="tel:+237675073439"
+                  label="Call La-Cura"
+                  icon={faPhone}
+                />
 
-              <FooterIcon
-                href="#home"
-                label="Visit La-Cura home"
-                icon={faGlobe}
-              />
+                <FooterIcon
+                  href="mailto:info@lacurahealth.com"
+                  label="Email La-Cura"
+                  icon={faEnvelope}
+                />
+
+                <FooterIcon
+                  href="#home"
+                  label="Back to top"
+                  icon={faGlobe}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -1139,16 +1190,16 @@ function FooterColumn({
 }: FooterColumnProps) {
   return (
     <div>
-      <h3 className="text-2xl font-bold">
+      <p className="text-xs font-black uppercase tracking-[0.18em] text-[#D5A437]">
         {title}
-      </h3>
+      </p>
 
-      <ul className="mt-8 space-y-5 text-gray-400">
+      <ul className="mt-6 space-y-4 text-sm text-[#B6C9C2]">
         {links.map((link) => (
           <li key={link.label}>
             <a
               href={link.href}
-              className="transition hover:text-white"
+              className="transition duration-200 hover:translate-x-1 hover:text-white"
             >
               {link.label}
             </a>
@@ -1174,7 +1225,7 @@ function FooterIcon({
     <a
       href={href}
       aria-label={label}
-      className="flex h-11 w-11 items-center justify-center rounded-full bg-green-700 transition hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-900"
+      className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.06] text-[#D5A437] transition hover:-translate-y-0.5 hover:border-[#D5A437]/60 hover:bg-[#D5A437] hover:text-[#073B2F] focus:outline-none focus:ring-4 focus:ring-[#D5A437]/10"
     >
       <AppIcon icon={icon} />
     </a>
