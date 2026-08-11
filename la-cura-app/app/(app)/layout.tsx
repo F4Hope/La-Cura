@@ -6,9 +6,9 @@ import type {
 
 import RoleGuard from "@/components/RoleGuard";
 import RoleThemeShell from "@/components/RoleThemeShell";
-import Sidebar from "@/components/Sidebar";
 import StaffSessionProvider from "@/components/StaffSessionProvider";
 
+import ClinicalTopNav from "@/components/ClinicalTopNav";
 type Props = {
   children: ReactNode;
 };
@@ -26,10 +26,10 @@ export default function AppLayout({
             "Physician",
           ]}
         >
-          <div className="flex min-h-screen bg-gray-100">
-            <Sidebar />
+          <div className="min-h-screen bg-[#F7F5EF]">
+            <ClinicalTopNav />
 
-            <main className="min-w-0 flex-1">
+            <main className="min-w-0">
               {children}
             </main>
           </div>
