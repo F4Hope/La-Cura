@@ -1,9 +1,5 @@
 "use client";
 
-import type {
-  ReactNode,
-} from "react";
-
 import Link from "next/link";
 
 import {
@@ -12,32 +8,13 @@ import {
   useState,
 } from "react";
 
-import type {
-  IconDefinition,
-} from "@fortawesome/fontawesome-svg-core";
-
 import {
-  faArrowRight,
-  faBed,
-  faBuilding,
-  faCalendarDays,
-  faChevronLeft,
-  faChevronRight,
-  faMagnifyingGlass,
-  faNotesMedical,
-  faPhone,
-  faPlus,
-  faRotateLeft,
-  faShieldHeart,
-  faStethoscope,
-  faUser,
-  faUserPlus,
-  faUsers,
-  faVenusMars,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
-
-import AppIcon from "@/components/ui/AppIcon";
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  RotateCcw,
+  Search,
+} from "lucide-react";
 
 export type ResidentRecord = {
   id: number;
@@ -64,14 +41,10 @@ type Props = {
   residents: ResidentRecord[];
 };
 
-type StatusTone =
-  | "green"
-  | "amber"
-  | "red"
-  | "blue"
-  | "gray";
+const PAGE_SIZE = 15;
 
-const PAGE_SIZE = 10;
+const alphabet =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 function cleanText(
   value: unknown
@@ -83,15 +56,19 @@ function cleanText(
 
 function normalizeSearch(
   value: unknown
-): string {
-  return cleanText(value).toLowerCase();
+) {
+  return cleanText(
+    value
+  ).toLowerCase();
 }
 
 function getResidentName(
   resident: ResidentRecord
-): string {
+) {
   return (
-    cleanText(resident.full_name) ||
+    cleanText(
+      resident.full_name
+    ) ||
     "Unnamed Resident"
   );
 }
@@ -99,8 +76,10 @@ function getResidentName(
 function compareResidents(
   first: ResidentRecord,
   second: ResidentRecord
-): number {
-  return getResidentName(first).localeCompare(
+) {
+  return getResidentName(
+    first
+  ).localeCompare(
     getResidentName(second),
     undefined,
     {
@@ -112,277 +91,276 @@ function compareResidents(
 
 function getInitials(
   resident: ResidentRecord
-): string {
-  const name = getResidentName(resident);
-
-  return name
+) {
+  return getResidentName(
+    resident
+  )
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
     .map((part) =>
-      part.charAt(0).toUpperCase()
+      part
+        .charAt(0)
+        .toUpperCase()
     )
     .join("");
 }
 
-function getAvatarClass(
-  resident: ResidentRecord
-): string {
-  const options = [
-    "bg-green-700",
-    "bg-emerald-600",
-    "bg-teal-600",
-    "bg-blue-600",
-    "bg-violet-600",
-    "bg-amber-600",
-  ];
-
-  const total = getResidentName(
-    resident
-  )
-    .split("")
-    .reduce(
-      (sum, character) =>
-        sum + character.charCodeAt(0),
-      0
-    );
-
-  return options[
-    total % options.length
-  ];
-}
-
 function formatDate(
-  value: string | null | undefined
-): string {
+  value:
+    | string
+    | null
+    | undefined
+) {
   if (!value) {
-    return "Not recorded";
+    return "—";
   }
 
-  const date = new Date(value);
+  const date =
+    new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
     return value;
   }
 
   return new Intl.DateTimeFormat(
     "en-US",
     {
-      month: "short",
+      month: "numeric",
       day: "numeric",
-      year: "numeric",
+      year: "2-digit",
     }
   ).format(date);
 }
 
 function formatAge(
-  age: number | null | undefined
-): string {
+  value:
+    | number
+    | null
+    | undefined
+) {
   if (
-    typeof age !== "number" ||
-    !Number.isFinite(age) ||
-    age < 0
+    typeof value !==
+      "number" ||
+    !Number.isFinite(value)
   ) {
     return "—";
   }
 
-  return String(age);
-}
-
-function isNewThisMonth(
-  resident: ResidentRecord
-): boolean {
-  const sourceDate =
-    resident.date_admitted ??
-    resident.created_at;
-
-  if (!sourceDate) {
-    return false;
-  }
-
-  const date = new Date(sourceDate);
-  const today = new Date();
-
-  if (Number.isNaN(date.getTime())) {
-    return false;
-  }
-
-  return (
-    date.getFullYear() ===
-      today.getFullYear() &&
-    date.getMonth() ===
-      today.getMonth()
-  );
+  return String(value);
 }
 
 function requiresAttention(
-  status: string | null | undefined
-): boolean {
+  status:
+    | string
+    | null
+    | undefined
+) {
   const normalized =
-    normalizeSearch(status);
+    cleanText(
+      status
+    ).toLowerCase();
 
   return [
     "critical",
-    "observation",
-    "unstable",
-    "urgent",
-    "high risk",
     "attention",
-    "monitor",
-  ].some((term) =>
-    normalized.includes(term)
+    "hospital",
+    "hospitalized",
+    "acute",
+    "unstable",
+  ].some((keyword) =>
+    normalized.includes(keyword)
   );
 }
 
-function getStatusTone(
-  status: string | null | undefined
-): StatusTone {
-  const normalized =
-    normalizeSearch(status);
+function hasAllergy(
+  value:
+    | string
+    | null
+    | undefined
+) {
+  const allergy =
+    cleanText(
+      value
+    ).toLowerCase();
 
-  if (
-    normalized.includes("critical") ||
-    normalized.includes("unstable") ||
-    normalized.includes("urgent")
-  ) {
-    return "red";
+  if (!allergy) {
+    return false;
   }
 
-  if (
-    normalized.includes("observation") ||
-    normalized.includes("attention") ||
-    normalized.includes("monitor")
-  ) {
-    return "amber";
-  }
-
-  if (
-    normalized.includes("stable") ||
-    normalized.includes("active")
-  ) {
-    return "green";
-  }
-
-  if (
-    normalized.includes("admitted") ||
-    normalized.includes("new")
-  ) {
-    return "blue";
-  }
-
-  return "gray";
+  return ![
+    "none",
+    "nka",
+    "nkda",
+    "no known allergies",
+    "no known allergy",
+    "no known drug allergies",
+  ].includes(allergy);
 }
 
-function getStatusClasses(
-  tone: StatusTone
-): string {
-  switch (tone) {
-    case "green":
-      return "border-green-200 bg-green-50 text-green-700";
+function statusStyle(
+  status:
+    | string
+    | null
+    | undefined
+) {
+  const normalized =
+    cleanText(
+      status
+    ).toLowerCase();
 
-    case "amber":
-      return "border-amber-200 bg-amber-50 text-amber-700";
-
-    case "red":
-      return "border-red-200 bg-red-50 text-red-700";
-
-    case "blue":
-      return "border-blue-200 bg-blue-50 text-blue-700";
-
-    default:
-      return "border-slate-200 bg-slate-50 text-slate-600";
+  if (
+    normalized.includes(
+      "discharg"
+    )
+  ) {
+    return "border-slate-300 bg-slate-100 text-slate-700";
   }
+
+  if (
+    normalized.includes(
+      "hospital"
+    ) ||
+    normalized.includes(
+      "critical"
+    ) ||
+    normalized.includes(
+      "acute"
+    )
+  ) {
+    return "border-red-200 bg-red-50 text-red-700";
+  }
+
+  if (
+    normalized.includes(
+      "leave"
+    ) ||
+    normalized.includes(
+      "hold"
+    )
+  ) {
+    return "border-amber-200 bg-amber-50 text-amber-800";
+  }
+
+  return "border-emerald-200 bg-emerald-50 text-emerald-800";
 }
 
 export default function ResidentsDirectory({
   residents,
 }: Props) {
-  const [search, setSearch] =
-    useState("");
-
-  const [statusFilter, setStatusFilter] =
-    useState("all");
-
-  const [roomFilter, setRoomFilter] =
-    useState("all");
-
-  const [page, setPage] =
-    useState(1);
+  const [
+    search,
+    setSearch,
+  ] = useState("");
 
   const [
-    selectedResidentId,
-    setSelectedResidentId,
-  ] = useState<number | null>(
-    residents[0]?.id ?? null
-  );
+    statusFilter,
+    setStatusFilter,
+  ] = useState("all");
 
-  const sortedResidents = useMemo(
-    () =>
-      [...residents].sort(
-        compareResidents
-      ),
-    [residents]
-  );
+  const [
+    roomFilter,
+    setRoomFilter,
+  ] = useState("all");
 
-  const statuses = useMemo(() => {
-    return [
-      ...new Set(
-        sortedResidents
-          .map((resident) =>
-            cleanText(resident.status)
-          )
-          .filter(Boolean)
-      ),
-    ].sort((first, second) =>
-      first.localeCompare(
-        second,
-        undefined,
-        {
-          sensitivity: "base",
-        }
-      )
+  const [
+    letterFilter,
+    setLetterFilter,
+  ] = useState("all");
+
+  const [
+    page,
+    setPage,
+  ] = useState(1);
+
+  const sortedResidents =
+    useMemo(
+      () =>
+        [...residents].sort(
+          compareResidents
+        ),
+      [residents]
     );
-  }, [sortedResidents]);
 
-  const rooms = useMemo(() => {
-    return [
-      ...new Set(
-        sortedResidents
-          .map((resident) =>
-            cleanText(resident.room)
-          )
-          .filter(Boolean)
-      ),
-    ].sort((first, second) =>
-      first.localeCompare(
-        second,
-        undefined,
-        {
-          sensitivity: "base",
-          numeric: true,
-        }
-      )
-    );
-  }, [sortedResidents]);
+  const statuses =
+    useMemo(() => {
+      return [
+        ...new Set(
+          sortedResidents
+            .map((resident) =>
+              cleanText(
+                resident.status
+              )
+            )
+            .filter(Boolean)
+        ),
+      ].sort((a, b) =>
+        a.localeCompare(
+          b,
+          undefined,
+          {
+            sensitivity:
+              "base",
+          }
+        )
+      );
+    }, [sortedResidents]);
+
+  const rooms =
+    useMemo(() => {
+      return [
+        ...new Set(
+          sortedResidents
+            .map((resident) =>
+              cleanText(
+                resident.room
+              )
+            )
+            .filter(Boolean)
+        ),
+      ].sort((a, b) =>
+        a.localeCompare(
+          b,
+          undefined,
+          {
+            numeric: true,
+            sensitivity:
+              "base",
+          }
+        )
+      );
+    }, [sortedResidents]);
 
   const filteredResidents =
     useMemo(() => {
       const query =
-        normalizeSearch(search);
+        normalizeSearch(
+          search
+        );
 
       return sortedResidents.filter(
         (resident) => {
+          const name =
+            getResidentName(
+              resident
+            );
+
           const matchesSearch =
             !query ||
             [
               resident.full_name,
               resident.room,
               resident.status,
-              resident.emergency_contact,
+              resident.diagnosis,
+              resident.allergies,
+              resident.primary_doctor,
               resident.next_of_kin,
               resident.next_of_kin_phone,
-              resident.primary_doctor,
-              resident.diagnosis,
+              resident.emergency_contact,
             ].some((value) =>
               normalizeSearch(
                 value
@@ -390,7 +368,8 @@ export default function ResidentsDirectory({
             );
 
           const matchesStatus =
-            statusFilter === "all" ||
+            statusFilter ===
+              "all" ||
             cleanText(
               resident.status
             ) === statusFilter;
@@ -401,32 +380,53 @@ export default function ResidentsDirectory({
               resident.room
             ) === roomFilter;
 
+          const matchesLetter =
+            letterFilter ===
+              "all" ||
+            name
+              .charAt(0)
+              .toUpperCase() ===
+              letterFilter;
+
           return (
             matchesSearch &&
             matchesStatus &&
-            matchesRoom
+            matchesRoom &&
+            matchesLetter
           );
         }
       );
     }, [
+      letterFilter,
       roomFilter,
       search,
       sortedResidents,
       statusFilter,
     ]);
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(
-      filteredResidents.length /
-        PAGE_SIZE
-    )
-  );
+  useEffect(() => {
+    setPage(1);
+  }, [
+    search,
+    statusFilter,
+    roomFilter,
+    letterFilter,
+  ]);
 
-  const currentPage = Math.min(
-    page,
-    totalPages
-  );
+  const totalPages =
+    Math.max(
+      1,
+      Math.ceil(
+        filteredResidents.length /
+          PAGE_SIZE
+      )
+    );
+
+  const currentPage =
+    Math.min(
+      page,
+      totalPages
+    );
 
   const pageStart =
     (currentPage - 1) *
@@ -438,1085 +438,956 @@ export default function ResidentsDirectory({
       pageStart + PAGE_SIZE
     );
 
-  const selectedResident =
-    sortedResidents.find(
-      (resident) =>
-        resident.id ===
-        selectedResidentId
-    ) ?? null;
+  const filtersActive =
+    Boolean(search.trim()) ||
+    statusFilter !== "all" ||
+    roomFilter !== "all" ||
+    letterFilter !== "all";
 
-  const statistics = useMemo(() => {
-    const occupiedRooms = new Set(
+  const firstRecord =
+    filteredResidents.length
+      ? pageStart + 1
+      : 0;
+
+  const lastRecord =
+    Math.min(
+      pageStart +
+        PAGE_SIZE,
+      filteredResidents.length
+    );
+
+  const roomsInUse =
+    new Set(
       sortedResidents
         .map((resident) =>
-          cleanText(resident.room)
+          cleanText(
+            resident.room
+          )
         )
         .filter(Boolean)
-    );
+    ).size;
 
-    return {
-      total:
-        sortedResidents.length,
-
-      newThisMonth:
-        sortedResidents.filter(
-          isNewThisMonth
-        ).length,
-
-      attention:
-        sortedResidents.filter(
-          (resident) =>
-            requiresAttention(
-              resident.status
-            )
-        ).length,
-
-      rooms:
-        occupiedRooms.size,
-    };
-  }, [sortedResidents]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [
-    search,
-    statusFilter,
-    roomFilter,
-  ]);
-
-  useEffect(() => {
-    const selectedStillVisible =
-      filteredResidents.some(
-        (resident) =>
-          resident.id ===
-          selectedResidentId
-      );
-
-    if (selectedStillVisible) {
-      return;
-    }
-
-    setSelectedResidentId(
-      filteredResidents[0]?.id ?? null
-    );
-  }, [
-    filteredResidents,
-    selectedResidentId,
-  ]);
+  const attentionCount =
+    sortedResidents.filter(
+      (resident) =>
+        requiresAttention(
+          resident.status
+        )
+    ).length;
 
   function clearFilters() {
     setSearch("");
     setStatusFilter("all");
     setRoomFilter("all");
+    setLetterFilter("all");
     setPage(1);
   }
 
-  const filtersActive =
-    Boolean(search.trim()) ||
-    statusFilter !== "all" ||
-    roomFilter !== "all";
-
-  const firstRecord =
-    filteredResidents.length === 0
-      ? 0
-      : pageStart + 1;
-
-  const lastRecord = Math.min(
-    pageStart + PAGE_SIZE,
-    filteredResidents.length
-  );
-
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
-      <section className="relative overflow-hidden bg-gradient-to-r from-green-800 via-green-700 to-green-600 text-white">
-        <div className="absolute inset-0">
-          <div className="absolute -right-32 -top-48 h-[520px] w-[520px] rounded-full border border-white/10" />
+    <div className="min-h-[calc(100vh-119px)] bg-[#F3F2ED] text-[#1B2924]">
+      {/* PAGE HEADING */}
 
-          <div className="absolute -right-4 top-4 h-72 w-72 rounded-full bg-green-300/20 blur-3xl" />
+      <section className="border-b border-[#CCD5D0] bg-white">
+        <div className="mx-auto flex max-w-[1800px] flex-col gap-3 px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+          <div>
+            <div className="flex items-center gap-2 text-[11px] text-[#72827B]">
+              <Link
+                href="/dashboard"
+                className="hover:text-[#073B2F]"
+              >
+                Home
+              </Link>
 
-          <div className="absolute -bottom-32 left-1/2 h-80 w-80 rounded-full bg-white/5" />
+              <span>/</span>
 
-          <div className="absolute bottom-0 left-1/3 h-px w-96 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-        </div>
-
-        <div className="relative mx-auto max-w-[1500px] px-6 pb-16 pt-10 lg:px-8 lg:pb-20">
-          <div className="flex flex-col justify-between gap-8 xl:flex-row xl:items-end">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.22em] text-green-100">
-                <span className="h-px w-8 bg-green-200" />
-
-                Resident Management
-              </div>
-
-              <h1 className="mt-5 text-4xl font-semibold tracking-[-0.035em] sm:text-5xl">
+              <span className="font-semibold text-[#40524B]">
                 Residents
+              </span>
+            </div>
+
+            <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+              <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
+                Resident List
               </h1>
 
-              <p className="mt-4 max-w-xl text-base leading-7 text-green-50/85">
-                A complete view of resident
-                profiles, admissions, rooms,
-                contacts, and care status.
+              <p className="text-xs text-[#718078]">
+                Current resident clinical directory
               </p>
             </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <div className="flex items-center gap-3 rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm">
-                <span className="relative flex h-3 w-3">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-200 opacity-50" />
-
-                  <span className="relative inline-flex h-3 w-3 rounded-full bg-green-200" />
-                </span>
-
-                <div>
-                  <p className="text-xs text-green-100/70">
-                    System status
-                  </p>
-
-                  <p className="text-sm font-medium text-white">
-                    Online
-                  </p>
-                </div>
-              </div>
-
-              <Link
-                href="/add-resident"
-                className="inline-flex h-[58px] items-center justify-center gap-3 rounded-xl bg-white px-6 text-sm font-semibold text-green-700 shadow-[0_18px_40px_rgba(0,0,0,0.16)] transition hover:-translate-y-0.5 hover:bg-green-50"
-              >
-                <AppIcon icon={faPlus} />
-
-                Add Resident
-              </Link>
-            </div>
           </div>
 
-          <div className="mt-10 grid overflow-hidden rounded-2xl border border-white/15 bg-white/10 backdrop-blur-md sm:grid-cols-2 xl:grid-cols-4">
-            <HeroMetric
-              icon={faUsers}
-              label="Total residents"
-              value={statistics.total}
-              detail="Registered profiles"
-            />
+          <Link
+            href="/add-resident"
+            className="
+              inline-flex h-9
+              items-center justify-center
+              gap-2 rounded-[5px]
+              border border-[#063428]
+              bg-[#073B2F]
+              px-4 text-xs
+              font-bold text-white
+              transition
+              hover:bg-[#0D4A3A]
+            "
+          >
+            <Plus size={14} />
 
-            <HeroMetric
-              icon={faUserPlus}
-              label="New this month"
-              value={
-                statistics.newThisMonth
-              }
-              detail="Recent admissions"
-            />
-
-            <HeroMetric
-              icon={faShieldHeart}
-              label="Need attention"
-              value={
-                statistics.attention
-              }
-              detail="Clinical monitoring"
-              warning={
-                statistics.attention > 0
-              }
-            />
-
-            <HeroMetric
-              icon={faBed}
-              label="Rooms in use"
-              value={statistics.rooms}
-              detail="Current assignments"
-            />
-          </div>
+            Add Resident
+          </Link>
         </div>
       </section>
 
-      <main className="relative mx-auto -mt-9 max-w-[1500px] px-6 pb-12 lg:px-8">
-        <section className="grid items-start gap-6 2xl:grid-cols-[minmax(0,1fr)_330px]">
-          <div className="min-w-0 overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-[0_24px_70px_rgba(22,101,52,0.10)]">
-            <div className="border-b border-slate-200 bg-white px-5 py-5 lg:px-6">
-              <div className="flex flex-col gap-4 xl:flex-row xl:items-center">
-                <div className="relative min-w-0 flex-1">
-                  <AppIcon
-                    icon={
-                      faMagnifyingGlass
-                    }
-                    className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400"
-                  />
 
-                  <input
-                    type="search"
-                    value={search}
-                    onChange={(event) =>
-                      setSearch(
-                        event.target.value
-                      )
-                    }
-                    placeholder="Search residents by name, room, contact, diagnosis, or physician"
-                    className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-green-600 focus:bg-white focus:ring-4 focus:ring-green-100"
-                  />
-                </div>
+      <main className="mx-auto max-w-[1800px] p-3 sm:p-4 lg:px-6">
+        {/* SUMMARY STRIP */}
 
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <select
-                    value={statusFilter}
-                    onChange={(event) =>
-                      setStatusFilter(
-                        event.target.value
-                      )
-                    }
-                    aria-label="Filter residents by status"
-                    className="h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 outline-none transition focus:border-green-600 focus:ring-4 focus:ring-green-100"
-                  >
-                    <option value="all">
-                      All statuses
-                    </option>
+        <section
+          className="
+            mb-3 grid
+            border border-[#CCD5D0]
+            bg-white
+            sm:grid-cols-3
+          "
+        >
+          <SummaryCell
+            label="Residents"
+            value={
+              sortedResidents.length
+            }
+          />
 
-                    {statuses.map(
-                      (status) => (
-                        <option
-                          key={status}
-                          value={status}
-                        >
-                          {status}
-                        </option>
-                      )
-                    )}
-                  </select>
+          <SummaryCell
+            label="Rooms in use"
+            value={roomsInUse}
+          />
 
-                  <select
-                    value={roomFilter}
-                    onChange={(event) =>
-                      setRoomFilter(
-                        event.target.value
-                      )
-                    }
-                    aria-label="Filter residents by room"
-                    className="h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 outline-none transition focus:border-green-600 focus:ring-4 focus:ring-green-100"
-                  >
-                    <option value="all">
-                      All rooms
-                    </option>
+          <SummaryCell
+            label="Need attention"
+            value={
+              attentionCount
+            }
+            warning={
+              attentionCount > 0
+            }
+          />
+        </section>
 
-                    {rooms.map((room) => (
+
+        {/* FILTER BAR */}
+
+        <section className="border border-[#C9D3CE] bg-white">
+          <div className="border-b border-[#D8DFDB] bg-[#F8F7F2] px-3 py-2">
+            <div className="flex flex-col gap-2 xl:flex-row xl:items-center">
+              <div className="relative min-w-0 flex-1">
+                <Search
+                  size={14}
+                  className="
+                    pointer-events-none
+                    absolute left-2.5
+                    top-1/2
+                    -translate-y-1/2
+                    text-[#6D7D76]
+                  "
+                />
+
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(
+                    event
+                  ) =>
+                    setSearch(
+                      event.target
+                        .value
+                    )
+                  }
+                  placeholder="Search resident, room, diagnosis, physician, contact..."
+                  className="
+                    h-8 w-full
+                    rounded-[4px]
+                    border border-[#BCC9C3]
+                    bg-white
+                    pl-8 pr-3
+                    text-xs
+                    text-[#1D2F28]
+                    outline-none
+                    placeholder:text-[#8B9892]
+                    focus:border-[#59766B]
+                    focus:ring-1
+                    focus:ring-[#59766B]/20
+                  "
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <select
+                  value={
+                    statusFilter
+                  }
+                  onChange={(
+                    event
+                  ) =>
+                    setStatusFilter(
+                      event.target
+                        .value
+                    )
+                  }
+                  className="
+                    h-8
+                    min-w-[145px]
+                    rounded-[4px]
+                    border border-[#BCC9C3]
+                    bg-white
+                    px-2 text-xs
+                    text-[#31443D]
+                    outline-none
+                    focus:border-[#59766B]
+                  "
+                >
+                  <option value="all">
+                    All Statuses
+                  </option>
+
+                  {statuses.map(
+                    (status) => (
+                      <option
+                        key={status}
+                        value={status}
+                      >
+                        {status}
+                      </option>
+                    )
+                  )}
+                </select>
+
+                <select
+                  value={roomFilter}
+                  onChange={(
+                    event
+                  ) =>
+                    setRoomFilter(
+                      event.target
+                        .value
+                    )
+                  }
+                  className="
+                    h-8
+                    min-w-[125px]
+                    rounded-[4px]
+                    border border-[#BCC9C3]
+                    bg-white
+                    px-2 text-xs
+                    text-[#31443D]
+                    outline-none
+                    focus:border-[#59766B]
+                  "
+                >
+                  <option value="all">
+                    All Rooms
+                  </option>
+
+                  {rooms.map(
+                    (room) => (
                       <option
                         key={room}
                         value={room}
                       >
                         Room {room}
                       </option>
-                    ))}
-                  </select>
-
-                  {filtersActive && (
-                    <button
-                      type="button"
-                      onClick={clearFilters}
-                      className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
-                    >
-                      <AppIcon
-                        icon={faRotateLeft}
-                      />
-
-                      Clear
-                    </button>
+                    )
                   )}
-                </div>
-              </div>
+                </select>
 
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm text-slate-500">
-                  <span className="font-semibold text-slate-900">
-                    {
-                      filteredResidents.length
+                {filtersActive && (
+                  <button
+                    type="button"
+                    onClick={
+                      clearFilters
                     }
-                  </span>{" "}
-                  resident
-                  {filteredResidents.length === 1
-                    ? ""
-                    : "s"}{" "}
-                  found
-                </p>
+                    className="
+                      inline-flex h-8
+                      items-center gap-1.5
+                      rounded-[4px]
+                      border border-[#BCC9C3]
+                      bg-white px-3
+                      text-xs font-semibold
+                      text-[#42564E]
+                      hover:bg-[#F5F4EF]
+                    "
+                  >
+                    <RotateCcw
+                      size={12}
+                    />
 
-                <div className="inline-flex items-center gap-2 rounded-full bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700">
-                  A–Z alphabetical order
-                </div>
+                    Reset
+                  </button>
+                )}
               </div>
             </div>
+          </div>
 
-            {filteredResidents.length ===
-            0 ? (
-              <EmptyState
-                filtered={filtersActive}
-                onClear={clearFilters}
-              />
-            ) : (
-              <>
-                <div className="hidden overflow-x-auto lg:block">
-                  <table className="w-full min-w-[940px] border-collapse">
-                    <thead>
-                      <tr className="border-b border-green-100 bg-green-50/70">
-                        <TableHeading>
-                          Resident
-                        </TableHeading>
 
-                        <TableHeading>
-                          Age
-                        </TableHeading>
+          {/* A-Z STRIP */}
 
-                        <TableHeading>
-                          Room
-                        </TableHeading>
+          <div className="overflow-x-auto border-b border-[#D8DFDB] bg-white">
+            <div className="flex min-w-max items-stretch px-2 py-1.5">
+              <button
+                type="button"
+                onClick={() =>
+                  setLetterFilter(
+                    "all"
+                  )
+                }
+                className={`
+                  mr-1 h-7
+                  min-w-[42px]
+                  border px-2
+                  text-[11px]
+                  font-bold
 
-                        <TableHeading>
-                          Status
-                        </TableHeading>
+                  ${
+                    letterFilter ===
+                    "all"
+                      ? "border-[#073B2F] bg-[#073B2F] text-white"
+                      : "border-[#CBD4CF] bg-white text-[#50645B] hover:bg-[#F3F2ED]"
+                  }
+                `}
+              >
+                ALL
+              </button>
 
-                        <TableHeading>
-                          Care summary
-                        </TableHeading>
+              {alphabet.map(
+                (letter) => (
+                  <button
+                    key={letter}
+                    type="button"
+                    onClick={() =>
+                      setLetterFilter(
+                        letter
+                      )
+                    }
+                    className={`
+                      h-7 min-w-[29px]
+                      border-y border-r
+                      border-[#D2DAD6]
+                      px-1.5
+                      text-[11px]
+                      font-bold
 
-                        <TableHeading>
-                          Contact
-                        </TableHeading>
+                      ${
+                        letterFilter ===
+                        letter
+                          ? "bg-[#E9EEE9] text-[#073B2F] shadow-[inset_0_-2px_0_#D5A437]"
+                          : "bg-white text-[#607169] hover:bg-[#F5F4EF]"
+                      }
+                    `}
+                  >
+                    {letter}
+                  </button>
+                )
+              )}
+            </div>
+          </div>
 
-                        <TableHeading>
-                          Action
-                        </TableHeading>
-                      </tr>
-                    </thead>
 
-                    <tbody>
-                      {visibleResidents.map(
-                        (resident) => {
-                          const status =
-                            cleanText(
-                              resident.status
-                            ) ||
-                            "Not recorded";
+          {/* RESULT STATUS */}
 
-                          const selected =
-                            selectedResidentId ===
-                            resident.id;
+          <div className="flex items-center justify-between gap-3 border-b border-[#D8DFDB] bg-[#FBFAF7] px-3 py-1.5 text-[11px]">
+            <p className="text-[#607169]">
+              Showing{" "}
+              <strong className="text-[#263A32]">
+                {
+                  filteredResidents.length
+                }
+              </strong>{" "}
+              matching resident
+              {filteredResidents.length ===
+              1
+                ? ""
+                : "s"}
+            </p>
 
-                          return (
-                            <tr
-                              key={resident.id}
-                              onClick={() =>
-                                setSelectedResidentId(
-                                  resident.id
-                                )
-                              }
-                              className={`group cursor-pointer border-b border-slate-100 text-sm transition last:border-b-0 ${
-                                selected
-                                  ? "bg-green-50/70"
-                                  : "bg-white hover:bg-slate-50"
-                              }`}
-                            >
-                              <td className="relative px-5 py-4">
-                                {selected && (
-                                  <span className="absolute bottom-2 left-0 top-2 w-1 rounded-r-full bg-green-600" />
-                                )}
+            <p className="font-semibold text-[#7D6A35]">
+              A–Z order
+            </p>
+          </div>
 
-                                <div className="flex min-w-0 items-center gap-3.5">
-                                  <ResidentAvatar
-                                    resident={
-                                      resident
-                                    }
-                                  />
 
-                                  <div className="min-w-0">
-                                    <p className="truncate font-semibold text-slate-900">
-                                      {getResidentName(
-                                        resident
-                                      )}
-                                    </p>
+          {/* DESKTOP TABLE */}
 
-                                    <p className="mt-1 text-xs text-slate-400">
-                                      Resident #
-                                      {
-                                        resident.id
-                                      }
-                                    </p>
-                                  </div>
-                                </div>
-                              </td>
+          <div className="hidden overflow-x-auto lg:block">
+            <table className="w-full min-w-[1380px] border-collapse text-left">
+              <thead>
+                <tr className="bg-[#E8EEEA] text-[10px] font-bold uppercase tracking-[0.035em] text-[#354A41]">
+                  <TableHead>
+                    Resident
+                  </TableHead>
 
-                              <td className="px-4 py-4 text-slate-600">
-                                {formatAge(
-                                  resident.age
-                                )}
-                              </td>
+                  <TableHead>
+                    ID
+                  </TableHead>
 
-                              <td className="px-4 py-4">
-                                <span className="inline-flex items-center gap-2 font-medium text-slate-700">
-                                  <AppIcon
-                                    icon={
-                                      faBuilding
-                                    }
-                                    className="text-xs text-slate-400"
-                                  />
+                  <TableHead>
+                    Sex
+                  </TableHead>
 
-                                  {cleanText(
-                                    resident.room
-                                  ) ||
-                                    "Unassigned"}
-                                </span>
-                              </td>
+                  <TableHead>
+                    Age
+                  </TableHead>
 
-                              <td className="px-4 py-4">
-                                <StatusBadge
-                                  status={
-                                    status
-                                  }
-                                  tone={getStatusTone(
-                                    resident.status
-                                  )}
-                                />
-                              </td>
+                  <TableHead>
+                    Room
+                  </TableHead>
 
-                              <td className="max-w-[210px] px-4 py-4">
-                                <p className="truncate font-medium text-slate-700">
-                                  {cleanText(
-                                    resident.diagnosis
-                                  ) ||
-                                    "No diagnosis recorded"}
-                                </p>
+                  <TableHead>
+                    Status
+                  </TableHead>
 
-                                <p className="mt-1 truncate text-xs text-slate-400">
-                                  {cleanText(
-                                    resident.primary_doctor
-                                  ) ||
-                                    "Doctor not assigned"}
-                                </p>
-                              </td>
+                  <TableHead>
+                    Admit Date
+                  </TableHead>
 
-                              <td className="max-w-[190px] px-4 py-4">
-                                <p className="truncate font-medium text-slate-700">
-                                  {cleanText(
-                                    resident.next_of_kin
-                                  ) ||
-                                    "Primary contact"}
-                                </p>
+                  <TableHead>
+                    Diagnosis
+                  </TableHead>
 
-                                <p className="mt-1 truncate text-xs text-slate-400">
-                                  {cleanText(
-                                    resident.next_of_kin_phone
-                                  ) ||
-                                    cleanText(
-                                      resident.emergency_contact
-                                    ) ||
-                                    "Not recorded"}
-                                </p>
-                              </td>
+                  <TableHead>
+                    Physician
+                  </TableHead>
 
-                              <td className="px-5 py-4">
-                                <Link
-                                  href={`/residents/${resident.id}`}
-                                  onClick={(
-                                    event
-                                  ) =>
-                                    event.stopPropagation()
-                                  }
-                                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-green-300 hover:bg-green-50 hover:text-green-700"
-                                >
-                                  View
+                  <TableHead>
+                    Allergies
+                  </TableHead>
 
-                                  <AppIcon
-                                    icon={
-                                      faArrowRight
-                                    }
-                                    className="text-xs"
-                                  />
-                                </Link>
-                              </td>
-                            </tr>
-                          );
-                        }
-                      )}
-                    </tbody>
-                  </table>
-                </div>
+                  <TableHead>
+                    Contact
+                  </TableHead>
 
-                <div className="divide-y divide-slate-100 lg:hidden">
-                  {visibleResidents.map(
-                    (resident) => (
-                      <article
-                        key={resident.id}
-                        className="p-5"
-                      >
-                        <div className="flex items-start gap-3.5">
-                          <ResidentAvatar
-                            resident={
-                              resident
+                  <TableHead>
+                    Action
+                  </TableHead>
+                </tr>
+              </thead>
+
+              <tbody>
+                {visibleResidents.length >
+                0 ? (
+                  visibleResidents.map(
+                    (
+                      resident,
+                      index
+                    ) => {
+                      const allergy =
+                        cleanText(
+                          resident.allergies
+                        );
+
+                      return (
+                        <tr
+                          key={
+                            resident.id
+                          }
+                          className={`
+                            border-b
+                            border-[#E2E7E4]
+                            text-[12px]
+                            transition-colors
+                            hover:bg-[#FFFDF7]
+
+                            ${
+                              index %
+                                2 ===
+                              0
+                                ? "bg-white"
+                                : "bg-[#FAFAF7]"
                             }
-                          />
+                          `}
+                        >
+                          <td className="px-3 py-2">
+                            <div className="flex min-w-[205px] items-center gap-2.5">
+                              <ResidentAvatar
+                                resident={
+                                  resident
+                                }
+                              />
 
-                          <div className="min-w-0 flex-1">
-                            <div className="flex flex-wrap items-start justify-between gap-3">
-                              <div>
-                                <h2 className="font-semibold text-slate-900">
+                              <Link
+                                href={`/residents/${resident.id}`}
+                                className="
+                                  min-w-0
+                                  font-bold
+                                  text-[#073B2F]
+                                  hover:underline
+                                "
+                              >
+                                <span className="block max-w-[180px] truncate">
                                   {getResidentName(
                                     resident
                                   )}
-                                </h2>
+                                </span>
+                              </Link>
+                            </div>
+                          </td>
 
-                                <p className="mt-1 text-xs text-slate-400">
-                                  Resident #
-                                  {
-                                    resident.id
-                                  }
-                                </p>
-                              </div>
+                          <td className="px-3 py-2 font-mono text-[11px] text-[#607169]">
+                            {resident.id}
+                          </td>
 
-                              <StatusBadge
-                                status={
-                                  cleanText(
-                                    resident.status
-                                  ) ||
-                                  "Not recorded"
-                                }
-                                tone={getStatusTone(
+                          <td className="px-3 py-2 text-[#40534B]">
+                            {cleanText(
+                              resident.gender
+                            ) || "—"}
+                          </td>
+
+                          <td className="px-3 py-2 text-[#40534B]">
+                            {formatAge(
+                              resident.age
+                            )}
+                          </td>
+
+                          <td className="px-3 py-2 font-semibold text-[#263A32]">
+                            {cleanText(
+                              resident.room
+                            ) || "—"}
+                          </td>
+
+                          <td className="px-3 py-2">
+                            <StatusBadge
+                              status={
+                                cleanText(
                                   resident.status
-                                )}
-                              />
+                                ) ||
+                                "Not recorded"
+                              }
+                            />
+                          </td>
+
+                          <td className="px-3 py-2 whitespace-nowrap text-[#506159]">
+                            {formatDate(
+                              resident.date_admitted
+                            )}
+                          </td>
+
+                          <td className="max-w-[230px] px-3 py-2">
+                            <span className="block truncate text-[#40534B]">
+                              {cleanText(
+                                resident.diagnosis
+                              ) || "—"}
+                            </span>
+                          </td>
+
+                          <td className="max-w-[190px] px-3 py-2">
+                            <span className="block truncate text-[#40534B]">
+                              {cleanText(
+                                resident.primary_doctor
+                              ) || "—"}
+                            </span>
+                          </td>
+
+                          <td className="max-w-[180px] px-3 py-2">
+                            <span
+                              className={`
+                                block truncate
+                                ${
+                                  hasAllergy(
+                                    allergy
+                                  )
+                                    ? "font-semibold text-red-700"
+                                    : "text-[#607169]"
+                                }
+                              `}
+                            >
+                              {allergy ||
+                                "NKA"}
+                            </span>
+                          </td>
+
+                          <td className="max-w-[190px] px-3 py-2">
+                            <div className="truncate font-medium text-[#40534B]">
+                              {cleanText(
+                                resident.next_of_kin
+                              ) ||
+                                "—"}
                             </div>
 
-                            <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-4">
-                              <MobileDetail
-                                label="Age"
-                                value={formatAge(
-                                  resident.age
-                                )}
-                              />
+                            <div className="mt-0.5 truncate text-[10px] text-[#7B8983]">
+                              {cleanText(
+                                resident.next_of_kin_phone
+                              ) ||
+                                cleanText(
+                                  resident.emergency_contact
+                                ) ||
+                                "No phone"}
+                            </div>
+                          </td>
 
-                              <MobileDetail
-                                label="Room"
-                                value={
-                                  cleanText(
-                                    resident.room
-                                  ) ||
-                                  "Unassigned"
-                                }
-                              />
-
-                              <div className="col-span-2">
-                                <MobileDetail
-                                  label="Diagnosis"
-                                  value={
-                                    cleanText(
-                                      resident.diagnosis
-                                    ) ||
-                                    "Not recorded"
-                                  }
-                                />
-                              </div>
-                            </dl>
-
+                          <td className="px-3 py-2">
                             <Link
                               href={`/residents/${resident.id}`}
-                              className="mt-5 inline-flex h-10 items-center gap-2 rounded-lg bg-green-700 px-4 text-sm font-semibold text-white transition hover:bg-green-800"
+                              className="
+                                inline-flex h-7
+                                items-center
+                                rounded-[4px]
+                                border
+                                border-[#93A69D]
+                                bg-white px-2.5
+                                text-[11px]
+                                font-bold
+                                text-[#073B2F]
+                                hover:border-[#073B2F]
+                                hover:bg-[#F0F4F1]
+                              "
                             >
-                              View profile
-
-                              <AppIcon
-                                icon={
-                                  faArrowRight
-                                }
-                                className="text-xs"
-                              />
+                              Open
                             </Link>
-                          </div>
-                        </div>
-                      </article>
-                    )
-                  )}
-                </div>
-
-                <div className="flex flex-col gap-4 border-t border-slate-200 bg-slate-50/70 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-sm text-slate-500">
-                    Showing{" "}
-                    <span className="font-semibold text-slate-700">
-                      {firstRecord}
-                    </span>{" "}
-                    to{" "}
-                    <span className="font-semibold text-slate-700">
-                      {lastRecord}
-                    </span>{" "}
-                    of{" "}
-                    <span className="font-semibold text-slate-700">
-                      {
-                        filteredResidents.length
-                      }
-                    </span>
-                  </p>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setPage(
-                          Math.max(
-                            1,
-                            currentPage - 1
-                          )
-                        )
-                      }
-                      disabled={
-                        currentPage === 1
-                      }
-                      aria-label="Previous page"
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-green-300 hover:text-green-700 disabled:cursor-not-allowed disabled:opacity-40"
+                          </td>
+                        </tr>
+                      );
+                    }
+                  )
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={12}
+                      className="px-6 py-14 text-center"
                     >
-                      <AppIcon
-                        icon={faChevronLeft}
-                      />
-                    </button>
+                      <p className="text-sm font-semibold text-[#30443B]">
+                        No residents match the selected filters.
+                      </p>
 
-                    <span className="min-w-24 text-center text-sm font-medium text-slate-600">
-                      Page {currentPage} of{" "}
-                      {totalPages}
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setPage(
-                          Math.min(
-                            totalPages,
-                            currentPage + 1
-                          )
-                        )
-                      }
-                      disabled={
-                        currentPage ===
-                        totalPages
-                      }
-                      aria-label="Next page"
-                      className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 transition hover:border-green-300 hover:text-green-700 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      <AppIcon
-                        icon={
-                          faChevronRight
+                      <button
+                        type="button"
+                        onClick={
+                          clearFilters
                         }
-                      />
-                    </button>
+                        className="mt-2 text-xs font-bold text-[#073B2F] underline"
+                      >
+                        Reset filters
+                      </button>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+
+          {/* MOBILE */}
+
+          <div className="divide-y divide-[#DCE3DF] lg:hidden">
+            {visibleResidents.map(
+              (resident) => (
+                <article
+                  key={resident.id}
+                  className="bg-white p-3"
+                >
+                  <div className="flex items-start gap-3">
+                    <ResidentAvatar
+                      resident={
+                        resident
+                      }
+                    />
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <Link
+                            href={`/residents/${resident.id}`}
+                            className="block truncate text-sm font-bold text-[#073B2F]"
+                          >
+                            {getResidentName(
+                              resident
+                            )}
+                          </Link>
+
+                          <p className="mt-0.5 text-[10px] text-[#76857E]">
+                            Resident #
+                            {resident.id}
+                          </p>
+                        </div>
+
+                        <StatusBadge
+                          status={
+                            cleanText(
+                              resident.status
+                            ) ||
+                            "Not recorded"
+                          }
+                        />
+                      </div>
+
+                      <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                        <MobileField
+                          label="Room"
+                          value={
+                            cleanText(
+                              resident.room
+                            ) || "—"
+                          }
+                        />
+
+                        <MobileField
+                          label="Age"
+                          value={formatAge(
+                            resident.age
+                          )}
+                        />
+
+                        <MobileField
+                          label="Diagnosis"
+                          value={
+                            cleanText(
+                              resident.diagnosis
+                            ) || "—"
+                          }
+                        />
+
+                        <MobileField
+                          label="Physician"
+                          value={
+                            cleanText(
+                              resident.primary_doctor
+                            ) || "—"
+                          }
+                        />
+                      </dl>
+                    </div>
                   </div>
-                </div>
-              </>
+                </article>
+              )
             )}
           </div>
 
-          <ResidentPreview
-            resident={selectedResident}
-            onClose={() =>
-              setSelectedResidentId(null)
-            }
-          />
+
+          {/* PAGINATION */}
+
+          <div className="flex flex-col gap-2 border-t border-[#D1D9D5] bg-[#F8F7F2] px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[11px] text-[#607169]">
+              Showing{" "}
+              <strong>
+                {firstRecord}
+              </strong>{" "}
+              -{" "}
+              <strong>
+                {lastRecord}
+              </strong>{" "}
+              of{" "}
+              <strong>
+                {
+                  filteredResidents.length
+                }
+              </strong>
+            </p>
+
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                aria-label="Previous page"
+                disabled={
+                  currentPage === 1
+                }
+                onClick={() =>
+                  setPage(
+                    Math.max(
+                      1,
+                      currentPage - 1
+                    )
+                  )
+                }
+                className="
+                  inline-flex h-7 w-7
+                  items-center justify-center
+                  border border-[#BDC8C2]
+                  bg-white text-[#4A5D54]
+                  disabled:cursor-not-allowed
+                  disabled:opacity-35
+                  hover:bg-[#EEF2EF]
+                "
+              >
+                <ChevronLeft
+                  size={13}
+                />
+              </button>
+
+              <span className="min-w-[92px] text-center text-[11px] font-semibold text-[#4A5D54]">
+                Page {currentPage} of{" "}
+                {totalPages}
+              </span>
+
+              <button
+                type="button"
+                aria-label="Next page"
+                disabled={
+                  currentPage ===
+                  totalPages
+                }
+                onClick={() =>
+                  setPage(
+                    Math.min(
+                      totalPages,
+                      currentPage + 1
+                    )
+                  )
+                }
+                className="
+                  inline-flex h-7 w-7
+                  items-center justify-center
+                  border border-[#BDC8C2]
+                  bg-white text-[#4A5D54]
+                  disabled:cursor-not-allowed
+                  disabled:opacity-35
+                  hover:bg-[#EEF2EF]
+                "
+              >
+                <ChevronRight
+                  size={13}
+                />
+              </button>
+            </div>
+          </div>
         </section>
       </main>
     </div>
   );
 }
 
-type HeroMetricProps = {
-  icon: IconDefinition;
-  label: string;
-  value: number;
-  detail: string;
-  warning?: boolean;
-};
 
-function HeroMetric({
-  icon,
+function SummaryCell({
   label,
   value,
-  detail,
   warning = false,
-}: HeroMetricProps) {
+}: {
+  label: string;
+  value: number;
+  warning?: boolean;
+}) {
   return (
-    <article className="border-b border-white/15 px-5 py-5 last:border-b-0 sm:border-r sm:last:border-r-0 xl:border-b-0">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-[0.13em] text-green-100/75">
-            {label}
-          </p>
-
-          <p className="mt-2 text-3xl font-semibold tracking-tight text-white">
-            {value}
-          </p>
-
-          <p className="mt-1 text-xs text-green-100/65">
-            {detail}
-          </p>
-        </div>
-
-        <div
-          className={`flex h-10 w-10 items-center justify-center rounded-xl ${
+    <div className="flex items-center gap-3 border-b border-[#D8DFDB] px-3 py-2.5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
+      <span
+        className={`
+          text-[20px]
+          font-bold
+          ${
             warning
-              ? "bg-red-400/20 text-red-100"
-              : "bg-white/15 text-white"
-          }`}
-        >
-          <AppIcon icon={icon} />
-        </div>
-      </div>
-    </article>
+              ? "text-red-700"
+              : "text-[#073B2F]"
+          }
+        `}
+      >
+        {value}
+      </span>
+
+      <span className="text-[11px] font-semibold uppercase tracking-[0.04em] text-[#6D7D76]">
+        {label}
+      </span>
+    </div>
   );
 }
 
-type TableHeadingProps = {
-  children: ReactNode;
-};
 
-function TableHeading({
+function TableHead({
   children,
-}: TableHeadingProps) {
+}: {
+  children:
+    React.ReactNode;
+}) {
   return (
-    <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-green-800 first:px-5 last:px-5">
+    <th className="border-r border-[#D2DBD6] px-3 py-2 last:border-r-0">
       {children}
     </th>
   );
 }
 
-type ResidentAvatarProps = {
-  resident: ResidentRecord;
-};
 
 function ResidentAvatar({
   resident,
-}: ResidentAvatarProps) {
-  if (resident.photo_url) {
+}: {
+  resident: ResidentRecord;
+}) {
+  if (
+    resident.photo_url
+  ) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        src={resident.photo_url}
+        src={
+          resident.photo_url
+        }
         alt=""
-        className="h-11 w-11 shrink-0 rounded-xl object-cover shadow-sm"
+        className="
+          h-9 w-9
+          shrink-0
+          rounded-[4px]
+          border border-[#C8D2CD]
+          object-cover
+        "
       />
     );
   }
 
   return (
     <div
-      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xs font-semibold tracking-wide text-white shadow-sm ${getAvatarClass(
+      className="
+        flex h-9 w-9
+        shrink-0
+        items-center justify-center
+        rounded-[4px]
+        border border-[#C5D0CA]
+        bg-[#E6EEE8]
+        text-[11px]
+        font-bold
+        text-[#073B2F]
+      "
+    >
+      {getInitials(
         resident
-      )}`}
-    >
-      {getInitials(resident)}
-    </div>
-  );
-}
-
-type StatusBadgeProps = {
-  status: string;
-  tone: StatusTone;
-};
-
-function StatusBadge({
-  status,
-  tone,
-}: StatusBadgeProps) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium ${getStatusClasses(
-        tone
-      )}`}
-    >
-      <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
-
-      {status}
-    </span>
-  );
-}
-
-type MobileDetailProps = {
-  label: string;
-  value: string;
-};
-
-function MobileDetail({
-  label,
-  value,
-}: MobileDetailProps) {
-  return (
-    <div>
-      <dt className="text-xs font-medium text-slate-400">
-        {label}
-      </dt>
-
-      <dd className="mt-1 text-sm font-medium text-slate-700">
-        {value}
-      </dd>
-    </div>
-  );
-}
-
-type EmptyStateProps = {
-  filtered: boolean;
-  onClear: () => void;
-};
-
-function EmptyState({
-  filtered,
-  onClear,
-}: EmptyStateProps) {
-  return (
-    <div className="px-6 py-24 text-center">
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-green-50 text-green-700">
-        <AppIcon
-          icon={
-            filtered
-              ? faMagnifyingGlass
-              : faUsers
-          }
-          className="text-xl"
-        />
-      </div>
-
-      <h2 className="mt-5 text-lg font-semibold text-slate-900">
-        {filtered
-          ? "No matching residents"
-          : "No residents yet"}
-      </h2>
-
-      <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
-        {filtered
-          ? "No resident records match the current search and filters."
-          : "Add the first resident to begin building the resident directory."}
-      </p>
-
-      {filtered ? (
-        <button
-          type="button"
-          onClick={onClear}
-          className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-green-700"
-        >
-          <AppIcon
-            icon={faRotateLeft}
-          />
-
-          Clear filters
-        </button>
-      ) : (
-        <Link
-          href="/add-resident"
-          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-green-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800"
-        >
-          <AppIcon icon={faPlus} />
-
-          Add resident
-        </Link>
       )}
     </div>
   );
 }
 
-type ResidentPreviewProps = {
-  resident: ResidentRecord | null;
-  onClose: () => void;
-};
 
-function ResidentPreview({
-  resident,
-  onClose,
-}: ResidentPreviewProps) {
-  if (!resident) {
-    return null;
-  }
-
+function StatusBadge({
+  status,
+}: {
+  status: string;
+}) {
   return (
-    <aside className="hidden self-start overflow-hidden rounded-[22px] border border-slate-200 bg-white shadow-[0_24px_70px_rgba(22,101,52,0.10)] 2xl:block">
-      <div className="relative overflow-hidden bg-gradient-to-br from-green-800 via-green-700 to-green-600 px-6 pb-6 pt-7 text-white">
-        <div className="absolute -right-12 -top-16 h-44 w-44 rounded-full border border-white/15" />
-
-        <div className="absolute -right-4 top-0 h-28 w-28 rounded-full bg-green-300/20 blur-2xl" />
-
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close resident preview"
-          className="absolute right-5 top-5 z-10 flex h-8 w-8 items-center justify-center rounded-lg bg-white/15 text-green-50 transition hover:bg-white/25"
-        >
-          <AppIcon icon={faXmark} />
-        </button>
-
-        <ResidentAvatar
-          resident={resident}
-        />
-
-        <h2 className="mt-4 pr-10 text-xl font-semibold tracking-tight">
-          {getResidentName(resident)}
-        </h2>
-
-        <p className="mt-1 text-xs text-green-100/75">
-          Resident #{resident.id}
-        </p>
-
-        <div className="mt-4">
-          <StatusBadge
-            status={
-              cleanText(
-                resident.status
-              ) || "Not recorded"
-            }
-            tone={getStatusTone(
-              resident.status
-            )}
-          />
-        </div>
-      </div>
-
-      <div className="p-6">
-        <PreviewSection title="Resident details">
-          <PreviewDetail
-            icon={faBuilding}
-            label="Room"
-            value={
-              cleanText(
-                resident.room
-              ) || "Unassigned"
-            }
-          />
-
-          <PreviewDetail
-            icon={faCalendarDays}
-            label="Age / Date of birth"
-            value={`${formatAge(
-              resident.age
-            )} years / ${formatDate(
-              resident.date_of_birth
-            )}`}
-          />
-
-          <PreviewDetail
-            icon={faVenusMars}
-            label="Gender"
-            value={
-              cleanText(
-                resident.gender
-              ) || "Not recorded"
-            }
-          />
-        </PreviewSection>
-
-        <PreviewSection title="Care information">
-          <PreviewDetail
-            icon={faNotesMedical}
-            label="Diagnosis"
-            value={
-              cleanText(
-                resident.diagnosis
-              ) || "Not recorded"
-            }
-          />
-
-          <PreviewDetail
-            icon={faStethoscope}
-            label="Primary doctor"
-            value={
-              cleanText(
-                resident.primary_doctor
-              ) || "Not recorded"
-            }
-          />
-
-          <PreviewDetail
-            icon={faCalendarDays}
-            label="Admission date"
-            value={formatDate(
-              resident.date_admitted
-            )}
-          />
-        </PreviewSection>
-
-        <PreviewSection title="Contact">
-          <PreviewDetail
-            icon={faUser}
-            label="Next of kin"
-            value={
-              cleanText(
-                resident.next_of_kin
-              ) || "Not recorded"
-            }
-          />
-
-          <PreviewDetail
-            icon={faPhone}
-            label="Phone"
-            value={
-              cleanText(
-                resident.next_of_kin_phone
-              ) ||
-              cleanText(
-                resident.emergency_contact
-              ) ||
-              "Not recorded"
-            }
-          />
-        </PreviewSection>
-
-        <Link
-          href={`/residents/${resident.id}`}
-          className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-green-700 text-sm font-semibold text-white transition hover:bg-green-800"
-        >
-          View full profile
-
-          <AppIcon
-            icon={faArrowRight}
-            className="text-xs"
-          />
-        </Link>
-      </div>
-    </aside>
+    <span
+      className={`
+        inline-flex
+        items-center
+        whitespace-nowrap
+        rounded-[3px]
+        border
+        px-1.5 py-0.5
+        text-[10px]
+        font-bold
+        ${statusStyle(status)}
+      `}
+    >
+      {status}
+    </span>
   );
 }
 
-type PreviewSectionProps = {
-  title: string;
-  children: ReactNode;
-};
 
-function PreviewSection({
-  title,
-  children,
-}: PreviewSectionProps) {
-  return (
-    <section className="border-b border-slate-100 py-5 first:pt-0 last:border-b-0 last:pb-0">
-      <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-400">
-        {title}
-      </h3>
-
-      <div className="space-y-4">
-        {children}
-      </div>
-    </section>
-  );
-}
-
-type PreviewDetailProps = {
-  icon: IconDefinition;
-  label: string;
-  value: string;
-};
-
-function PreviewDetail({
-  icon,
+function MobileField({
   label,
   value,
-}: PreviewDetailProps) {
+}: {
+  label: string;
+  value: string;
+}) {
   return (
-    <div className="flex items-start gap-3">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-green-50 text-green-700">
-        <AppIcon icon={icon} />
-      </div>
+    <div className="min-w-0">
+      <dt className="text-[9px] font-bold uppercase tracking-wide text-[#7A8982]">
+        {label}
+      </dt>
 
-      <div className="min-w-0">
-        <p className="text-xs text-slate-400">
-          {label}
-        </p>
-
-        <p className="mt-1 break-words text-sm font-medium leading-5 text-slate-700">
-          {value}
-        </p>
-      </div>
+      <dd className="mt-0.5 truncate font-medium text-[#31443C]">
+        {value}
+      </dd>
     </div>
   );
 }
