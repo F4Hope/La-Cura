@@ -144,9 +144,12 @@ export function PremiumLandingStyles() {
         }
       }
 
-      @keyframes premiumGoldCycle {
+      
+
+
+      @keyframes premiumGoldContinuous {
         0% {
-          background-position: 180% center;
+          background-position: 165% 50%;
           opacity: 0;
         }
 
@@ -154,34 +157,77 @@ export function PremiumLandingStyles() {
           opacity: 1;
         }
 
-        45% {
-          background-position: -80% center;
+        88% {
+          background-position: -65% 50%;
           opacity: 1;
         }
 
-        48% {
-          background-position: -80% center;
+        94% {
+          background-position: -65% 50%;
           opacity: 0;
-        }
-
-        49% {
-          background-position: 180% center;
-          opacity: 0;
-        }
-
-        52% {
-          opacity: 1;
-        }
-
-        97% {
-          background-position: -80% center;
-          opacity: 1;
         }
 
         100% {
-          background-position: -80% center;
+          background-position: 165% 50%;
           opacity: 0;
         }
+      }
+
+      .premium-gold-loop {
+        position: absolute;
+        inset: 0;
+        z-index: 20;
+
+        display: block;
+
+        color: transparent;
+
+        -webkit-text-fill-color: transparent;
+        -webkit-background-clip: text;
+        background-clip: text;
+
+        background-image:
+          linear-gradient(
+            108deg,
+            transparent 0%,
+            transparent 37%,
+
+            rgba(213, 164, 55, 0.15) 42%,
+
+            #f0cf6a 46%,
+            #fff3b0 48%,
+            #fffbe6 50%,
+            #ffffff 51%,
+            #fff6c7 52%,
+            #e8bd43 55%,
+            #d5a437 58%,
+
+            rgba(213, 164, 55, 0.18) 63%,
+
+            transparent 68%,
+            transparent 100%
+          );
+
+        background-repeat: no-repeat;
+        background-size: 230% 100%;
+        background-position: 165% 50%;
+
+        opacity: 0;
+
+        pointer-events: none;
+
+        will-change:
+          background-position,
+          opacity;
+      }
+
+      .premium-gold-loop.is-active {
+        animation:
+          premiumGoldContinuous
+          3.4s
+          linear
+          1.15s
+          infinite;
       }
 
       @keyframes premiumHeroImage {
@@ -655,24 +701,19 @@ export function AnimatedHeroTitle() {
             letterDelay={34}
           />
 
+          {/* Continuous gold light moving through Every Life */}
           <span
             aria-hidden="true"
-            className="premium-gold-glimpse pointer-events-none absolute inset-0 whitespace-nowrap bg-clip-text text-transparent"
-            style={{
-              backgroundImage:
-                "linear-gradient(110deg, transparent 34%, transparent 43%, #FFF4C7 47%, #E8C45C 50%, #D5A437 52%, #FFF4C7 56%, transparent 63%, transparent 100%)",
-
-              backgroundSize:
-                "260% 100%",
-
-              animation: active
-                ? "premiumGoldCycle 4.6s linear 1.1s infinite"
-                : "none",
-            }}
+            className={`premium-gold-loop ${
+              active
+                ? "is-active"
+                : ""
+            }`}
           >
             Every Life
           </span>
 
+          {/* Permanent premium gold underline */}
           <span
             aria-hidden="true"
             className="absolute -bottom-3 left-1 h-[4px] w-[72%] rounded-full"
