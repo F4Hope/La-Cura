@@ -1,16 +1,29 @@
-import { supabase } from "./supabase/client";
+import {
+  createClient,
+} from "@/lib/supabase/server";
+
 
 export async function getCarePlans() {
-  const { data, error } = await supabase
+  const supabase =
+    await createClient();
+
+  const {
+    data,
+    error,
+  } = await supabase
     .from("care_plans")
     .select("*")
-    .order("review_date", {
-      ascending: true,
-    });
+    .order(
+      "review_date",
+      {
+        ascending: true,
+      }
+    );
 
   if (error) {
     console.error(
-      "Unable to load care plans."
+      "Unable to load care plans:",
+      error.message
     );
 
     return [];
