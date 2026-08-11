@@ -1,5 +1,9 @@
 "use client";
 
+import type {
+  ReactNode,
+} from "react";
+
 import {
   useCallback,
   useEffect,
@@ -7,81 +11,177 @@ import {
   useState,
 } from "react";
 
-import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import Link from "next/link";
 
 import {
-  faBuilding,
-  faEnvelope,
-  faIdCard,
-  faMagnifyingGlass,
-  faPenToSquare,
-  faPhone,
-  faShieldHalved,
-  faStethoscope,
-  faUserGear,
-  faUserPlus,
-  faUsers,
-} from "@fortawesome/free-solid-svg-icons";
+  LoaderCircle,
+  Plus,
+  RefreshCw,
+  Search,
+  Settings,
+} from "lucide-react";
 
 import AddStaffModal from "@/components/AddStaffModal";
 import DeactivateStaffButton from "@/components/DeactivateStaffButton";
 import EditStaffModal from "@/components/EditStaffModal";
 import ResetPasswordButton from "@/components/ResetPasswordButton";
-import AppIcon from "@/components/ui/AppIcon";
 
-import { getStaff } from "@/lib/staff";
+import {
+  getStaff,
+} from "@/lib/staff";
+
 
 export type StaffMember = {
   id: number;
-  auth_user_id?: string | null;
+
+  auth_user_id?:
+    | string
+    | null;
+
   full_name: string;
-  email?: string | null;
-  phone?: string | null;
+
+  email?:
+    | string
+    | null;
+
+  phone?:
+    | string
+    | null;
+
   role: string;
-  department?: string | null;
-  license_number?: string | null;
-  shift?: string | null;
-  employment_date?: string | null;
-  active?: boolean | null;
+
+  department?:
+    | string
+    | null;
+
+  license_number?:
+    | string
+    | null;
+
+  shift?:
+    | string
+    | null;
+
+  employment_date?:
+    | string
+    | null;
+
+  active?:
+    | boolean
+    | null;
+
   staff_code: string;
-  must_change_password?: boolean;
-  credentials_created_at?: string | null;
+
+  must_change_password?:
+    | boolean;
+
+  credentials_created_at?:
+    | string
+    | null;
 };
 
-function normalize(
+
+function cleanText(
   value: unknown
-): string {
+) {
   return typeof value === "string"
-    ? value.toLowerCase().trim()
+    ? value.trim()
     : "";
 }
 
+
+function normalize(
+  value: unknown
+) {
+  return cleanText(
+    value
+  ).toLowerCase();
+}
+
+
+function formatDate(
+  value:
+    | string
+    | null
+    | undefined
+) {
+  if (!value) {
+    return "—";
+  }
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  ).format(date);
+}
+
+
 export default function StaffPage() {
-  const [staff, setStaff] = useState<
+  const [
+    staff,
+    setStaff,
+  ] = useState<
     StaffMember[]
   >([]);
 
-  const [search, setSearch] =
-    useState("");
+  const [
+    search,
+    setSearch,
+  ] = useState("");
 
-  const [loading, setLoading] =
-    useState(true);
+  const [
+    roleFilter,
+    setRoleFilter,
+  ] = useState("all");
 
-  const [error, setError] =
-    useState("");
+  const [
+    statusFilter,
+    setStatusFilter,
+  ] = useState("all");
 
-  const [addOpen, setAddOpen] =
-    useState(false);
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
-  const [editOpen, setEditOpen] =
-    useState(false);
+  const [
+    error,
+    setError,
+  ] = useState("");
+
+  const [
+    addOpen,
+    setAddOpen,
+  ] = useState(false);
+
+  const [
+    editOpen,
+    setEditOpen,
+  ] = useState(false);
 
   const [
     selectedStaff,
     setSelectedStaff,
-  ] = useState<StaffMember | null>(
-    null
-  );
+  ] =
+    useState<StaffMember | null>(
+      null
+    );
+
 
   const loadStaff =
     useCallback(async () => {
@@ -89,21 +189,44 @@ export default function StaffPage() {
       setError("");
 
       try {
-        const data = await getStaff();
+        const data =
+          await getStaff();
+
+        const rows =
+          Array.isArray(data)
+            ? (data as
+                StaffMember[])
+            : [];
 
         setStaff(
-          Array.isArray(data)
-            ? (data as StaffMember[])
-            : []
+          [...rows].sort(
+            (a, b) =>
+              cleanText(
+                a.full_name
+              ).localeCompare(
+                cleanText(
+                  b.full_name
+                ),
+                undefined,
+                {
+                  sensitivity:
+                    "base",
+                  numeric: true,
+                }
+              )
+          )
         );
-      } catch (caughtError) {
+      } catch (
+        caughtError
+      ) {
         console.error(
           "Unable to load staff:",
           caughtError
         );
 
         setError(
-          caughtError instanceof Error
+          caughtError instanceof
+          Error
             ? caughtError.message
             : "Unable to load staff members."
         );
@@ -112,480 +235,888 @@ export default function StaffPage() {
       }
     }, []);
 
+
   useEffect(() => {
     void loadStaff();
-  }, [loadStaff]);
+  }, [
+    loadStaff,
+  ]);
+
+
+  const roles =
+    useMemo(() => {
+      return [
+        ...new Set(
+          staff
+            .map(
+              (person) =>
+                cleanText(
+                  person.role
+                )
+            )
+            .filter(Boolean)
+        ),
+      ].sort(
+        (a, b) =>
+          a.localeCompare(
+            b,
+            undefined,
+            {
+              sensitivity:
+                "base",
+            }
+          )
+      );
+    }, [
+      staff,
+    ]);
+
 
   const filteredStaff =
     useMemo(() => {
       const query =
         normalize(search);
 
-      if (!query) {
-        return staff;
-      }
-
       return staff.filter(
         (person) => {
-          return [
-            person.full_name,
-            person.staff_code,
-            person.email,
-            person.phone,
-            person.role,
-            person.department,
-            person.license_number,
-            person.shift,
-          ].some((value) =>
-            normalize(value).includes(
-              query
-            )
-          );
-        }
-      );
-    }, [staff, search]);
+          const matchesSearch =
+            !query ||
+            [
+              person.full_name,
+              person.staff_code,
+              person.email,
+              person.phone,
+              person.role,
+              person.department,
+              person.license_number,
+              person.shift,
+            ].some(
+              (value) =>
+                normalize(
+                  value
+                ).includes(
+                  query
+                )
+            );
 
-  const statistics = useMemo(() => {
-    const activeStaff = staff.filter(
-      (person) =>
-        person.active === true
-    );
 
-    return {
-      total: staff.length,
-
-      active:
-        activeStaff.length,
-
-      nurses: activeStaff.filter(
-        (person) =>
-          normalize(person.role) ===
-          "nurse"
-      ).length,
-
-      physicians:
-        activeStaff.filter(
-          (person) =>
-            normalize(
-              person.role
-            ) === "physician"
-        ).length,
-
-      administrators:
-        activeStaff.filter(
-          (person) =>
+          const matchesRole =
+            roleFilter ===
+              "all" ||
             normalize(
               person.role
             ) ===
-            "administrator"
-        ).length,
-    };
-  }, [staff]);
+              normalize(
+                roleFilter
+              );
+
+
+          const active =
+            person.active ===
+            true;
+
+
+          const matchesStatus =
+            statusFilter ===
+              "all" ||
+            (statusFilter ===
+              "active" &&
+              active) ||
+            (statusFilter ===
+              "inactive" &&
+              !active);
+
+
+          return (
+            matchesSearch &&
+            matchesRole &&
+            matchesStatus
+          );
+        }
+      );
+    }, [
+      roleFilter,
+      search,
+      staff,
+      statusFilter,
+    ]);
+
+
+  const statistics =
+    useMemo(() => {
+      const active =
+        staff.filter(
+          (person) =>
+            person.active ===
+            true
+        );
+
+      return {
+        total:
+          staff.length,
+
+        active:
+          active.length,
+
+        nurses:
+          active.filter(
+            (person) =>
+              normalize(
+                person.role
+              ) === "nurse"
+          ).length,
+
+        physicians:
+          active.filter(
+            (person) =>
+              normalize(
+                person.role
+              ) ===
+              "physician"
+          ).length,
+
+        administrators:
+          active.filter(
+            (person) =>
+              normalize(
+                person.role
+              ) ===
+              "administrator"
+          ).length,
+      };
+    }, [
+      staff,
+    ]);
+
 
   function openEditModal(
-    person: StaffMember
+    person:
+      StaffMember
   ) {
-    setSelectedStaff(person);
+    setSelectedStaff(
+      person
+    );
+
     setEditOpen(true);
   }
 
+
   function closeAddModal() {
     setAddOpen(false);
+
     void loadStaff();
   }
+
 
   function closeEditModal() {
     setEditOpen(false);
-    setSelectedStaff(null);
+
+    setSelectedStaff(
+      null
+    );
+
     void loadStaff();
   }
 
+
+  function resetFilters() {
+    setSearch("");
+    setRoleFilter(
+      "all"
+    );
+    setStatusFilter(
+      "all"
+    );
+  }
+
+
   return (
-    <div className="min-h-screen bg-slate-100">
-      <section className="relative overflow-hidden rounded-b-[40px] bg-gradient-to-r from-green-800 via-green-700 to-green-600 shadow-2xl">
-        <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/10" />
+    <div className="min-h-[calc(100vh-119px)] bg-[#F3F2ED] text-[#1B2924]">
+      {/* HEADER */}
 
-        <div className="absolute -bottom-24 left-1/2 h-80 w-80 rounded-full bg-white/5" />
+      <section className="border-b border-[#CCD5D0] bg-white">
+        <div className="mx-auto flex max-w-[1800px] flex-col gap-3 px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+          <div>
+            <div className="flex items-center gap-2 text-[11px] text-[#72827B]">
+              <Link
+                href="/dashboard"
+                className="hover:text-[#073B2F]"
+              >
+                Home
+              </Link>
 
-        <div className="relative mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-14">
-          <div className="flex flex-col justify-between gap-10 lg:flex-row">
-            <div>
-              <span className="font-semibold uppercase tracking-[5px] text-green-100">
-                Staff Management
+              <span>/</span>
+
+              <span className="font-semibold text-[#40524B]">
+                Staff
               </span>
+            </div>
 
-              <h1 className="mt-4 text-4xl font-black text-white sm:text-5xl">
-                Healthcare Team
+            <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+              <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
+                Staff Management
               </h1>
 
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-green-100 sm:text-xl sm:leading-9">
-                Create staff accounts,
-                issue secure login codes,
-                reset passwords, and manage
-                access to La-Cura.
+              <p className="text-xs text-[#718078]">
+                Accounts, roles, credentials, and access
               </p>
             </div>
+          </div>
 
-            <div className="w-full rounded-[30px] bg-white/15 p-7 backdrop-blur-xl lg:min-w-[350px] lg:max-w-md lg:p-8">
-              <div className="grid grid-cols-2 gap-7">
-                <StaffMetric
-                  icon={faUsers}
-                  value={
-                    statistics.total
-                  }
-                  label="Total Staff"
-                />
 
-                <StaffMetric
-                  icon={faUserGear}
-                  value={
-                    statistics.administrators
-                  }
-                  label="Administrators"
-                />
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() =>
+                void loadStaff()
+              }
+              disabled={
+                loading
+              }
+              className="
+                inline-flex h-8
+                items-center gap-1.5
+                border
+                border-[#AAB8B1]
+                bg-white px-3
+                text-[10px]
+                font-bold
+                text-[#40544B]
+                hover:border-[#073B2F]
+                disabled:opacity-50
+              "
+            >
+              <RefreshCw
+                size={11}
+                className={
+                  loading
+                    ? "animate-spin"
+                    : ""
+                }
+              />
 
-                <StaffMetric
-                  icon={faShieldHalved}
-                  value={
-                    statistics.nurses
-                  }
-                  label="Nurses"
-                />
+              Refresh
+            </button>
 
-                <StaffMetric
-                  icon={faStethoscope}
-                  value={
-                    statistics.physicians
-                  }
-                  label="Physicians"
-                />
-              </div>
-            </div>
+            <Link
+              href="/settings"
+              className="
+                inline-flex h-8
+                items-center gap-1.5
+                border
+                border-[#AAB8B1]
+                bg-white px-3
+                text-[10px]
+                font-bold
+                text-[#40544B]
+                hover:border-[#073B2F]
+              "
+            >
+              <Settings
+                size={11}
+              />
+
+              Settings
+            </Link>
+
+            <button
+              type="button"
+              onClick={() =>
+                setAddOpen(
+                  true
+                )
+              }
+              className="
+                inline-flex h-8
+                items-center gap-1.5
+                border
+                border-[#063428]
+                bg-[#073B2F]
+                px-3
+                text-[10px]
+                font-bold
+                text-white
+                hover:bg-[#0D4A3A]
+              "
+            >
+              <Plus
+                size={12}
+              />
+
+              Create Staff Account
+            </button>
           </div>
         </div>
       </section>
 
-      <main className="mx-auto max-w-7xl px-6 py-10 lg:px-8">
-        <div className="mb-10 flex flex-col items-stretch justify-between gap-5 lg:flex-row lg:items-center">
-          <div className="relative w-full lg:max-w-[500px]">
-            <AppIcon
-              icon={faMagnifyingGlass}
-              className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
-            />
 
-            <input
-              type="search"
-              value={search}
-              onChange={(event) =>
-                setSearch(
-                  event.target.value
-                )
-              }
-              placeholder="Search by name, staff code, role, phone, or department..."
-              className="h-16 w-full rounded-2xl border border-gray-200 bg-white pl-14 pr-6 text-gray-900 shadow-lg outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:ring-4 focus:ring-green-100"
-            />
-          </div>
+      <main className="mx-auto max-w-[1800px] p-3 sm:p-4 lg:px-6">
+        {/* SUMMARY */}
 
-          <button
-            type="button"
-            onClick={() =>
-              setAddOpen(true)
+        <section className="mb-3 grid border border-[#CBD4D0] bg-white sm:grid-cols-5">
+          <SummaryCell
+            label="Staff Accounts"
+            value={
+              statistics.total
             }
-            className="flex h-16 items-center justify-center gap-3 rounded-2xl bg-green-700 px-8 font-bold text-white shadow-xl transition hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-200"
-          >
-            <AppIcon
-              icon={faUserPlus}
-              className="text-xl"
-            />
+          />
 
-            Create Staff Account
-          </button>
-        </div>
+          <SummaryCell
+            label="Active"
+            value={
+              statistics.active
+            }
+          />
 
-        <section className="mb-8 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-green-200 bg-green-50 px-5 py-4">
-            <p className="text-sm font-semibold text-green-700">
-              Active staff accounts
-            </p>
+          <SummaryCell
+            label="Nurses"
+            value={
+              statistics.nurses
+            }
+          />
 
-            <p className="mt-1 text-3xl font-black text-green-900">
-              {statistics.active}
-            </p>
-          </div>
+          <SummaryCell
+            label="Physicians"
+            value={
+              statistics.physicians
+            }
+          />
 
-          <div className="rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4">
-            <p className="text-sm font-semibold text-blue-700">
-              Account creation method
-            </p>
-
-            <p className="mt-1 font-black text-blue-900">
-              Staff code and temporary
-              password
-            </p>
-          </div>
+          <SummaryCell
+            label="Administrators"
+            value={
+              statistics.administrators
+            }
+          />
         </section>
 
-        {error && (
-          <div
-            role="alert"
-            className="mb-8 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 font-semibold text-red-700"
-          >
-            {error}
-          </div>
-        )}
 
-        {loading ? (
-          <div className="rounded-[30px] bg-white py-24 text-center shadow-xl">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-green-100 border-t-green-700" />
+        <section className="border border-[#C8D2CD] bg-white">
+          {/* TOOLBAR */}
 
-            <p className="mt-5 font-semibold text-gray-500">
-              Loading staff directory...
-            </p>
-          </div>
-        ) : filteredStaff.length ===
-          0 ? (
-          <div className="rounded-[30px] bg-white py-24 text-center shadow-xl">
-            <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl bg-green-100">
-              <AppIcon
-                icon={faShieldHalved}
-                className="text-5xl text-green-600"
-              />
+          <div className="border-b border-[#D8DFDB] bg-[#F8F7F2] p-2.5">
+            <div className="flex flex-col gap-2 xl:flex-row xl:items-center">
+              <div className="relative min-w-0 flex-1">
+                <Search
+                  size={14}
+                  className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6D7D76]"
+                />
+
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(
+                    event
+                  ) =>
+                    setSearch(
+                      event.target
+                        .value
+                    )
+                  }
+                  placeholder="Search name, staff code, role, department, phone, email..."
+                  className="
+                    h-8 w-full
+                    border
+                    border-[#BCC9C3]
+                    bg-white
+                    pl-8 pr-3
+                    text-xs
+                    text-[#1D2F28]
+                    outline-none
+                    placeholder:text-[#8B9892]
+                    focus:border-[#59766B]
+                    focus:ring-1
+                    focus:ring-[#59766B]/20
+                  "
+                />
+              </div>
+
+
+              <select
+                value={
+                  roleFilter
+                }
+                onChange={(
+                  event
+                ) =>
+                  setRoleFilter(
+                    event.target
+                      .value
+                  )
+                }
+                className="
+                  h-8 min-w-[155px]
+                  border
+                  border-[#BCC9C3]
+                  bg-white
+                  px-2.5
+                  text-[10px]
+                  font-semibold
+                  text-[#40544B]
+                  outline-none
+                  focus:border-[#59766B]
+                "
+              >
+                <option value="all">
+                  All Roles
+                </option>
+
+                {roles.map(
+                  (role) => (
+                    <option
+                      key={role}
+                      value={role}
+                    >
+                      {role}
+                    </option>
+                  )
+                )}
+              </select>
+
+
+              <select
+                value={
+                  statusFilter
+                }
+                onChange={(
+                  event
+                ) =>
+                  setStatusFilter(
+                    event.target
+                      .value
+                  )
+                }
+                className="
+                  h-8 min-w-[145px]
+                  border
+                  border-[#BCC9C3]
+                  bg-white
+                  px-2.5
+                  text-[10px]
+                  font-semibold
+                  text-[#40544B]
+                  outline-none
+                  focus:border-[#59766B]
+                "
+              >
+                <option value="all">
+                  All Accounts
+                </option>
+
+                <option value="active">
+                  Active
+                </option>
+
+                <option value="inactive">
+                  Inactive
+                </option>
+              </select>
+
+
+              {(search ||
+                roleFilter !==
+                  "all" ||
+                statusFilter !==
+                  "all") && (
+                <button
+                  type="button"
+                  onClick={
+                    resetFilters
+                  }
+                  className="
+                    h-8 border
+                    border-[#BCC9C3]
+                    bg-white px-3
+                    text-[10px]
+                    font-bold
+                    text-[#52645C]
+                    hover:bg-[#F2F4F2]
+                  "
+                >
+                  Reset
+                </button>
+              )}
             </div>
-
-            <h2 className="mt-8 text-3xl font-black text-gray-900">
-              No Staff Found
-            </h2>
-
-            <p className="mt-4 text-lg text-gray-500">
-              No staff members match the
-              current search.
-            </p>
           </div>
-        ) : (
-          <div className="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
-            {filteredStaff.map(
-              (person) => {
-                const isActive =
-                  person.active ===
-                  true;
 
-                return (
-                  <article
-                    key={person.id}
-                    className="group overflow-hidden rounded-[30px] bg-white shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
-                  >
-                    <div
-                      className={`h-2 ${
-                        isActive
-                          ? "bg-green-600"
-                          : "bg-red-500"
-                      }`}
-                    />
 
-                    <div className="p-7">
-                      <div className="flex min-w-0 items-center gap-5">
-                        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-green-700 to-green-500 text-3xl font-black text-white">
-                          {person.full_name
-                            ?.trim()
-                            .charAt(0)
-                            .toUpperCase() ||
-                            "S"}
-                        </div>
+          <div className="flex items-center justify-between border-b border-[#D8DFDB] bg-[#FBFAF7] px-3 py-1.5 text-[10px]">
+            <span className="text-[#607169]">
+              Showing{" "}
+              <strong className="text-[#263A32]">
+                {
+                  filteredStaff.length
+                }
+              </strong>{" "}
+              staff account
+              {filteredStaff.length ===
+              1
+                ? ""
+                : "s"}
+            </span>
 
-                        <div className="min-w-0">
-                          <h2 className="truncate text-2xl font-black text-gray-900">
-                            {
-                              person.full_name
-                            }
-                          </h2>
+            <span className="font-semibold text-[#7D6A35]">
+              A–Z Staff Directory
+            </span>
+          </div>
 
-                          <div className="mt-2 flex min-w-0 items-center gap-2 text-green-700">
-                            <AppIcon
-                              icon={
-                                faIdCard
-                              }
-                              className="shrink-0 text-sm"
-                            />
 
-                            <span className="truncate font-mono text-sm font-bold tracking-wide">
-                              {
-                                person.staff_code
-                              }
-                            </span>
-                          </div>
-                        </div>
-                      </div>
+          {error && (
+            <div className="border-b border-red-200 bg-red-50 px-3 py-2 text-[10px] font-semibold text-red-700">
+              {error}
+            </div>
+          )}
 
-                      <div className="mt-6 space-y-3">
-                        {person.phone && (
-                          <StaffDetail
-                            icon={faPhone}
-                            value={
-                              person.phone
-                            }
-                          />
-                        )}
 
-                        {person.email && (
-                          <StaffDetail
-                            icon={
-                              faEnvelope
-                            }
-                            value={
-                              person.email
-                            }
-                          />
-                        )}
+          {loading ? (
+            <div className="flex min-h-[260px] items-center justify-center">
+              <div className="text-center">
+                <LoaderCircle
+                  size={22}
+                  className="mx-auto animate-spin text-[#073B2F]"
+                />
 
-                        {person.department && (
-                          <StaffDetail
-                            icon={
-                              faBuilding
-                            }
-                            value={
-                              person.department
-                            }
-                          />
-                        )}
-                      </div>
+                <p className="mt-2 text-[10px] font-semibold text-[#65756D]">
+                  Loading staff directory...
+                </p>
+              </div>
+            </div>
+          ) : filteredStaff.length >
+            0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[1550px] border-collapse text-left">
+                <thead>
+                  <tr className="bg-[#E8EEEA] text-[10px] font-bold uppercase tracking-[0.035em] text-[#354A41]">
+                    <ClinicalHead>
+                      Staff Member
+                    </ClinicalHead>
 
-                      <div className="mt-7 flex flex-wrap items-center justify-between gap-3">
-                        <span className="rounded-full bg-blue-100 px-4 py-2 font-semibold text-blue-700">
-                          {person.role}
-                        </span>
+                    <ClinicalHead>
+                      Staff Code
+                    </ClinicalHead>
 
-                        <span
-                          className={`rounded-full px-4 py-2 font-semibold ${
-                            isActive
-                              ? "bg-green-100 text-green-700"
-                              : "bg-red-100 text-red-700"
-                          }`}
-                        >
-                          {isActive
-                            ? "Active"
-                            : "Inactive"}
-                        </span>
-                      </div>
+                    <ClinicalHead>
+                      Role
+                    </ClinicalHead>
 
-                      {person.must_change_password && (
-                        <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
-                          Temporary password
-                          active — password
-                          change required
-                        </div>
-                      )}
+                    <ClinicalHead>
+                      Department
+                    </ClinicalHead>
 
-                      <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            openEditModal(
-                              person
-                            )
-                          }
-                          className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 font-semibold text-white transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200"
-                        >
-                          <AppIcon
-                            icon={
-                              faPenToSquare
-                            }
-                          />
+                    <ClinicalHead>
+                      Contact
+                    </ClinicalHead>
 
-                          Edit
-                        </button>
+                    <ClinicalHead>
+                      Shift
+                    </ClinicalHead>
 
-                        <ResetPasswordButton
-                          staffId={
+                    <ClinicalHead>
+                      License
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Employment
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Credentials
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Status
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Actions
+                    </ClinicalHead>
+                  </tr>
+                </thead>
+
+
+                <tbody>
+                  {filteredStaff.map(
+                    (
+                      person,
+                      index
+                    ) => {
+                      const active =
+                        person.active ===
+                        true;
+
+                      return (
+                        <tr
+                          key={
                             person.id
                           }
-                          fullName={
-                            person.full_name
-                          }
-                          staffCode={
-                            person.staff_code
-                          }
-                        />
-                      </div>
+                          className={`
+                            border-b
+                            border-[#E1E6E3]
+                            align-top
+                            text-[11px]
 
-                      <div className="mt-3">
-                        <DeactivateStaffButton
-                          id={person.id}
-                          active={
-                            isActive
-                          }
-                        />
-                      </div>
-                    </div>
-                  </article>
-                );
-              }
-            )}
+                            ${
+                              index %
+                                2 ===
+                              0
+                                ? "bg-white"
+                                : "bg-[#FAFAF7]"
+                            }
+
+                            hover:bg-[#FFFDF7]
+                          `}
+                        >
+                          <td className="min-w-[210px] px-3 py-2">
+                            <p className="font-bold text-[#263A32]">
+                              {cleanText(
+                                person.full_name
+                              ) ||
+                                "Staff Member"}
+                            </p>
+
+                            {person.email && (
+                              <p className="mt-0.5 truncate text-[9px] text-[#74837C]">
+                                {
+                                  person.email
+                                }
+                              </p>
+                            )}
+                          </td>
+
+                          <td className="px-3 py-2 font-mono text-[10px] font-bold text-[#073B2F]">
+                            {cleanText(
+                              person.staff_code
+                            ) ||
+                              "—"}
+                          </td>
+
+                          <td className="px-3 py-2">
+                            <span className="inline-flex border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[9px] font-bold text-blue-700">
+                              {cleanText(
+                                person.role
+                              ) ||
+                                "Staff"}
+                            </span>
+                          </td>
+
+                          <td className="px-3 py-2 text-[#506159]">
+                            {cleanText(
+                              person.department
+                            ) ||
+                              "—"}
+                          </td>
+
+                          <td className="min-w-[180px] px-3 py-2 text-[#506159]">
+                            <p>
+                              {cleanText(
+                                person.phone
+                              ) ||
+                                "—"}
+                            </p>
+
+                            {person.phone &&
+                              person.email && (
+                                <p className="mt-0.5 truncate text-[9px] text-[#7A8982]">
+                                  {
+                                    person.email
+                                  }
+                                </p>
+                              )}
+                          </td>
+
+                          <td className="px-3 py-2 text-[#506159]">
+                            {cleanText(
+                              person.shift
+                            ) ||
+                              "—"}
+                          </td>
+
+                          <td className="px-3 py-2 text-[#506159]">
+                            {cleanText(
+                              person.license_number
+                            ) ||
+                              "—"}
+                          </td>
+
+                          <td className="whitespace-nowrap px-3 py-2 text-[#607169]">
+                            {formatDate(
+                              person.employment_date
+                            )}
+                          </td>
+
+                          <td className="px-3 py-2">
+                            {person.must_change_password ? (
+                              <span className="inline-flex border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold text-amber-800">
+                                Password Change Required
+                              </span>
+                            ) : (
+                              <span className="inline-flex border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800">
+                                Credentials Current
+                              </span>
+                            )}
+                          </td>
+
+                          <td className="px-3 py-2">
+                            <span
+                              className={`
+                                inline-flex border
+                                px-1.5 py-0.5
+                                text-[9px]
+                                font-bold
+
+                                ${
+                                  active
+                                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                                    : "border-red-200 bg-red-50 text-red-700"
+                                }
+                              `}
+                            >
+                              {active
+                                ? "Active"
+                                : "Inactive"}
+                            </span>
+                          </td>
+
+                          <td className="min-w-[340px] px-3 py-1.5">
+                            <div
+                              className="
+                                flex flex-wrap
+                                items-center
+                                gap-1
+
+                                [&_button]:!min-h-7
+                                [&_button]:!rounded-[3px]
+                                [&_button]:!px-2.5
+                                [&_button]:!py-1
+                                [&_button]:!text-[10px]
+                                [&_button]:!font-bold
+                                [&_button]:!shadow-none
+                              "
+                            >
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  openEditModal(
+                                    person
+                                  )
+                                }
+                                className="
+                                  border
+                                  border-blue-200
+                                  bg-blue-50
+                                  text-blue-700
+                                  hover:bg-blue-100
+                                "
+                              >
+                                Edit
+                              </button>
+
+                              <ResetPasswordButton
+                                staffId={
+                                  person.id
+                                }
+                                fullName={
+                                  person.full_name
+                                }
+                                staffCode={
+                                  person.staff_code
+                                }
+                              />
+
+                              <DeactivateStaffButton
+                                id={
+                                  person.id
+                                }
+                                active={
+                                  active
+                                }
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  )}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="px-6 py-12 text-center">
+              <p className="text-[12px] font-semibold text-[#30443B]">
+                No staff accounts match the selected filters.
+              </p>
+
+              <button
+                type="button"
+                onClick={
+                  resetFilters
+                }
+                className="mt-2 text-[10px] font-bold text-[#073B2F] underline"
+              >
+                Reset filters
+              </button>
+            </div>
+          )}
+
+
+          <div className="border-t border-[#D1D9D5] bg-[#F8F7F2] px-3 py-2 text-[10px] text-[#607169]">
+            Staff accounts are displayed alphabetically by staff member name.
           </div>
-        )}
+        </section>
       </main>
+
 
       <AddStaffModal
         open={addOpen}
-        onClose={closeAddModal}
+        onClose={
+          closeAddModal
+        }
       />
 
       <EditStaffModal
         open={editOpen}
-        onClose={closeEditModal}
-        staff={selectedStaff}
+        onClose={
+          closeEditModal
+        }
+        staff={
+          selectedStaff
+        }
       />
     </div>
   );
 }
 
-type StaffMetricProps = {
-  icon: IconDefinition;
-  value: number;
-  label: string;
-};
 
-function StaffMetric({
-  icon,
-  value,
+function SummaryCell({
   label,
-}: StaffMetricProps) {
-  return (
-    <div>
-      <AppIcon
-        icon={icon}
-        className="mb-3 text-3xl text-white"
-      />
-
-      <p className="text-4xl font-black text-white">
-        {value}
-      </p>
-
-      <p className="mt-1 text-green-100">
-        {label}
-      </p>
-    </div>
-  );
-}
-
-type StaffDetailProps = {
-  icon: IconDefinition;
-  value: string;
-};
-
-function StaffDetail({
-  icon,
   value,
-}: StaffDetailProps) {
+}: {
+  label: string;
+  value: number;
+}) {
   return (
-    <div className="flex min-w-0 items-center gap-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
-      <AppIcon
-        icon={icon}
-        className="shrink-0 text-green-700"
-      />
-
-      <span className="truncate">
+    <div className="flex items-center gap-3 border-b border-[#D8DFDB] px-3 py-2.5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
+      <span className="text-[20px] font-bold text-[#073B2F]">
         {value}
       </span>
+
+      <span className="text-[10px] font-semibold uppercase tracking-[0.04em] text-[#6D7D76]">
+        {label}
+      </span>
     </div>
+  );
+}
+
+
+function ClinicalHead({
+  children,
+}: {
+  children:
+    ReactNode;
+}) {
+  return (
+    <th className="border-r border-[#D2DBD6] px-3 py-2 last:border-r-0">
+      {children}
+    </th>
   );
 }
