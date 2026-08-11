@@ -74,3 +74,497 @@ body {
   }
 
 }
+
+/* LA-CURA ROLE THEMING START */
+
+/* ==========================================================
+   DEFAULT / LOADING THEME
+   ========================================================== */
+
+.role-theme-shell {
+  --role-50: #f8fafc;
+  --role-100: #f1f5f9;
+  --role-200: #e2e8f0;
+  --role-300: #cbd5e1;
+
+  --role-600: #475569;
+  --role-700: #334155;
+  --role-800: #1e293b;
+  --role-900: #0f172a;
+
+  --role-surface: #f4f6f7;
+  --role-accent: #64748b;
+
+  background:
+    var(--role-surface);
+
+  transition:
+    background-color 250ms ease;
+}
+
+
+/* ==========================================================
+   ADMINISTRATOR
+   Forest + Ivory + Gold
+   ========================================================== */
+
+.role-theme-shell[
+  data-lacura-role-theme="administrator"
+] {
+  --role-50: #faf8f1;
+  --role-100: #f3eee0;
+  --role-200: #e5d7aa;
+  --role-300: #d5b85c;
+
+  --role-600: #0d5946;
+  --role-700: #073b2f;
+  --role-800: #052e25;
+  --role-900: #031f19;
+
+  --role-surface: #f7f5ef;
+  --role-accent: #d5a437;
+}
+
+
+/* ==========================================================
+   NURSE
+   Clinical Emerald + Sage
+   ========================================================== */
+
+.role-theme-shell[
+  data-lacura-role-theme="nurse"
+] {
+  --role-50: #ecfdf5;
+  --role-100: #d1fae5;
+  --role-200: #a7f3d0;
+  --role-300: #6ee7b7;
+
+  --role-600: #059669;
+  --role-700: #047857;
+  --role-800: #065f46;
+  --role-900: #064e3b;
+
+  --role-surface: #f3faf6;
+  --role-accent: #10b981;
+}
+
+
+/* ==========================================================
+   PHYSICIAN
+   Deep Teal + Clinical Aqua
+   ========================================================== */
+
+.role-theme-shell[
+  data-lacura-role-theme="physician"
+] {
+  --role-50: #ecfeff;
+  --role-100: #cffafe;
+  --role-200: #a5f3fc;
+  --role-300: #67e8f9;
+
+  --role-600: #0f766e;
+  --role-700: #115e59;
+  --role-800: #134e4a;
+  --role-900: #0f3d3a;
+
+  --role-surface: #f1f8f8;
+  --role-accent: #2dd4bf;
+}
+
+
+/* ==========================================================
+   APP BACKGROUNDS
+   ========================================================== */
+
+[data-lacura-role-theme]
+.bg-gray-100,
+
+[data-lacura-role-theme]
+.bg-slate-100 {
+  background-color:
+    var(--role-surface)
+    !important;
+}
+
+
+/* ==========================================================
+   PRIMARY BACKGROUND COLORS
+   ========================================================== */
+
+[data-lacura-role-theme]
+.bg-green-50 {
+  background-color:
+    var(--role-50)
+    !important;
+}
+
+[data-lacura-role-theme]
+.bg-green-100 {
+  background-color:
+    var(--role-100)
+    !important;
+}
+
+[data-lacura-role-theme]
+.bg-green-600 {
+  background-color:
+    var(--role-600)
+    !important;
+}
+
+[data-lacura-role-theme]
+.bg-green-700 {
+  background-color:
+    var(--role-700)
+    !important;
+}
+
+[data-lacura-role-theme]
+.bg-green-800 {
+  background-color:
+    var(--role-800)
+    !important;
+}
+
+[data-lacura-role-theme]
+.bg-green-900 {
+  background-color:
+    var(--role-900)
+    !important;
+}
+
+
+/* ==========================================================
+   PRIMARY TEXT COLORS
+   ========================================================== */
+
+[data-lacura-role-theme]
+.text-green-50 {
+  color:
+    var(--role-50)
+    !important;
+}
+
+[data-lacura-role-theme]
+.text-green-100 {
+  color:
+    var(--role-100)
+    !important;
+}
+
+[data-lacura-role-theme]
+.text-green-200 {
+  color:
+    var(--role-200)
+    !important;
+}
+
+[data-lacura-role-theme]
+.text-green-600 {
+  color:
+    var(--role-600)
+    !important;
+}
+
+[data-lacura-role-theme]
+.text-green-700 {
+  color:
+    var(--role-700)
+    !important;
+}
+
+[data-lacura-role-theme]
+.text-green-800 {
+  color:
+    var(--role-800)
+    !important;
+}
+
+[data-lacura-role-theme]
+.text-green-900 {
+  color:
+    var(--role-900)
+    !important;
+}
+
+
+/* ==========================================================
+   BORDERS
+   ========================================================== */
+
+[data-lacura-role-theme]
+.border-green-100 {
+  border-color:
+    var(--role-100)
+    !important;
+}
+
+[data-lacura-role-theme]
+.border-green-200 {
+  border-color:
+    var(--role-200)
+    !important;
+}
+
+[data-lacura-role-theme]
+.border-green-300 {
+  border-color:
+    var(--role-300)
+    !important;
+}
+
+[data-lacura-role-theme]
+.border-green-600 {
+  border-color:
+    var(--role-600)
+    !important;
+}
+
+[data-lacura-role-theme]
+.border-green-700 {
+  border-color:
+    var(--role-700)
+    !important;
+}
+
+
+/* ==========================================================
+   HOVERS
+   ========================================================== */
+
+[data-lacura-role-theme]
+.hover\:bg-green-50:hover {
+  background-color:
+    var(--role-50)
+    !important;
+}
+
+[data-lacura-role-theme]
+.hover\:bg-green-100:hover {
+  background-color:
+    var(--role-100)
+    !important;
+}
+
+[data-lacura-role-theme]
+.hover\:bg-green-700:hover {
+  background-color:
+    var(--role-700)
+    !important;
+}
+
+[data-lacura-role-theme]
+.hover\:bg-green-800:hover {
+  background-color:
+    var(--role-800)
+    !important;
+}
+
+[data-lacura-role-theme]
+.hover\:text-green-700:hover {
+  color:
+    var(--role-700)
+    !important;
+}
+
+[data-lacura-role-theme]
+.hover\:text-green-800:hover {
+  color:
+    var(--role-800)
+    !important;
+}
+
+[data-lacura-role-theme]
+.hover\:border-green-300:hover {
+  border-color:
+    var(--role-300)
+    !important;
+}
+
+[data-lacura-role-theme]
+.hover\:border-green-400:hover {
+  border-color:
+    var(--role-300)
+    !important;
+}
+
+
+/* ==========================================================
+   INPUT FOCUS STATES
+   ========================================================== */
+
+[data-lacura-role-theme]
+.focus\:border-green-600:focus {
+  border-color:
+    var(--role-600)
+    !important;
+}
+
+[data-lacura-role-theme]
+.focus\:ring-green-100:focus {
+  --tw-ring-color:
+    color-mix(
+      in srgb,
+      var(--role-100) 85%,
+      transparent
+    )
+    !important;
+}
+
+
+/* ==========================================================
+   LA-CURA HEADER GRADIENTS
+
+   Existing:
+   from-green-800
+   via-green-700
+   to-green-600
+
+   automatically becomes the staff theme.
+   ========================================================== */
+
+[data-lacura-role-theme]
+.from-green-800 {
+  --tw-gradient-from:
+    var(--role-800)
+    !important;
+}
+
+[data-lacura-role-theme]
+.via-green-700 {
+  --tw-gradient-via:
+    var(--role-700)
+    !important;
+}
+
+[data-lacura-role-theme]
+.to-green-600 {
+  --tw-gradient-to:
+    var(--role-600)
+    !important;
+}
+
+
+/* ==========================================================
+   SPECIFIC COMMON GRADIENT FALLBACK
+   ========================================================== */
+
+[data-lacura-role-theme]
+.bg-gradient-to-r.from-green-800.via-green-700.to-green-600 {
+  background-image:
+    linear-gradient(
+      to right,
+      var(--role-800),
+      var(--role-700),
+      var(--role-600)
+    )
+    !important;
+}
+
+
+/* ==========================================================
+   SELECTION
+   ========================================================== */
+
+[data-lacura-role-theme]
+::selection {
+  background:
+    var(--role-200);
+
+  color:
+    var(--role-900);
+}
+
+
+/* ==========================================================
+   SMOOTH THEME TRANSITIONS
+
+   Deliberately excludes clinical warning colors:
+   red, amber, orange.
+   ========================================================== */
+
+[data-lacura-role-theme]
+.bg-green-50,
+
+[data-lacura-role-theme]
+.bg-green-100,
+
+[data-lacura-role-theme]
+.bg-green-600,
+
+[data-lacura-role-theme]
+.bg-green-700,
+
+[data-lacura-role-theme]
+.bg-green-800,
+
+[data-lacura-role-theme]
+.text-green-600,
+
+[data-lacura-role-theme]
+.text-green-700,
+
+[data-lacura-role-theme]
+.text-green-800,
+
+[data-lacura-role-theme]
+.border-green-200,
+
+[data-lacura-role-theme]
+.border-green-300,
+
+[data-lacura-role-theme]
+.border-green-600,
+
+[data-lacura-role-theme]
+.border-green-700 {
+  transition:
+    background-color 220ms ease,
+    color 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+
+/* ==========================================================
+   ADMINISTRATOR PREMIUM GOLD DETAILS
+
+   Gold remains a small accent.
+   ========================================================== */
+
+.role-theme-shell[
+  data-lacura-role-theme="administrator"
+]
+.text-green-200 {
+  color:
+    var(--role-accent)
+    !important;
+}
+
+.role-theme-shell[
+  data-lacura-role-theme="administrator"
+]
+.border-green-300 {
+  border-color:
+    color-mix(
+      in srgb,
+      var(--role-accent) 65%,
+      white
+    )
+    !important;
+}
+
+
+/* ==========================================================
+   IMPORTANT:
+   We do NOT override:
+   - red
+   - amber
+   - orange
+   - yellow
+
+   Clinical alerts therefore retain the same meaning
+   for Administrator, Nurse, and Physician.
+   ========================================================== */
+
+/* LA-CURA ROLE THEMING END */
