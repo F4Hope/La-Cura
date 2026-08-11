@@ -1,32 +1,44 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
-import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import type {
+  LucideIcon,
+} from "lucide-react";
+
 import {
-  faCalendarDays,
-  faChartColumn,
-  faChartLine,
-  faChevronRight,
-  faCircleCheck,
-  faClipboardCheck,
-  faDownload,
-  faFileLines,
-  faHeartPulse,
-  faMagnifyingGlass,
-  faPills,
-  faShieldHalved,
-  faSpinner,
-  faStethoscope,
-  faUserCheck,
-  faUsers,
-  faXmark,
-} from "@fortawesome/free-solid-svg-icons";
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
+import {
+  CalendarDays,
+  ChartColumn,
+  CheckCircle2,
+  ChevronRight,
+  ClipboardCheck,
+  Download,
+  FileText,
+  HeartPulse,
+  LoaderCircle,
+  Pill,
+  Search,
+  ShieldCheck,
+  Stethoscope,
+  UserCheck,
+  Users,
+  X,
+} from "lucide-react";
+
+import Link from "next/link";
+
+import {
+  createPortal,
+} from "react-dom";
 
 import ResidentClinicalReportModal, {
   type ResidentReportGeneratedData,
 } from "@/components/reports/ResidentClinicalReportModal";
-import AppIcon from "@/components/ui/AppIcon";
+
 
 type ReportCategory =
   | "All"
@@ -36,241 +48,392 @@ type ReportCategory =
   | "Compliance"
   | "Operational";
 
+
 type ReportDefinition = {
   id: string;
   name: string;
   description: string;
-  category: Exclude<ReportCategory, "All">;
-  icon: IconDefinition;
-  iconClass: string;
-  iconBackground: string;
+
+  category:
+    Exclude<
+      ReportCategory,
+      "All"
+    >;
+
+  icon: LucideIcon;
 };
+
 
 type RecentReport = {
   id: string;
   name: string;
-  category: Exclude<ReportCategory, "All">;
+
+  category:
+    Exclude<
+      ReportCategory,
+      "All"
+    >;
+
   dateRange: string;
-  format: "PDF" | "CSV";
+
+  format:
+    | "PDF"
+    | "CSV";
+
   generatedAt: string;
   generatedBy: string;
   status: "Ready";
 };
 
-type SummaryCard = {
-  label: string;
-  value: number;
-  detail: string;
-  icon: IconDefinition;
-  iconClass: string;
-  iconBackground: string;
-};
 
-const reportCategories: ReportCategory[] = [
-  "All",
-  "Clinical",
-  "Medication",
-  "Resident",
-  "Compliance",
-  "Operational",
-];
+const reportCategories:
+  ReportCategory[] = [
+    "All",
+    "Clinical",
+    "Medication",
+    "Resident",
+    "Compliance",
+    "Operational",
+  ];
 
-const reportDefinitions: ReportDefinition[] = [
-  {
-    id: "resident-clinical-summary",
-    name: "Resident Clinical Summary",
-    description:
-      "Download a branded La-Cura PDF containing resident information and clinical history.",
-    category: "Clinical",
-    icon: faStethoscope,
-    iconClass: "text-green-700",
-    iconBackground: "bg-green-50",
-  },
-  {
-    id: "medication-administration",
-    name: "Medication Administration Record",
-    description:
-      "Review administered, held, refused, missed, and overdue medication entries.",
-    category: "Medication",
-    icon: faPills,
-    iconClass: "text-orange-700",
-    iconBackground: "bg-orange-50",
-  },
-  {
-    id: "medication-exceptions",
-    name: "Medication Exception Report",
-    description:
-      "Identify medication refusals, holds, omissions, and documentation exceptions.",
-    category: "Medication",
-    icon: faClipboardCheck,
-    iconClass: "text-rose-700",
-    iconBackground: "bg-rose-50",
-  },
-  {
-    id: "resident-census",
-    name: "Resident Census Report",
-    description:
-      "View active residents, admission information, room assignments, and status.",
-    category: "Resident",
-    icon: faUsers,
-    iconClass: "text-emerald-700",
-    iconBackground: "bg-emerald-50",
-  },
-  {
-    id: "vitals-summary",
-    name: "Vitals Summary Report",
-    description:
-      "Review blood pressure, pulse, respirations, oxygen saturation, and temperature.",
-    category: "Clinical",
-    icon: faHeartPulse,
-    iconClass: "text-red-700",
-    iconBackground: "bg-red-50",
-  },
-  {
-    id: "appointments",
-    name: "Appointment Schedule",
-    description:
-      "View upcoming, completed, cancelled, and missed resident appointments.",
-    category: "Operational",
-    icon: faCalendarDays,
-    iconClass: "text-purple-700",
-    iconBackground: "bg-purple-50",
-  },
-  {
-    id: "staff-activity",
-    name: "Staff Activity Report",
-    description:
-      "Review clinical documentation and system activity completed by staff.",
-    category: "Operational",
-    icon: faUserCheck,
-    iconClass: "text-cyan-700",
-    iconBackground: "bg-cyan-50",
-  },
-  {
-    id: "compliance-audit",
-    name: "Compliance Audit Report",
-    description:
-      "Review required documentation, incomplete records, and compliance exceptions.",
-    category: "Compliance",
-    icon: faShieldHalved,
-    iconClass: "text-indigo-700",
-    iconBackground: "bg-indigo-50",
-  },
-  {
-    id: "incident-summary",
-    name: "Incident Summary Report",
-    description:
-      "Review resident incidents, severity, follow-up actions, and resolution status.",
-    category: "Compliance",
-    icon: faChartColumn,
-    iconClass: "text-amber-700",
-    iconBackground: "bg-amber-50",
-  },
-];
 
-const summaryCards: SummaryCard[] = [
-  {
-    label: "Residents",
-    value: 1,
-    detail: "Active residents",
-    icon: faUsers,
-    iconClass: "text-green-700",
-    iconBackground: "bg-green-100",
-  },
-  {
-    label: "Staff",
-    value: 0,
-    detail: "Active staff members",
-    icon: faUserCheck,
-    iconClass: "text-blue-700",
-    iconBackground: "bg-blue-100",
-  },
-  {
-    label: "Medications",
-    value: 3,
-    detail: "Active medication orders",
-    icon: faPills,
-    iconClass: "text-orange-700",
-    iconBackground: "bg-orange-100",
-  },
-  {
-    label: "Appointments",
-    value: 0,
-    detail: "Upcoming appointments",
-    icon: faCalendarDays,
-    iconClass: "text-purple-700",
-    iconBackground: "bg-purple-100",
-  },
-];
+const reportDefinitions:
+  ReportDefinition[] = [
+    {
+      id:
+        "resident-clinical-summary",
 
-function formatGeneratedDate(): string {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(new Date());
+      name:
+        "Resident Clinical Summary",
+
+      description:
+        "Resident demographics and available clinical history in a La-Cura PDF.",
+
+      category:
+        "Clinical",
+
+      icon:
+        Stethoscope,
+    },
+
+    {
+      id:
+        "medication-administration",
+
+      name:
+        "Medication Administration Record",
+
+      description:
+        "Administration, hold, refusal, missed-dose, and medication-status review.",
+
+      category:
+        "Medication",
+
+      icon:
+        Pill,
+    },
+
+    {
+      id:
+        "medication-exceptions",
+
+      name:
+        "Medication Exception Report",
+
+      description:
+        "Medication refusals, holds, omissions, and documentation exceptions.",
+
+      category:
+        "Medication",
+
+      icon:
+        ClipboardCheck,
+    },
+
+    {
+      id:
+        "resident-census",
+
+      name:
+        "Resident Census Report",
+
+      description:
+        "Resident status, admission information, room assignment, and census review.",
+
+      category:
+        "Resident",
+
+      icon:
+        Users,
+    },
+
+    {
+      id:
+        "vitals-summary",
+
+      name:
+        "Vitals Summary Report",
+
+      description:
+        "Blood pressure, pulse, respirations, oxygen saturation, temperature, and pain review.",
+
+      category:
+        "Clinical",
+
+      icon:
+        HeartPulse,
+    },
+
+    {
+      id:
+        "appointments",
+
+      name:
+        "Appointment Schedule",
+
+      description:
+        "Scheduled, completed, cancelled, and missed resident appointments.",
+
+      category:
+        "Operational",
+
+      icon:
+        CalendarDays,
+    },
+
+    {
+      id:
+        "staff-activity",
+
+      name:
+        "Staff Activity Report",
+
+      description:
+        "Clinical documentation and system activity recorded by staff.",
+
+      category:
+        "Operational",
+
+      icon:
+        UserCheck,
+    },
+
+    {
+      id:
+        "compliance-audit",
+
+      name:
+        "Compliance Audit Report",
+
+      description:
+        "Required documentation, incomplete records, and identified compliance exceptions.",
+
+      category:
+        "Compliance",
+
+      icon:
+        ShieldCheck,
+    },
+
+    {
+      id:
+        "incident-summary",
+
+      name:
+        "Incident Summary Report",
+
+      description:
+        "Resident incidents, severity, follow-up actions, and resolution status.",
+
+      category:
+        "Compliance",
+
+      icon:
+        ChartColumn,
+    },
+  ];
+
+
+function formatGeneratedDate() {
+  return new Intl.DateTimeFormat(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }
+  ).format(
+    new Date()
+  );
 }
 
+
 export default function ReportsPage() {
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] =
-    useState<ReportCategory>("All");
-  const [selectedReport, setSelectedReport] =
-    useState<ReportDefinition | null>(null);
-  const [residentReportOpen, setResidentReportOpen] =
-    useState(false);
-  const [recentReports, setRecentReports] =
-    useState<RecentReport[]>([]);
+  const [
+    search,
+    setSearch,
+  ] = useState("");
 
-  const filteredReports = useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase();
+  const [
+    activeCategory,
+    setActiveCategory,
+  ] =
+    useState<ReportCategory>(
+      "All"
+    );
 
-    return reportDefinitions.filter((report) => {
-      const matchesCategory =
-        activeCategory === "All" || report.category === activeCategory;
+  const [
+    selectedReport,
+    setSelectedReport,
+  ] =
+    useState<ReportDefinition | null>(
+      null
+    );
 
-      const matchesSearch =
-        !normalizedSearch ||
-        report.name.toLowerCase().includes(normalizedSearch) ||
-        report.description.toLowerCase().includes(normalizedSearch) ||
-        report.category.toLowerCase().includes(normalizedSearch);
+  const [
+    residentReportOpen,
+    setResidentReportOpen,
+  ] = useState(false);
 
-      return matchesCategory && matchesSearch;
-    });
-  }, [activeCategory, search]);
+  const [
+    recentReports,
+    setRecentReports,
+  ] =
+    useState<RecentReport[]>(
+      []
+    );
 
-  function handleReportCreated(report: RecentReport) {
-    setRecentReports((currentReports) => [report, ...currentReports]);
+
+  const filteredReports =
+    useMemo(() => {
+      const query =
+        search
+          .trim()
+          .toLowerCase();
+
+      return reportDefinitions.filter(
+        (report) => {
+          const matchesCategory =
+            activeCategory ===
+              "All" ||
+            report.category ===
+              activeCategory;
+
+          const matchesSearch =
+            !query ||
+            report.name
+              .toLowerCase()
+              .includes(query) ||
+            report.description
+              .toLowerCase()
+              .includes(query) ||
+            report.category
+              .toLowerCase()
+              .includes(query);
+
+          return (
+            matchesCategory &&
+            matchesSearch
+          );
+        }
+      );
+    }, [
+      activeCategory,
+      search,
+    ]);
+
+
+  const clinicalCount =
+    reportDefinitions.filter(
+      (report) =>
+        report.category ===
+        "Clinical"
+    ).length;
+
+
+  const complianceCount =
+    reportDefinitions.filter(
+      (report) =>
+        report.category ===
+        "Compliance"
+    ).length;
+
+
+  function handleReportCreated(
+    report:
+      RecentReport
+  ) {
+    setRecentReports(
+      (
+        currentReports
+      ) => [
+        report,
+        ...currentReports,
+      ]
+    );
   }
+
 
   function handleResidentReportGenerated(
-    data: ResidentReportGeneratedData
+    data:
+      ResidentReportGeneratedData
   ) {
     handleReportCreated({
-      id: `resident-report-${Date.now()}`,
-      name: `${data.residentName} Clinical Summary`,
-      category: "Clinical",
-      dateRange: data.reportingPeriod,
-      format: "PDF",
-      generatedAt: formatGeneratedDate(),
-      generatedBy: "La-Cura Staff",
-      status: "Ready",
+      id:
+        `resident-report-${Date.now()}`,
+
+      name:
+        `${data.residentName} Clinical Summary`,
+
+      category:
+        "Clinical",
+
+      dateRange:
+        data.reportingPeriod,
+
+      format:
+        "PDF",
+
+      generatedAt:
+        formatGeneratedDate(),
+
+      generatedBy:
+        "La-Cura Staff",
+
+      status:
+        "Ready",
     });
   }
 
-  function openReport(report: ReportDefinition) {
-    if (report.id === "resident-clinical-summary") {
-      setResidentReportOpen(true);
+
+  function openReport(
+    report:
+      ReportDefinition
+  ) {
+    if (
+      report.id ===
+      "resident-clinical-summary"
+    ) {
+      setResidentReportOpen(
+        true
+      );
+
       return;
     }
 
-    setSelectedReport(report);
+    setSelectedReport(
+      report
+    );
   }
 
+
   function exportReportHistory() {
-    if (recentReports.length === 0) {
+    if (
+      recentReports.length ===
+      0
+    ) {
       return;
     }
 
@@ -284,319 +447,589 @@ export default function ReportsPage() {
       "Status",
     ];
 
-    const rows = recentReports.map((report) => [
-      report.name,
-      report.category,
-      report.dateRange,
-      report.format,
-      report.generatedAt,
-      report.generatedBy,
-      report.status,
-    ]);
+    const rows =
+      recentReports.map(
+        (report) => [
+          report.name,
+          report.category,
+          report.dateRange,
+          report.format,
+          report.generatedAt,
+          report.generatedBy,
+          report.status,
+        ]
+      );
 
-    const csv = [headings, ...rows]
-      .map((row) =>
-        row
-          .map((cell) => `"${String(cell).replaceAll('"', '""')}"`)
-          .join(",")
+    const csv = [
+      headings,
+      ...rows,
+    ]
+      .map(
+        (row) =>
+          row
+            .map(
+              (cell) =>
+                `"${String(
+                  cell
+                ).replaceAll(
+                  '"',
+                  '""'
+                )}"`
+            )
+            .join(",")
       )
       .join("\n");
 
-    const blob = new Blob([csv], {
-      type: "text/csv;charset=utf-8",
-    });
+    const blob =
+      new Blob(
+        [csv],
+        {
+          type:
+            "text/csv;charset=utf-8",
+        }
+      );
 
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
+    const url =
+      URL.createObjectURL(
+        blob
+      );
 
-    anchor.href = url;
-    anchor.download = "la-cura-report-history.csv";
+    const anchor =
+      document.createElement(
+        "a"
+      );
 
-    document.body.appendChild(anchor);
+    anchor.href =
+      url;
+
+    anchor.download =
+      "la-cura-report-history.csv";
+
+    document.body.appendChild(
+      anchor
+    );
+
     anchor.click();
     anchor.remove();
 
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(
+      url
+    );
   }
 
+
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-green-800 bg-gradient-to-r from-green-800 via-green-700 to-emerald-700 text-white shadow-lg">
-        <div className="px-6 py-7 lg:px-10">
-          <div className="flex flex-col justify-between gap-6 xl:flex-row xl:items-center">
-            <div className="flex items-center gap-4">
-              <div className="rounded-2xl bg-white/15 p-3 ring-1 ring-white/20">
-                <AppIcon icon={faChartColumn} className="text-3xl" />
-              </div>
+    <div className="min-h-[calc(100vh-119px)] bg-[#F3F2ED] text-[#1B2924]">
+      {/* PAGE HEADER */}
 
-              <div>
-                <h1 className="text-3xl font-black tracking-tight">
-                  Reports
-                </h1>
+      <section className="border-b border-[#CCD5D0] bg-white">
+        <div className="mx-auto flex max-w-[1800px] flex-col gap-3 px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+          <div>
+            <div className="flex items-center gap-2 text-[11px] text-[#72827B]">
+              <Link
+                href="/dashboard"
+                className="hover:text-[#073B2F]"
+              >
+                Home
+              </Link>
 
-                <p className="mt-1 text-green-100">
-                  Clinical, medication, compliance, and facility reporting
-                </p>
-              </div>
+              <span>/</span>
+
+              <span className="font-semibold text-[#40524B]">
+                Reports
+              </span>
             </div>
 
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={exportReportHistory}
-                disabled={recentReports.length === 0}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/25 bg-white/10 px-5 py-3 font-semibold text-white transition hover:bg-white/20 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                <AppIcon icon={faDownload} />
-                Export History
-              </button>
+            <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+              <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
+                Reports
+              </h1>
 
-              <button
-                type="button"
-                onClick={() => setResidentReportOpen(true)}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-5 py-3 font-bold text-green-800 shadow-sm transition hover:bg-green-50"
-              >
-                <AppIcon icon={faFileLines} />
-                Download Patient Report
-              </button>
+              <p className="text-xs text-[#718078]">
+                Clinical, medication, compliance, resident, and operational reporting
+              </p>
             </div>
           </div>
-        </div>
-      </header>
 
-      <main className="space-y-8 p-6 lg:p-10">
-        <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {summaryCards.map((card) => (
-            <article
-              key={card.label}
-              className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={
+                exportReportHistory
+              }
+              disabled={
+                recentReports.length ===
+                0
+              }
+              className="
+                inline-flex h-8
+                items-center gap-1.5
+                border
+                border-[#AAB8B1]
+                bg-white px-3
+                text-[10px]
+                font-bold
+                text-[#30483E]
+                hover:border-[#073B2F]
+                hover:bg-[#F2F5F3]
+                disabled:cursor-not-allowed
+                disabled:opacity-40
+              "
             >
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="font-semibold text-slate-500">{card.label}</p>
-                  <p className="mt-3 text-4xl font-black text-slate-900">
-                    {card.value}
-                  </p>
-                  <p className="mt-2 text-sm text-slate-500">
-                    {card.detail}
-                  </p>
-                </div>
+              <Download
+                size={12}
+              />
 
-                <div className={`rounded-2xl p-3 ${card.iconBackground}`}>
-                  <AppIcon
-                    icon={card.icon}
-                    className={`text-2xl ${card.iconClass}`}
-                  />
-                </div>
-              </div>
-            </article>
-          ))}
+              Export History
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                setResidentReportOpen(
+                  true
+                )
+              }
+              className="
+                inline-flex h-8
+                items-center gap-1.5
+                border
+                border-[#063428]
+                bg-[#073B2F]
+                px-3
+                text-[10px]
+                font-bold
+                text-white
+                hover:bg-[#0D4A3A]
+              "
+            >
+              <FileText
+                size={12}
+              />
+
+              Resident Clinical PDF
+            </button>
+          </div>
+        </div>
+      </section>
+
+
+      <main className="mx-auto max-w-[1800px] p-3 sm:p-4 lg:px-6">
+        {/* SUMMARY STRIP */}
+
+        <section className="mb-3 grid border border-[#CBD4D0] bg-white sm:grid-cols-4">
+          <SummaryCell
+            label="Available Reports"
+            value={
+              reportDefinitions.length
+            }
+          />
+
+          <SummaryCell
+            label="Clinical"
+            value={
+              clinicalCount
+            }
+          />
+
+          <SummaryCell
+            label="Compliance"
+            value={
+              complianceCount
+            }
+          />
+
+          <SummaryCell
+            label="Generated This Session"
+            value={
+              recentReports.length
+            }
+            gold={
+              recentReports.length >
+              0
+            }
+          />
         </section>
 
-        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-          <div className="border-b border-slate-200 p-6 lg:p-8">
-            <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-center">
-              <div>
-                <h2 className="text-2xl font-black text-slate-900">
-                  Report Library
-                </h2>
-                <p className="mt-1 text-slate-500">
-                  Select a report and configure its reporting period.
-                </p>
-              </div>
 
-              <div className="relative w-full xl:max-w-md">
-                <AppIcon
-                  icon={faMagnifyingGlass}
-                  className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+        {/* REPORT LIBRARY */}
+
+        <section className="border border-[#C8D2CD] bg-white">
+          <div className="flex flex-col gap-1 border-b border-[#D3DCD7] bg-[#E7EDE9] px-3 py-1.5 sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
+              Report Library
+            </h2>
+
+            <span className="text-[9px] text-[#718078]">
+              Select a report to configure its reporting period
+            </span>
+          </div>
+
+
+          {/* TOOLBAR */}
+
+          <div className="border-b border-[#D8DFDB] bg-[#F8F7F2] p-2.5">
+            <div className="flex flex-col gap-2 xl:flex-row xl:items-center">
+              <div className="relative min-w-0 flex-1">
+                <Search
+                  size={14}
+                  className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-[#6D7D76]"
                 />
 
                 <input
                   type="search"
                   value={search}
-                  onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search reports..."
-                  className="w-full rounded-xl border border-slate-300 bg-white py-3 pl-12 pr-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-green-600 focus:ring-4 focus:ring-green-100"
+                  onChange={(
+                    event
+                  ) =>
+                    setSearch(
+                      event.target.value
+                    )
+                  }
+                  placeholder="Search report name, category, or purpose..."
+                  className="
+                    h-8 w-full
+                    border border-[#BCC9C3]
+                    bg-white
+                    pl-8 pr-3
+                    text-xs
+                    text-[#1D2F28]
+                    outline-none
+                    placeholder:text-[#8B9892]
+                    focus:border-[#59766B]
+                    focus:ring-1
+                    focus:ring-[#59766B]/20
+                  "
                 />
               </div>
-            </div>
 
-            <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
-              {reportCategories.map((category) => {
-                const isActive = activeCategory === category;
 
-                return (
-                  <button
-                    key={category}
-                    type="button"
-                    onClick={() => setActiveCategory(category)}
-                    className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold transition ${
-                      isActive
-                        ? "bg-green-700 text-white shadow-sm"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                    }`}
-                  >
-                    {category}
-                  </button>
-                );
-              })}
+              <div className="flex flex-wrap gap-1">
+                {reportCategories.map(
+                  (category) => (
+                    <button
+                      key={
+                        category
+                      }
+                      type="button"
+                      onClick={() =>
+                        setActiveCategory(
+                          category
+                        )
+                      }
+                      className={`
+                        h-8 border
+                        px-3
+                        text-[10px]
+                        font-bold
+
+                        ${
+                          activeCategory ===
+                          category
+                            ? "border-[#073B2F] bg-[#073B2F] text-white"
+                            : "border-[#BCC9C3] bg-white text-[#465A51] hover:bg-[#EEF2EF]"
+                        }
+                      `}
+                    >
+                      {category}
+                    </button>
+                  )
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="grid gap-5 p-6 md:grid-cols-2 lg:p-8 xl:grid-cols-3">
-            {filteredReports.map((report) => (
-              <article
-                key={report.id}
-                className="group flex min-h-64 flex-col rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-green-300 hover:shadow-lg"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className={`rounded-2xl p-3 ${report.iconBackground}`}>
-                    <AppIcon
-                      icon={report.icon}
-                      className={`text-2xl ${report.iconClass}`}
-                    />
-                  </div>
 
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
-                    {report.category}
-                  </span>
-                </div>
+          <div className="flex items-center justify-between border-b border-[#D8DFDB] bg-[#FBFAF7] px-3 py-1.5 text-[10px]">
+            <span className="text-[#607169]">
+              Showing{" "}
+              <strong className="text-[#263A32]">
+                {filteredReports.length}
+              </strong>{" "}
+              report
+              {filteredReports.length ===
+              1
+                ? ""
+                : "s"}
+            </span>
 
-                <div className="mt-5 flex-1">
-                  <h3 className="text-lg font-black text-slate-900">
-                    {report.name}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
-                    {report.description}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => openReport(report)}
-                  className="mt-6 flex w-full items-center justify-between rounded-xl border border-slate-200 px-4 py-3 font-bold text-slate-700 transition group-hover:border-green-600 group-hover:bg-green-50 group-hover:text-green-800"
-                >
-                  {report.id === "resident-clinical-summary"
-                    ? "Download PDF"
-                    : "Configure Report"}
-
-                  <AppIcon icon={faChevronRight} />
-                </button>
-              </article>
-            ))}
-
-            {filteredReports.length === 0 && (
-              <div className="col-span-full rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-6 py-16 text-center">
-                <AppIcon
-                  icon={faFileLines}
-                  className="mx-auto text-4xl text-slate-300"
-                />
-                <h3 className="mt-4 text-lg font-bold text-slate-800">
-                  No reports found
-                </h3>
-                <p className="mt-1 text-slate-500">
-                  Change the search term or choose another category.
-                </p>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-          <div className="flex flex-col justify-between gap-3 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-center lg:px-8">
-            <div>
-              <h2 className="text-xl font-black text-slate-900">
-                Generated Reports
-              </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                Reports generated during this session.
-              </p>
-            </div>
-
-            <span className="w-fit rounded-full bg-green-50 px-3 py-1.5 text-sm font-bold text-green-700">
-              {recentReports.length} reports
+            <span className="font-semibold text-[#7D6A35]">
+              Report Catalog
             </span>
           </div>
 
-          {recentReports.length === 0 ? (
-            <div className="px-6 py-16 text-center">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100">
-                <AppIcon
-                  icon={faFileLines}
-                  className="text-2xl text-slate-400"
-                />
-              </div>
 
-              <h3 className="mt-4 text-lg font-bold text-slate-800">
-                No reports generated yet
-              </h3>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-                Download a patient clinical report or select another report
-                from the library.
-              </p>
-            </div>
-          ) : (
+          {filteredReports.length >
+          0 ? (
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[900px]">
-                <thead className="bg-slate-50">
-                  <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wider text-slate-500">
-                    <th className="px-6 py-4 font-bold lg:px-8">Report</th>
-                    <th className="px-6 py-4 font-bold">Category</th>
-                    <th className="px-6 py-4 font-bold">Date Range</th>
-                    <th className="px-6 py-4 font-bold">Format</th>
-                    <th className="px-6 py-4 font-bold">Generated</th>
-                    <th className="px-6 py-4 font-bold">Status</th>
+              <table className="w-full min-w-[1100px] border-collapse text-left">
+                <thead>
+                  <tr className="bg-[#E8EEEA] text-[10px] font-bold uppercase tracking-[0.035em] text-[#354A41]">
+                    <ClinicalHead>
+                      Report
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Category
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Description
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Action
+                    </ClinicalHead>
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-slate-100">
-                  {recentReports.map((report) => (
-                    <tr
-                      key={report.id}
-                      className="transition hover:bg-slate-50"
-                    >
-                      <td className="px-6 py-5 lg:px-8">
-                        <div className="flex items-center gap-3">
-                          <div className="rounded-xl bg-green-50 p-2.5">
-                            <AppIcon
-                              icon={faFileLines}
-                              className="text-green-700"
+                <tbody>
+                  {filteredReports.map(
+                    (
+                      report,
+                      index
+                    ) => {
+                      const Icon =
+                        report.icon;
+
+                      return (
+                        <tr
+                          key={
+                            report.id
+                          }
+                          className={`
+                            border-b
+                            border-[#E1E6E3]
+                            text-[11px]
+
+                            ${
+                              index %
+                                2 ===
+                              0
+                                ? "bg-white"
+                                : "bg-[#FAFAF7]"
+                            }
+
+                            hover:bg-[#FFFDF7]
+                          `}
+                        >
+                          <td className="min-w-[260px] px-3 py-2">
+                            <div className="flex items-center gap-2">
+                              <span className="flex h-7 w-7 shrink-0 items-center justify-center border border-[#CBD5D0] bg-[#EEF3EF] text-[#073B2F]">
+                                <Icon
+                                  size={13}
+                                />
+                              </span>
+
+                              <span className="font-bold text-[#263A32]">
+                                {report.name}
+                              </span>
+                            </div>
+                          </td>
+
+                          <td className="px-3 py-2">
+                            <span className="inline-flex border border-[#D2D9D5] bg-[#F5F6F4] px-1.5 py-0.5 text-[9px] font-bold text-[#52645C]">
+                              {report.category}
+                            </span>
+                          </td>
+
+                          <td className="max-w-[650px] px-3 py-2 leading-5 text-[#52645C]">
+                            {report.description}
+                          </td>
+
+                          <td className="px-3 py-2">
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openReport(
+                                  report
+                                )
+                              }
+                              className="
+                                inline-flex h-7
+                                items-center gap-1.5
+                                border
+                                border-[#98AAA1]
+                                bg-white
+                                px-2.5
+                                text-[10px]
+                                font-bold
+                                text-[#073B2F]
+                                hover:border-[#073B2F]
+                                hover:bg-[#F0F4F1]
+                              "
+                            >
+                              {report.id ===
+                              "resident-clinical-summary"
+                                ? "Generate PDF"
+                                : "Configure"}
+
+                              <ChevronRight
+                                size={11}
+                              />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    }
+                  )}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="px-6 py-12 text-center">
+              <p className="text-[12px] font-semibold text-[#30443B]">
+                No reports match the selected filters.
+              </p>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSearch("");
+                  setActiveCategory(
+                    "All"
+                  );
+                }}
+                className="mt-2 text-[10px] font-bold text-[#073B2F] underline"
+              >
+                Reset report filters
+              </button>
+            </div>
+          )}
+        </section>
+
+
+        {/* GENERATED HISTORY */}
+
+        <section className="mt-3 border border-[#C8D2CD] bg-white">
+          <div className="flex items-center justify-between border-b border-[#D3DCD7] bg-[#E7EDE9] px-3 py-1.5">
+            <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
+              Generated Reports
+            </h2>
+
+            <span className="text-[9px] font-semibold text-[#718078]">
+              {recentReports.length} this session
+            </span>
+          </div>
+
+
+          {recentReports.length ===
+          0 ? (
+            <div className="flex min-h-[140px] items-center justify-center px-6 py-8">
+              <div className="text-center">
+                <span className="mx-auto flex h-8 w-8 items-center justify-center border border-[#D1D9D5] bg-[#F4F6F4] text-[#697A72]">
+                  <FileText
+                    size={14}
+                  />
+                </span>
+
+                <p className="mt-2 text-[11px] font-semibold text-[#40544B]">
+                  No reports generated during this session
+                </p>
+
+                <p className="mt-1 text-[9px] text-[#7B8982]">
+                  Generated report activity will appear here.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[1000px] border-collapse text-left">
+                <thead>
+                  <tr className="bg-[#F4F6F4] text-[10px] font-bold uppercase tracking-[0.03em] text-[#40544B]">
+                    <ClinicalHead>
+                      Report
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Category
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Date Range
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Format
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Generated
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Generated By
+                    </ClinicalHead>
+
+                    <ClinicalHead>
+                      Status
+                    </ClinicalHead>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {recentReports.map(
+                    (
+                      report,
+                      index
+                    ) => (
+                      <tr
+                        key={
+                          report.id
+                        }
+                        className={`
+                          border-b
+                          border-[#E1E6E3]
+                          text-[11px]
+
+                          ${
+                            index %
+                              2 ===
+                            0
+                              ? "bg-white"
+                              : "bg-[#FAFAF7]"
+                          }
+                        `}
+                      >
+                        <td className="px-3 py-2 font-bold text-[#263A32]">
+                          {report.name}
+                        </td>
+
+                        <td className="px-3 py-2 text-[#52645C]">
+                          {report.category}
+                        </td>
+
+                        <td className="px-3 py-2 text-[#52645C]">
+                          {report.dateRange}
+                        </td>
+
+                        <td className="px-3 py-2">
+                          <span className="border border-[#D1D9D5] bg-[#F4F6F4] px-1.5 py-0.5 text-[9px] font-bold text-[#52645C]">
+                            {report.format}
+                          </span>
+                        </td>
+
+                        <td className="whitespace-nowrap px-3 py-2 text-[#607169]">
+                          {report.generatedAt}
+                        </td>
+
+                        <td className="px-3 py-2 text-[#607169]">
+                          {report.generatedBy}
+                        </td>
+
+                        <td className="px-3 py-2">
+                          <span className="inline-flex items-center gap-1 border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800">
+                            <CheckCircle2
+                              size={9}
                             />
-                          </div>
 
-                          <div>
-                            <p className="font-bold text-slate-900">
-                              {report.name}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                              Generated by {report.generatedBy}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-
-                      <td className="px-6 py-5 text-sm font-medium text-slate-600">
-                        {report.category}
-                      </td>
-                      <td className="px-6 py-5 text-sm text-slate-600">
-                        {report.dateRange}
-                      </td>
-                      <td className="px-6 py-5">
-                        <span className="rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
-                          {report.format}
-                        </span>
-                      </td>
-                      <td className="px-6 py-5 text-sm text-slate-600">
-                        {report.generatedAt}
-                      </td>
-                      <td className="px-6 py-5">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-700">
-                          <AppIcon icon={faCircleCheck} />
-                          {report.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                            {report.status}
+                          </span>
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
             </div>
@@ -604,36 +1037,85 @@ export default function ReportsPage() {
         </section>
       </main>
 
+
       <ResidentClinicalReportModal
-        open={residentReportOpen}
-        onClose={() => setResidentReportOpen(false)}
-        onGenerated={handleResidentReportGenerated}
+        open={
+          residentReportOpen
+        }
+        onClose={() =>
+          setResidentReportOpen(
+            false
+          )
+        }
+        onGenerated={
+          handleResidentReportGenerated
+        }
       />
 
+
       <GenerateReportModal
-        report={selectedReport}
-        onClose={() => setSelectedReport(null)}
-        onCreated={handleReportCreated}
+        report={
+          selectedReport
+        }
+        onClose={() =>
+          setSelectedReport(
+            null
+          )
+        }
+        onCreated={
+          handleReportCreated
+        }
       />
     </div>
   );
 }
 
+
 type GenerateReportModalProps = {
-  report: ReportDefinition | null;
-  onClose: () => void;
-  onCreated: (report: RecentReport) => void;
+  report:
+    ReportDefinition | null;
+
+  onClose:
+    () => void;
+
+  onCreated:
+    (
+      report:
+        RecentReport
+    ) => void;
 };
+
 
 function GenerateReportModal({
   report,
   onClose,
   onCreated,
 }: GenerateReportModalProps) {
-  const [mounted, setMounted] = useState(false);
-  const [dateRange, setDateRange] = useState("Last 7 days");
-  const [format, setFormat] = useState<"PDF" | "CSV">("PDF");
-  const [loading, setLoading] = useState(false);
+  const [
+    mounted,
+    setMounted,
+  ] = useState(false);
+
+  const [
+    dateRange,
+    setDateRange,
+  ] = useState(
+    "Last 7 days"
+  );
+
+  const [
+    format,
+    setFormat,
+  ] =
+    useState<
+      "PDF" | "CSV"
+    >("PDF");
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(false);
+
 
   useEffect(() => {
     setMounted(true);
@@ -643,58 +1125,110 @@ function GenerateReportModal({
     };
   }, []);
 
+
   useEffect(() => {
     if (!report) {
       return;
     }
 
-    setDateRange("Last 7 days");
+    setDateRange(
+      "Last 7 days"
+    );
+
     setFormat("PDF");
-  }, [report]);
+  }, [
+    report,
+  ]);
+
 
   useEffect(() => {
     if (!report) {
       return;
     }
 
-    const previousOverflow = document.body.style.overflow;
+    const previousOverflow =
+      document.body.style
+        .overflow;
 
-    function handleEscape(event: KeyboardEvent) {
-      if (event.key === "Escape" && !loading) {
+    function handleEscape(
+      event:
+        KeyboardEvent
+    ) {
+      if (
+        event.key ===
+          "Escape" &&
+        !loading
+      ) {
         onClose();
       }
     }
 
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", handleEscape);
+    document.body.style.overflow =
+      "hidden";
+
+    window.addEventListener(
+      "keydown",
+      handleEscape
+    );
 
     return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow =
+        previousOverflow;
+
+      window.removeEventListener(
+        "keydown",
+        handleEscape
+      );
     };
-  }, [report, loading, onClose]);
+  }, [
+    report,
+    loading,
+    onClose,
+  ]);
+
 
   async function handleGenerate() {
-    if (!report || loading) {
+    if (
+      !report ||
+      loading
+    ) {
       return;
     }
 
     setLoading(true);
 
     try {
-      await new Promise<void>((resolve) => {
-        window.setTimeout(resolve, 600);
-      });
+      await new Promise<void>(
+        (resolve) => {
+          window.setTimeout(
+            resolve,
+            600
+          );
+        }
+      );
 
       onCreated({
-        id: `${report.id}-${Date.now()}`,
-        name: report.name,
-        category: report.category,
+        id:
+          `${report.id}-${Date.now()}`,
+
+        name:
+          report.name,
+
+        category:
+          report.category,
+
         dateRange,
+
         format,
-        generatedAt: formatGeneratedDate(),
-        generatedBy: "La-Cura Staff",
-        status: "Ready",
+
+        generatedAt:
+          formatGeneratedDate(),
+
+        generatedBy:
+          "La-Cura Staff",
+
+        status:
+          "Ready",
       });
 
       onClose();
@@ -703,13 +1237,22 @@ function GenerateReportModal({
     }
   }
 
-  if (!mounted || !report) {
+
+  if (
+    !mounted ||
+    !report
+  ) {
     return null;
   }
 
+
+  const Icon =
+    report.icon;
+
+
   return createPortal(
     <div
-      className="fixed inset-0 z-[999999] flex items-center justify-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[999999] flex items-center justify-center overflow-y-auto bg-black/45 p-4"
       onMouseDown={() => {
         if (!loading) {
           onClose();
@@ -720,136 +1263,236 @@ function GenerateReportModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="generate-report-title"
-        onMouseDown={(event) => event.stopPropagation()}
-        className="my-auto w-full max-w-xl overflow-hidden rounded-3xl bg-white shadow-2xl"
+        onMouseDown={(
+          event
+        ) =>
+          event.stopPropagation()
+        }
+        className="my-auto w-full max-w-lg border border-[#AEBAB4] bg-white shadow-2xl"
       >
-        <header className="bg-gradient-to-r from-green-800 to-green-700 px-6 py-6 text-white">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="rounded-2xl bg-white/15 p-3">
-                <AppIcon icon={report.icon} className="text-2xl" />
-              </div>
+        {/* MODAL HEADER */}
 
-              <div>
-                <p className="text-sm font-semibold text-green-100">
-                  Generate Report
-                </p>
-                <h2
-                  id="generate-report-title"
-                  className="mt-1 text-2xl font-black"
-                >
-                  {report.name}
-                </h2>
-              </div>
+        <header className="flex items-start justify-between gap-4 border-b border-[#C9D3CE] bg-[#073B2F] px-4 py-3 text-white">
+          <div className="flex items-start gap-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center border border-white/25 bg-white/10">
+              <Icon
+                size={15}
+              />
+            </span>
+
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-[0.06em] text-[#D8E6DF]">
+                Configure Report
+              </p>
+
+              <h2
+                id="generate-report-title"
+                className="mt-0.5 text-[15px] font-bold"
+              >
+                {report.name}
+              </h2>
             </div>
-
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={loading}
-              aria-label="Close report modal"
-              className="rounded-xl bg-white/15 p-2 transition hover:bg-white/25 disabled:opacity-50"
-            >
-              <AppIcon icon={faXmark} />
-            </button>
           </div>
+
+
+          <button
+            type="button"
+            onClick={
+              onClose
+            }
+            disabled={
+              loading
+            }
+            aria-label="Close report modal"
+            className="flex h-7 w-7 items-center justify-center border border-white/25 bg-white/10 hover:bg-white/20 disabled:opacity-50"
+          >
+            <X size={13} />
+          </button>
         </header>
 
-        <main className="space-y-6 p-6 sm:p-8">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-            <p className="text-sm leading-6 text-slate-600">
+
+        <div className="p-4">
+          <div className="border border-[#D7DFDB] bg-[#F8F7F2] px-3 py-2.5">
+            <p className="text-[10px] leading-5 text-[#52645C]">
               {report.description}
             </p>
           </div>
 
-          <div>
-            <label
-              htmlFor="report-date-range"
-              className="mb-2 block font-bold text-slate-800"
-            >
-              Reporting Period
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <label>
+              <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.03em] text-[#4D6158]">
+                Reporting Period
+              </span>
+
+              <select
+                value={
+                  dateRange
+                }
+                onChange={(
+                  event
+                ) =>
+                  setDateRange(
+                    event.target.value
+                  )
+                }
+                disabled={
+                  loading
+                }
+                className="
+                  h-9 w-full
+                  border
+                  border-[#BFCAC4]
+                  bg-white
+                  px-2.5
+                  text-[11px]
+                  font-semibold
+                  text-[#30443B]
+                  outline-none
+                  focus:border-[#667E72]
+                  disabled:opacity-60
+                "
+              >
+                <option value="Today">
+                  Today
+                </option>
+
+                <option value="Last 7 days">
+                  Last 7 days
+                </option>
+
+                <option value="Last 30 days">
+                  Last 30 days
+                </option>
+
+                <option value="This month">
+                  This month
+                </option>
+
+                <option value="Previous month">
+                  Previous month
+                </option>
+
+                <option value="Year to date">
+                  Year to date
+                </option>
+              </select>
             </label>
 
-            <select
-              id="report-date-range"
-              value={dateRange}
-              onChange={(event) => setDateRange(event.target.value)}
-              disabled={loading}
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-slate-900 outline-none transition focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:opacity-60"
-            >
-              <option value="Today">Today</option>
-              <option value="Last 7 days">Last 7 days</option>
-              <option value="Last 30 days">Last 30 days</option>
-              <option value="This month">This month</option>
-              <option value="Previous month">Previous month</option>
-              <option value="Year to date">Year to date</option>
-            </select>
-          </div>
 
-          <div>
-            <p className="mb-2 font-bold text-slate-800">Report Format</p>
+            <div>
+              <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.03em] text-[#4D6158]">
+                Format
+              </span>
 
-            <div className="grid grid-cols-2 gap-3">
-              {(["PDF", "CSV"] as const).map((option) => (
-                <button
-                  key={option}
-                  type="button"
-                  onClick={() => setFormat(option)}
-                  disabled={loading}
-                  className={`rounded-xl border px-4 py-4 text-left transition ${
-                    format === option
-                      ? "border-green-600 bg-green-50 ring-2 ring-green-100"
-                      : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <AppIcon
-                      icon={faFileLines}
-                      className={
-                        format === option ? "text-green-700" : "text-slate-500"
+              <div className="grid grid-cols-2 gap-1">
+                {(
+                  [
+                    "PDF",
+                    "CSV",
+                  ] as const
+                ).map(
+                  (option) => (
+                    <button
+                      key={
+                        option
                       }
-                    />
+                      type="button"
+                      onClick={() =>
+                        setFormat(
+                          option
+                        )
+                      }
+                      disabled={
+                        loading
+                      }
+                      className={`
+                        h-9 border
+                        text-[10px]
+                        font-bold
 
-                    <div>
-                      <p className="font-bold text-slate-900">{option}</p>
-                      <p className="mt-0.5 text-xs text-slate-500">
-                        {option === "PDF"
-                          ? "Formatted document"
-                          : "Spreadsheet-compatible"}
-                      </p>
-                    </div>
-                  </div>
-                </button>
-              ))}
+                        ${
+                          format ===
+                          option
+                            ? "border-[#073B2F] bg-[#EAF0EC] text-[#073B2F]"
+                            : "border-[#BFCAC4] bg-white text-[#52645C]"
+                        }
+                      `}
+                    >
+                      {option}
+                    </button>
+                  )
+                )}
+              </div>
             </div>
           </div>
-        </main>
+        </div>
 
-        <footer className="flex flex-col-reverse gap-3 border-t border-slate-200 bg-slate-50 px-6 py-5 sm:flex-row sm:justify-end">
+
+        <footer className="flex justify-end gap-1.5 border-t border-[#D4DDD8] bg-[#F8F7F2] px-4 py-3">
           <button
             type="button"
-            onClick={onClose}
-            disabled={loading}
-            className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
+            onClick={
+              onClose
+            }
+            disabled={
+              loading
+            }
+            className="
+              h-8 border
+              border-[#B4C0BA]
+              bg-white px-3
+              text-[10px]
+              font-bold
+              text-[#52645C]
+              hover:bg-[#F0F2F0]
+              disabled:opacity-50
+            "
           >
             Cancel
           </button>
 
           <button
             type="button"
-            onClick={handleGenerate}
-            disabled={loading}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-6 py-3 font-bold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={
+              handleGenerate
+            }
+            disabled={
+              loading
+            }
+            className="
+              inline-flex h-8
+              min-w-[120px]
+              items-center
+              justify-center
+              gap-1.5
+              border
+              border-[#063428]
+              bg-[#073B2F]
+              px-3
+              text-[10px]
+              font-bold
+              text-white
+              hover:bg-[#0D4A3A]
+              disabled:opacity-50
+            "
           >
             {loading ? (
               <>
-                <AppIcon icon={faSpinner} spin />
+                <LoaderCircle
+                  size={11}
+                  className="animate-spin"
+                />
+
                 Generating...
               </>
             ) : (
               <>
-                <AppIcon icon={faChartLine} />
-                Generate Report
+                <FileText
+                  size={11}
+                />
+
+                Generate
               </>
             )}
           </button>
@@ -857,5 +1500,53 @@ function GenerateReportModal({
       </div>
     </div>,
     document.body
+  );
+}
+
+
+function SummaryCell({
+  label,
+  value,
+  gold = false,
+}: {
+  label: string;
+  value: number;
+  gold?: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-3 border-b border-[#D8DFDB] px-3 py-2.5 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0">
+      <span
+        className={`
+          text-[20px]
+          font-bold
+
+          ${
+            gold
+              ? "text-[#9A7420]"
+              : "text-[#073B2F]"
+          }
+        `}
+      >
+        {value}
+      </span>
+
+      <span className="text-[10px] font-semibold uppercase tracking-[0.04em] text-[#6D7D76]">
+        {label}
+      </span>
+    </div>
+  );
+}
+
+
+function ClinicalHead({
+  children,
+}: {
+  children:
+    React.ReactNode;
+}) {
+  return (
+    <th className="border-r border-[#D2DBD6] px-3 py-2 last:border-r-0">
+      {children}
+    </th>
   );
 }
