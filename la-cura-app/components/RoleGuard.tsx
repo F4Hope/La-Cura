@@ -424,7 +424,7 @@ function AccessLoading({
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 px-6">
       <div className="text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100 text-green-700">
+        <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-[3px] bg-green-100 text-[#073B2F]">
           <AppIcon
             icon={faSpinner}
             className="text-2xl"
@@ -460,7 +460,7 @@ function AccessMessage({
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-100 px-6">
-      <section className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-xl">
+      <section className="w-full max-w-lg rounded-[4px] border border-slate-200 bg-white p-8 text-center shadow-sm">
         <div
           className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full ${
             errorState
@@ -474,7 +474,7 @@ function AccessMessage({
                 ? faShieldHalved
                 : faBan
             }
-            className={`text-4xl ${
+            className={`text-2xl ${
               errorState
                 ? "text-amber-700"
                 : "text-red-700"
@@ -497,7 +497,7 @@ function AccessMessage({
               actionHref
             );
           }}
-          className="mt-7 rounded-xl bg-green-700 px-6 py-3 font-semibold text-white transition hover:bg-green-800"
+          className="mt-5 rounded-[3px] bg-[#073B2F] px-4 py-2 text-[10px] font-bold text-white transition hover:bg-[#0D4A3A]"
         >
           {actionLabel}
         </button>

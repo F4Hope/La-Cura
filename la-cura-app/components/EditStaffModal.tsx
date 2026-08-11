@@ -314,12 +314,12 @@ export default function EditStaffModal({
         onMouseDown={(event) =>
           event.stopPropagation()
         }
-        className="my-auto w-full max-w-2xl overflow-hidden rounded-[30px] bg-white shadow-2xl"
+        className="my-auto w-full max-w-2xl overflow-hidden rounded-[4px] border border-[#AEBAB4] bg-white shadow-lg"
       >
-        <header className="bg-gradient-to-r from-blue-800 to-blue-600 px-6 py-6 text-white sm:px-8">
+        <header className="bg-gradient-to-r from-blue-800 to-blue-600 px-4 py-3 text-white sm:px-5">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-white/15">
                 <AppIcon
                   icon={faUserPen}
                   className="text-2xl"
@@ -329,7 +329,7 @@ export default function EditStaffModal({
               <div>
                 <h2
                   id="edit-staff-title"
-                  className="text-2xl font-black"
+                  className="text-[16px] font-bold"
                 >
                   Edit Staff Member
                 </h2>
@@ -346,7 +346,7 @@ export default function EditStaffModal({
               onClick={handleClose}
               disabled={loading}
               aria-label="Close edit staff modal"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 transition hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <AppIcon icon={faXmark} />
             </button>
@@ -528,7 +528,7 @@ export default function EditStaffModal({
           </div>
 
           {form.staff_code && (
-            <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+            <div className="mt-6 rounded-[4px] border border-slate-200 bg-slate-50 p-5">
               <div className="flex items-start gap-3">
                 <AppIcon
                   icon={faIdCard}
@@ -557,7 +557,7 @@ export default function EditStaffModal({
           {error && (
             <div
               role="alert"
-              className="mt-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700"
+              className="mt-6 flex items-start gap-3 rounded-[4px] border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700"
             >
               <AppIcon
                 icon={
@@ -576,7 +576,7 @@ export default function EditStaffModal({
             type="button"
             onClick={handleClose}
             disabled={loading}
-            className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-[3px] border border-slate-300 bg-white px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
           </button>
@@ -589,7 +589,7 @@ export default function EditStaffModal({
               form.full_name.trim()
                 .length < 2
             }
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-6 py-3 font-bold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-[3px] bg-blue-700 px-6 py-3 font-bold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <AppIcon
               icon={

@@ -618,7 +618,7 @@ export default function AddResidentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div className="min-h-screen bg-[#F3F2ED] text-slate-900">
       {notification && (
         <Notification
           message={
@@ -628,7 +628,7 @@ export default function AddResidentPage() {
         />
       )}
 
-      <header className="relative overflow-hidden bg-gradient-to-r from-green-800 via-green-700 to-green-600 text-white">
+      <header className="relative overflow-hidden bg-[#073B2F] text-white">
         <div className="absolute -right-32 -top-40 h-[420px] w-[420px] rounded-full border border-white/10" />
 
         <div className="absolute -bottom-36 left-1/2 h-72 w-72 rounded-full bg-white/5" />
@@ -653,7 +653,7 @@ export default function AddResidentPage() {
                 Resident Registration
               </div>
 
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
+              <h1 className="mt-2 text-[22px] font-bold tracking-[-0.02em]">
                 Add Resident
               </h1>
 
@@ -664,7 +664,7 @@ export default function AddResidentPage() {
               </p>
             </div>
 
-            <div className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm text-green-50 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 rounded-[3px] border border-white/15 bg-white/10 px-4 py-3 text-sm text-green-50 backdrop-blur-sm">
               <ShieldCheck
                 size={18}
               />
@@ -681,20 +681,20 @@ export default function AddResidentPage() {
           onSubmit={handleSubmit}
           className="mx-auto grid max-w-[1400px] items-start gap-6 xl:grid-cols-[330px_minmax(0,1fr)]"
         >
-          <aside className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm xl:sticky xl:top-6">
+          <aside className="overflow-hidden rounded-[4px] border border-slate-200 bg-white xl:sticky xl:top-6">
             <div className="border-b border-slate-200 bg-green-50 px-5 py-4">
               <h2 className="font-semibold text-green-900">
                 Resident Photo
               </h2>
 
-              <p className="mt-1 text-xs leading-5 text-green-700">
+              <p className="mt-1 text-xs leading-5 text-[#073B2F]">
                 JPG, PNG, or WebP. Maximum
                 file size 5 MB.
               </p>
             </div>
 
             <div className="p-6">
-              <div className="relative mx-auto h-52 w-52 overflow-hidden rounded-2xl border-4 border-white bg-gradient-to-br from-green-100 to-green-200 shadow-lg ring-1 ring-slate-200">
+              <div className="relative mx-auto h-52 w-52 overflow-hidden rounded-[4px] border-4 border-white bg-[#E6EEE8] shadow-lg ring-1 ring-slate-200">
                 {photoPreview ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -703,8 +703,8 @@ export default function AddResidentPage() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full w-full flex-col items-center justify-center text-green-700">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/80 text-2xl font-semibold shadow-sm">
+                  <div className="flex h-full w-full flex-col items-center justify-center text-[#073B2F]">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-white/80 text-2xl font-semibold">
                       {getResidentInitials(
                         form.full_name
                       )}
@@ -738,7 +738,7 @@ export default function AddResidentPage() {
                   fileInputRef.current?.click()
                 }
                 disabled={isSubmitting}
-                className="mt-6 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-green-700 px-4 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-6 inline-flex h-9 w-full items-center justify-center gap-2 rounded-[3px] bg-[#073B2F] px-3 text-[11px] font-bold text-white transition hover:bg-[#0D4A3A] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Upload size={17} />
 
@@ -754,7 +754,7 @@ export default function AddResidentPage() {
                     removeSelectedPhoto
                   }
                   disabled={isSubmitting}
-                  className="mt-2 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-white px-4 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="mt-2 inline-flex h-11 w-full items-center justify-center gap-2 rounded-[3px] border border-red-200 bg-white px-4 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Trash2 size={17} />
 
@@ -769,7 +769,7 @@ export default function AddResidentPage() {
               )}
 
               {selectedPhoto && (
-                <div className="mt-4 rounded-xl bg-slate-50 p-3">
+                <div className="mt-4 rounded-[3px] bg-slate-50 p-3">
                   <p className="truncate text-sm font-medium text-slate-700">
                     {selectedPhoto.name}
                   </p>
@@ -1165,7 +1165,7 @@ export default function AddResidentPage() {
               </FormField>
             </FormSection>
 
-            <div className="flex flex-col-reverse gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col-reverse gap-3 rounded-[4px] border border-slate-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-slate-500">
                 Review the resident information
                 before saving.
@@ -1174,7 +1174,7 @@ export default function AddResidentPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-green-700 px-7 text-sm font-semibold text-white shadow-sm transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-9 items-center justify-center gap-2 rounded-[3px] bg-[#073B2F] px-4 text-[11px] font-bold text-white transition hover:bg-[#0D4A3A] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSubmitting ? (
                   <>
@@ -1215,9 +1215,9 @@ function FormSection({
   children,
 }: FormSectionProps) {
   return (
-    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <section className="overflow-hidden rounded-[4px] border border-slate-200 bg-white">
       <header className="flex items-start gap-3 border-b border-slate-200 bg-slate-50/70 px-5 py-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-700">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] bg-green-50 text-[#073B2F]">
           {icon}
         </div>
 
@@ -1295,11 +1295,11 @@ function getInputClass(
   hasError = false
 ): string {
   return [
-    "h-12 w-full rounded-xl border bg-white px-3.5 text-sm text-slate-900 outline-none transition",
+    "h-12 w-full rounded-[3px] border bg-white px-3.5 text-sm text-slate-900 outline-none transition",
     "placeholder:text-slate-400",
     "focus:ring-4",
     hasError
       ? "border-red-400 focus:border-red-500 focus:ring-red-100"
-      : "border-slate-300 focus:border-green-600 focus:ring-green-100",
+      : "border-slate-300 focus:border-[#667E72] focus:ring-[#073B2F]/10",
   ].join(" ");
 }

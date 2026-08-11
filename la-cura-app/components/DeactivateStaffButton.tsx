@@ -138,10 +138,10 @@ export default function DeactivateStaffButton({
       type="button"
       onClick={toggleStatus}
       disabled={loading}
-      className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 font-semibold text-white transition focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
+      className={`flex w-full items-center justify-center gap-2 rounded-[3px] px-4 py-3 font-semibold text-white transition focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 ${
         active
           ? "bg-red-600 hover:bg-red-700 focus:ring-red-200"
-          : "bg-green-700 hover:bg-green-800 focus:ring-green-200"
+          : "bg-[#073B2F] hover:bg-[#0D4A3A] focus:ring-[#073B2F]/15"
       }`}
     >
       <AppIcon

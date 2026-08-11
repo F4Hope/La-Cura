@@ -289,12 +289,12 @@ export default function ResidentClinicalReportModal({
         aria-modal="true"
         aria-labelledby="resident-report-modal-title"
         onMouseDown={(event) => event.stopPropagation()}
-        className="my-auto w-full max-w-2xl overflow-hidden rounded-3xl bg-white shadow-2xl"
+        className="my-auto w-full max-w-2xl overflow-hidden rounded-[4px] border border-[#AEBAB4] bg-white shadow-lg"
       >
-        <header className="bg-gradient-to-r from-green-800 to-green-700 px-6 py-6 text-white sm:px-8">
+        <header className="bg-[#073B2F] px-4 py-3 text-white sm:px-5">
           <div className="flex items-start justify-between gap-5">
             <div className="flex items-center gap-4">
-              <div className="rounded-2xl bg-white/15 p-3 ring-1 ring-white/20">
+              <div className="rounded-[4px] bg-white/15 p-3 ring-1 ring-white/20">
                 <AppIcon icon={faFileLines} className="text-2xl" />
               </div>
 
@@ -305,7 +305,7 @@ export default function ResidentClinicalReportModal({
 
                 <h2
                   id="resident-report-modal-title"
-                  className="mt-1 text-2xl font-black"
+                  className="mt-1 text-[16px] font-bold"
                 >
                   Resident Clinical Summary
                 </h2>
@@ -321,7 +321,7 @@ export default function ResidentClinicalReportModal({
               onClick={handleClose}
               disabled={generating}
               aria-label="Close resident report"
-              className="shrink-0 rounded-xl bg-white/15 p-2 transition hover:bg-white/25 disabled:opacity-50"
+              className="shrink-0 rounded-[3px] bg-white/15 p-2 transition hover:bg-white/25 disabled:opacity-50"
             >
               <AppIcon icon={faXmark} />
             </button>
@@ -350,7 +350,7 @@ export default function ResidentClinicalReportModal({
                 onChange={(event) => setSearch(event.target.value)}
                 disabled={loadingResidents || generating}
                 placeholder="Search by resident name, room, or age..."
-                className="w-full rounded-xl border border-slate-300 py-3.5 pl-11 pr-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:bg-slate-100"
+                className="w-full rounded-[3px] border border-slate-300 py-3.5 pl-11 pr-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10 disabled:bg-slate-100"
               />
             </div>
           </section>
@@ -368,7 +368,7 @@ export default function ResidentClinicalReportModal({
               value={selectedResidentId}
               onChange={(event) => setSelectedResidentId(event.target.value)}
               disabled={loadingResidents || generating}
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-slate-900 outline-none transition focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:bg-slate-100"
+              className="w-full rounded-[3px] border border-slate-300 bg-white px-4 py-3.5 text-slate-900 outline-none transition focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10 disabled:bg-slate-100"
             >
               <option value="">
                 {loadingResidents ? "Loading residents..." : "Choose a resident"}
@@ -390,9 +390,9 @@ export default function ResidentClinicalReportModal({
           </section>
 
           {selectedResident && (
-            <section className="flex items-center gap-4 rounded-2xl border border-green-200 bg-green-50 p-5">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-100">
-                <AppIcon icon={faUser} className="text-xl text-green-700" />
+            <section className="flex items-center gap-4 rounded-[4px] border border-green-200 bg-green-50 p-5">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-green-100">
+                <AppIcon icon={faUser} className="text-xl text-[#073B2F]" />
               </div>
 
               <div>
@@ -424,7 +424,7 @@ export default function ResidentClinicalReportModal({
                 setReportingPeriod(event.target.value as ReportingPeriod)
               }
               disabled={generating}
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3.5 text-slate-900 outline-none transition focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:bg-slate-100"
+              className="w-full rounded-[3px] border border-slate-300 bg-white px-4 py-3.5 text-slate-900 outline-none transition focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10 disabled:bg-slate-100"
             >
               <option value="30">Last 30 days</option>
               <option value="90">Last 90 days</option>
@@ -433,7 +433,7 @@ export default function ResidentClinicalReportModal({
             </select>
           </section>
 
-          <section className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+          <section className="rounded-[4px] border border-slate-200 bg-slate-50 p-5">
             <p className="font-bold text-slate-800">Report contents</p>
 
             <p className="mt-2 text-sm leading-6 text-slate-600">
@@ -446,7 +446,7 @@ export default function ResidentClinicalReportModal({
           {error && (
             <div
               role="alert"
-              className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700"
+              className="rounded-[4px] border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700"
             >
               {error}
             </div>
@@ -458,7 +458,7 @@ export default function ResidentClinicalReportModal({
             type="button"
             onClick={handleClose}
             disabled={generating}
-            className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
+            className="rounded-[3px] border border-slate-300 bg-white px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
           >
             Cancel
           </button>
@@ -467,7 +467,7 @@ export default function ResidentClinicalReportModal({
             type="button"
             onClick={handleDownload}
             disabled={!selectedResidentId || loadingResidents || generating}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-6 py-3 font-bold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-[3px] bg-[#073B2F] px-6 py-3 font-bold text-white transition hover:bg-[#0D4A3A] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {generating ? (
               <>

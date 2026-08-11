@@ -1268,7 +1268,7 @@ function GenerateReportModal({
         ) =>
           event.stopPropagation()
         }
-        className="my-auto w-full max-w-lg border border-[#AEBAB4] bg-white shadow-2xl"
+        className="my-auto w-full max-w-lg border border-[#AEBAB4] bg-white shadow-md"
       >
         {/* MODAL HEADER */}
 

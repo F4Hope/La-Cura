@@ -15,11 +15,11 @@ export default function Notification({
 }: Props) {
   return (
     <div
-      className={`fixed top-6 right-6 z-50 flex items-center gap-3 rounded-xl px-5 py-4 shadow-2xl text-white animate-[slideIn_.35s_ease]
+      className={`fixed top-6 right-6 z-50 flex items-center gap-3 rounded-[3px] border px-3 py-2.5 text-[11px] shadow-sm text-white animate-[slideIn_.35s_ease]
 
       ${
         type === "success"
-          ? "bg-green-700"
+          ? "bg-[#073B2F]"
           : "bg-red-600"
       }`}
     >

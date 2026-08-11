@@ -445,7 +445,7 @@ export default function AddMedicationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
+    <div className="min-h-screen bg-[#F3F2ED] text-slate-900">
       {notification && (
         <Notification
           message={
@@ -457,7 +457,7 @@ export default function AddMedicationPage() {
         />
       )}
 
-      <header className="relative overflow-hidden bg-gradient-to-r from-green-800 via-green-700 to-green-600 text-white">
+      <header className="relative overflow-hidden bg-[#073B2F] text-white">
         <div className="absolute -right-28 -top-32 h-80 w-80 rounded-full border border-white/10" />
 
         <div className="absolute -bottom-36 left-1/2 h-72 w-72 rounded-full bg-white/5" />
@@ -488,7 +488,7 @@ export default function AddMedicationPage() {
                 Medication Management
               </div>
 
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
+              <h1 className="mt-2 text-[22px] font-bold tracking-[-0.02em]">
                 Add Medication
               </h1>
 
@@ -500,7 +500,7 @@ export default function AddMedicationPage() {
             </div>
 
             {selectedResident && (
-              <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm">
+              <div className="rounded-[3px] border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm">
                 <p className="text-xs text-green-100">
                   Current resident
                 </p>
@@ -523,10 +523,10 @@ export default function AddMedicationPage() {
           }
           className="mx-auto max-w-6xl space-y-6"
         >
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <section className="overflow-hidden rounded-[4px] border border-slate-200 bg-white">
             <header className="border-b border-slate-200 bg-slate-50/80 px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-700">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[3px] bg-green-50 text-[#073B2F]">
                   <UserRound
                     size={19}
                   />
@@ -548,10 +548,10 @@ export default function AddMedicationPage() {
 
             <div className="p-5">
               {loadingResidents ? (
-                <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center gap-3 rounded-[3px] border border-slate-200 bg-slate-50 p-4">
                   <LoaderCircle
                     size={20}
-                    className="animate-spin text-green-700"
+                    className="animate-spin text-[#073B2F]"
                   />
 
                   <p className="text-sm font-medium text-slate-600">
@@ -560,9 +560,9 @@ export default function AddMedicationPage() {
                 </div>
               ) : selectedResident &&
                 !changingResident ? (
-                <div className="flex flex-col justify-between gap-4 rounded-xl border border-green-200 bg-green-50 p-4 sm:flex-row sm:items-center">
+                <div className="flex flex-col justify-between gap-4 rounded-[3px] border border-green-200 bg-green-50 p-4 sm:flex-row sm:items-center">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-700 text-white">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[3px] bg-[#073B2F] text-white">
                       <UserRound
                         size={22}
                       />
@@ -577,7 +577,7 @@ export default function AddMedicationPage() {
                         </p>
 
                         {cameFromResidentProfile && (
-                          <span className="rounded-full bg-green-700 px-2.5 py-1 text-[11px] font-semibold text-white">
+                          <span className="rounded-full bg-[#073B2F] px-2.5 py-1 text-[11px] font-semibold text-white">
                             From resident
                             profile
                           </span>
@@ -615,7 +615,7 @@ export default function AddMedicationPage() {
                     onClick={
                       startChangingResident
                     }
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-green-300 bg-white px-4 text-sm font-semibold text-green-700 transition hover:bg-green-100"
+                    className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-green-300 bg-white px-4 text-sm font-semibold text-[#073B2F] transition hover:bg-green-100"
                   >
                     <Search
                       size={16}
@@ -646,7 +646,7 @@ export default function AddMedicationPage() {
                             .value
                         )
                       }
-                      className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 outline-none transition focus:border-green-600 focus:ring-4 focus:ring-green-100"
+                      className="h-12 w-full rounded-[3px] border border-slate-300 bg-white px-3.5 text-sm text-slate-900 outline-none transition focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10"
                     >
                       <option value="">
                         Choose a resident
@@ -683,7 +683,7 @@ export default function AddMedicationPage() {
                         onClick={
                           cancelResidentChange
                         }
-                        className="mt-3 text-sm font-semibold text-green-700 hover:text-green-800"
+                        className="mt-3 text-sm font-semibold text-[#073B2F] hover:text-[#0D4A3A]"
                       >
                         Keep{" "}
                         {
@@ -696,10 +696,10 @@ export default function AddMedicationPage() {
             </div>
           </section>
 
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <section className="overflow-hidden rounded-[4px] border border-slate-200 bg-white">
             <header className="border-b border-slate-200 bg-slate-50/80 px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-50 text-orange-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[3px] bg-orange-50 text-orange-600">
                   <Pill size={19} />
                 </div>
 
@@ -898,10 +898,10 @@ export default function AddMedicationPage() {
             </div>
           </section>
 
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <section className="overflow-hidden rounded-[4px] border border-slate-200 bg-white">
             <header className="border-b border-slate-200 bg-slate-50/80 px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[3px] bg-blue-50 text-blue-600">
                   <CalendarDays
                     size={19}
                   />
@@ -962,10 +962,10 @@ export default function AddMedicationPage() {
             </div>
           </section>
 
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <section className="overflow-hidden rounded-[4px] border border-slate-200 bg-white">
             <header className="border-b border-slate-200 bg-slate-50/80 px-5 py-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-700">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[3px] bg-green-50 text-[#073B2F]">
                   <FileText
                     size={19}
                   />
@@ -998,12 +998,12 @@ export default function AddMedicationPage() {
                   )
                 }
                 placeholder="Enter administration instructions, precautions, or other relevant notes..."
-                className="w-full resize-y rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-green-600 focus:ring-4 focus:ring-green-100"
+                className="w-full resize-y rounded-[3px] border border-slate-300 bg-white px-3.5 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10"
               />
             </div>
           </section>
 
-          <section className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+          <section className="flex flex-col gap-4 rounded-[4px] border border-slate-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-medium text-slate-700">
                 {selectedResident
@@ -1025,7 +1025,7 @@ export default function AddMedicationPage() {
                 loadingResidents ||
                 !selectedResident
               }
-              className="inline-flex h-12 min-w-48 items-center justify-center gap-2 rounded-xl bg-green-700 px-6 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-9 min-w-40 items-center justify-center gap-2 rounded-[3px] bg-[#073B2F] px-4 text-[11px] font-bold text-white transition hover:bg-[#0D4A3A] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {saving ? (
                 <>
@@ -1049,7 +1049,7 @@ export default function AddMedicationPage() {
           {notification?.type ===
             "success" &&
             selectedResident && (
-              <div className="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+              <div className="flex items-center gap-3 rounded-[3px] border border-green-200 bg-green-50 p-4 text-sm text-[#0D4A3A]">
                 <CheckCircle2
                   size={18}
                   className="shrink-0"
@@ -1098,4 +1098,4 @@ function FormField({
 }
 
 const inputClass =
-  "h-12 w-full rounded-xl border border-slate-300 bg-white px-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-green-600 focus:ring-4 focus:ring-green-100";
+  "h-12 w-full rounded-[3px] border border-slate-300 bg-white px-3.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10";

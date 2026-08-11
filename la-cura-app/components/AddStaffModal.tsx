@@ -347,14 +347,14 @@ export default function AddStaffModal({
         onMouseDown={(event) =>
           event.stopPropagation()
         }
-        className="my-auto w-full max-w-2xl overflow-hidden rounded-[30px] bg-white shadow-2xl"
+        className="my-auto w-full max-w-2xl overflow-hidden rounded-[4px] border border-[#AEBAB4] bg-white shadow-lg"
       >
         {createdCredentials ? (
           <>
-            <header className="bg-gradient-to-r from-green-800 to-green-600 px-6 py-6 text-white sm:px-8">
+            <header className="bg-[#073B2F] px-4 py-3 text-white sm:px-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-white/15">
                     <AppIcon
                       icon={faCheck}
                       className="text-2xl"
@@ -362,7 +362,7 @@ export default function AddStaffModal({
                   </div>
 
                   <div>
-                    <h2 className="text-2xl font-black">
+                    <h2 className="text-[16px] font-bold">
                       Staff Account Created
                     </h2>
 
@@ -377,7 +377,7 @@ export default function AddStaffModal({
                   type="button"
                   onClick={handleClose}
                   aria-label="Close credentials"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 transition hover:bg-white/25"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25"
                 >
                   <AppIcon icon={faXmark} />
                 </button>
@@ -385,7 +385,7 @@ export default function AddStaffModal({
             </header>
 
             <main className="max-h-[calc(100vh-13rem)] overflow-y-auto p-6 sm:p-8">
-              <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-800">
+              <div className="flex items-start gap-3 rounded-[4px] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-800">
                 <AppIcon
                   icon={
                     faTriangleExclamation
@@ -426,13 +426,13 @@ export default function AddStaffModal({
                   <label className="mb-2 flex items-center gap-2 font-bold text-slate-800">
                     <AppIcon
                       icon={faKey}
-                      className="text-green-700"
+                      className="text-[#073B2F]"
                     />
 
                     Temporary Password
                   </label>
 
-                  <div className="flex items-stretch overflow-hidden rounded-xl border border-slate-300 bg-slate-50">
+                  <div className="flex items-stretch overflow-hidden rounded-[3px] border border-slate-300 bg-slate-50">
                     <div className="min-w-0 flex-1 px-4 py-3.5 font-mono text-sm font-bold tracking-wider text-slate-900 sm:text-base">
                       {showTemporaryPassword
                         ? createdCredentials.temporaryPassword
@@ -452,7 +452,7 @@ export default function AddStaffModal({
                           ? "Hide temporary password"
                           : "Show temporary password"
                       }
-                      className="border-l border-slate-300 px-4 text-slate-600 transition hover:bg-slate-100 hover:text-green-700"
+                      className="border-l border-slate-300 px-4 text-slate-600 transition hover:bg-slate-100 hover:text-[#073B2F]"
                     >
                       <AppIcon
                         icon={
@@ -471,7 +471,7 @@ export default function AddStaffModal({
                           "password"
                         )
                       }
-                      className="inline-flex items-center gap-2 border-l border-slate-300 px-4 font-bold text-green-700 transition hover:bg-green-50"
+                      className="inline-flex items-center gap-2 border-l border-slate-300 px-4 font-bold text-[#073B2F] transition hover:bg-green-50"
                     >
                       <AppIcon
                         icon={
@@ -493,7 +493,7 @@ export default function AddStaffModal({
                 </div>
               </div>
 
-              <div className="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+              <div className="mt-6 rounded-[4px] border border-blue-200 bg-blue-50 p-5">
                 <div className="flex items-start gap-3">
                   <AppIcon
                     icon={faShieldHalved}
@@ -527,7 +527,7 @@ export default function AddStaffModal({
                     "both"
                   )
                 }
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-green-700 bg-white px-6 py-3 font-bold text-green-700 transition hover:bg-green-50"
+                className="inline-flex items-center justify-center gap-2 rounded-[3px] border border-green-700 bg-white px-6 py-3 font-bold text-[#073B2F] transition hover:bg-green-50"
               >
                 <AppIcon
                   icon={
@@ -545,7 +545,7 @@ export default function AddStaffModal({
               <button
                 type="button"
                 onClick={handleClose}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-6 py-3 font-bold text-white transition hover:bg-green-800"
+                className="inline-flex items-center justify-center gap-2 rounded-[3px] bg-[#073B2F] px-6 py-3 font-bold text-white transition hover:bg-[#0D4A3A]"
               >
                 <AppIcon icon={faCheck} />
 
@@ -555,10 +555,10 @@ export default function AddStaffModal({
           </>
         ) : (
           <>
-            <header className="bg-gradient-to-r from-green-800 to-green-600 px-6 py-6 text-white sm:px-8">
+            <header className="bg-[#073B2F] px-4 py-3 text-white sm:px-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-white/15">
                     <AppIcon
                       icon={faUserPlus}
                       className="text-2xl"
@@ -566,7 +566,7 @@ export default function AddStaffModal({
                   </div>
 
                   <div>
-                    <h2 className="text-2xl font-black">
+                    <h2 className="text-[16px] font-bold">
                       Add Staff Member
                     </h2>
 
@@ -581,7 +581,7 @@ export default function AddStaffModal({
                   onClick={handleClose}
                   disabled={loading}
                   aria-label="Close add staff modal"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 transition hover:bg-white/25 disabled:opacity-50"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25 disabled:opacity-50"
                 >
                   <AppIcon icon={faXmark} />
                 </button>
@@ -687,11 +687,11 @@ export default function AddStaffModal({
                     </select>
                   </FormField>
 
-                  <div className="rounded-2xl border border-green-200 bg-green-50 p-5">
+                  <div className="rounded-[4px] border border-green-200 bg-green-50 p-5">
                     <div className="flex items-start gap-3">
                       <AppIcon
                         icon={faShieldHalved}
-                        className="mt-1 shrink-0 text-green-700"
+                        className="mt-1 shrink-0 text-[#073B2F]"
                       />
 
                       <div>
@@ -699,7 +699,7 @@ export default function AddStaffModal({
                           No email invitation
                         </p>
 
-                        <p className="mt-1 text-sm leading-6 text-green-700">
+                        <p className="mt-1 text-sm leading-6 text-[#073B2F]">
                           La-Cura will generate a
                           staff code and temporary
                           password. You will give
@@ -813,7 +813,7 @@ export default function AddStaffModal({
               {error && (
                 <div
                   role="alert"
-                  className="mt-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700"
+                  className="mt-6 flex items-start gap-3 rounded-[4px] border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700"
                 >
                   <AppIcon
                     icon={
@@ -833,7 +833,7 @@ export default function AddStaffModal({
                   type="button"
                   onClick={handleClose}
                   disabled={loading}
-                  className="rounded-xl border border-slate-300 bg-white px-6 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
+                  className="rounded-[3px] border border-slate-300 bg-white px-6 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
                 >
                   Cancel
                 </button>
@@ -844,7 +844,7 @@ export default function AddStaffModal({
                     setStep(1)
                   }
                   disabled={loading}
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-[3px] border border-slate-300 bg-white px-6 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
                 >
                   <AppIcon
                     icon={faArrowLeft}
@@ -875,7 +875,7 @@ export default function AddStaffModal({
                     loading ||
                     !form.full_name.trim()
                   }
-                  className="inline-flex items-center gap-2 rounded-xl bg-green-700 px-6 py-3 font-bold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-[3px] bg-[#073B2F] px-6 py-3 font-bold text-white transition hover:bg-[#0D4A3A] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   Next
 
@@ -888,7 +888,7 @@ export default function AddStaffModal({
                   type="button"
                   onClick={createStaff}
                   disabled={loading}
-                  className="inline-flex items-center gap-2 rounded-xl bg-green-700 px-6 py-3 font-bold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center gap-2 rounded-[3px] bg-[#073B2F] px-6 py-3 font-bold text-white transition hover:bg-[#0D4A3A] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <AppIcon
                     icon={
@@ -957,7 +957,7 @@ function FormField({
       >
         <AppIcon
           icon={icon}
-          className="text-green-700"
+          className="text-[#073B2F]"
         />
 
         {label}
@@ -988,13 +988,13 @@ function CredentialField({
       <label className="mb-2 flex items-center gap-2 font-bold text-slate-800">
         <AppIcon
           icon={icon}
-          className="text-green-700"
+          className="text-[#073B2F]"
         />
 
         {label}
       </label>
 
-      <div className="flex items-stretch overflow-hidden rounded-xl border border-slate-300 bg-slate-50">
+      <div className="flex items-stretch overflow-hidden rounded-[3px] border border-slate-300 bg-slate-50">
         <div className="min-w-0 flex-1 break-all px-4 py-3.5 font-mono text-sm font-bold tracking-wider text-slate-900 sm:text-base">
           {value}
         </div>
@@ -1002,7 +1002,7 @@ function CredentialField({
         <button
           type="button"
           onClick={onCopy}
-          className="inline-flex items-center gap-2 border-l border-slate-300 px-4 font-bold text-green-700 transition hover:bg-green-50"
+          className="inline-flex items-center gap-2 border-l border-slate-300 px-4 font-bold text-[#073B2F] transition hover:bg-green-50"
         >
           <AppIcon
             icon={

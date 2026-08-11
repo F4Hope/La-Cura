@@ -291,7 +291,7 @@ export default function ResetPasswordButton({
         onClick={resetPassword}
         disabled={loading}
         title={`Reset password for ${staffCode}`}
-        className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-60"
+        className="flex items-center justify-center gap-2 rounded-[3px] bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <AppIcon
           icon={
@@ -324,12 +324,12 @@ export default function ResetPasswordButton({
               onMouseDown={(event) =>
                 event.stopPropagation()
               }
-              className="my-auto w-full max-w-2xl overflow-hidden rounded-[30px] bg-white shadow-2xl"
+              className="my-auto w-full max-w-2xl overflow-hidden rounded-[4px] border border-[#AEBAB4] bg-white shadow-lg"
             >
-              <header className="bg-gradient-to-r from-indigo-800 to-indigo-600 px-6 py-6 text-white sm:px-8">
+              <header className="bg-gradient-to-r from-indigo-800 to-indigo-600 px-4 py-3 text-white sm:px-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-white/15">
                       <AppIcon
                         icon={faKey}
                         className="text-2xl"
@@ -339,7 +339,7 @@ export default function ResetPasswordButton({
                     <div>
                       <h2
                         id="reset-password-title"
-                        className="text-2xl font-black"
+                        className="text-[16px] font-bold"
                       >
                         Password Reset Complete
                       </h2>
@@ -356,7 +356,7 @@ export default function ResetPasswordButton({
                       closeCredentials
                     }
                     aria-label="Close password credentials"
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15 transition hover:bg-white/25"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25"
                   >
                     <AppIcon
                       icon={faXmark}
@@ -366,7 +366,7 @@ export default function ResetPasswordButton({
               </header>
 
               <main className="max-h-[calc(100vh-13rem)] overflow-y-auto p-6 sm:p-8">
-                <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-800">
+                <div className="flex items-start gap-3 rounded-[4px] border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-6 text-amber-800">
                   <AppIcon
                     icon={
                       faTriangleExclamation
@@ -395,7 +395,7 @@ export default function ResetPasswordButton({
                       Staff Code
                     </label>
 
-                    <div className="flex items-stretch overflow-hidden rounded-xl border border-slate-300 bg-slate-50">
+                    <div className="flex items-stretch overflow-hidden rounded-[3px] border border-slate-300 bg-slate-50">
                       <div className="min-w-0 flex-1 break-all px-4 py-3.5 font-mono text-sm font-bold tracking-wider text-slate-900 sm:text-base">
                         {
                           credentials.staffCode
@@ -441,7 +441,7 @@ export default function ResetPasswordButton({
                       Temporary Password
                     </label>
 
-                    <div className="flex items-stretch overflow-hidden rounded-xl border border-slate-300 bg-slate-50">
+                    <div className="flex items-stretch overflow-hidden rounded-[3px] border border-slate-300 bg-slate-50">
                       <div className="min-w-0 flex-1 break-all px-4 py-3.5 font-mono text-sm font-bold tracking-wider text-slate-900 sm:text-base">
                         {showPassword
                           ? credentials.temporaryPassword
@@ -505,7 +505,7 @@ export default function ResetPasswordButton({
                 {error && (
                   <div
                     role="alert"
-                    className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700"
+                    className="mt-6 rounded-[4px] border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-700"
                   >
                     {error}
                   </div>
@@ -521,7 +521,7 @@ export default function ResetPasswordButton({
                       "both"
                     )
                   }
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-indigo-700 bg-white px-6 py-3 font-bold text-indigo-700 transition hover:bg-indigo-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-[3px] border border-indigo-700 bg-white px-6 py-3 font-bold text-indigo-700 transition hover:bg-indigo-50"
                 >
                   <AppIcon
                     icon={
@@ -543,7 +543,7 @@ export default function ResetPasswordButton({
                   onClick={
                     closeCredentials
                   }
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-700 px-6 py-3 font-bold text-white transition hover:bg-indigo-800"
+                  className="inline-flex items-center justify-center gap-2 rounded-[3px] bg-indigo-700 px-6 py-3 font-bold text-white transition hover:bg-indigo-800"
                 >
                   <AppIcon
                     icon={faCheck}

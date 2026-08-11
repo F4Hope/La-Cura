@@ -32,7 +32,7 @@ export default function MedicationActionModal({
   resident,
   medication,
   confirmText,
-  confirmColor = "bg-green-700 hover:bg-green-800",
+  confirmColor = "bg-[#073B2F] hover:bg-[#0D4A3A]",
   onClose,
   onConfirm,
 }: MedicationActionModalProps) {
@@ -150,12 +150,12 @@ export default function MedicationActionModal({
         onMouseDown={(event) =>
           event.stopPropagation()
         }
-        className="my-auto w-full max-w-2xl overflow-hidden rounded-[30px] bg-white shadow-2xl"
+        className="my-auto w-full max-w-2xl overflow-hidden rounded-[4px] border border-[#AEBAB4] bg-white shadow-lg"
       >
-        <header className="bg-gradient-to-r from-green-700 to-green-600 px-6 py-6 text-white sm:px-8">
+        <header className="bg-[#073B2F] px-4 py-3 text-white sm:px-5">
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-center gap-4">
-              <div className="shrink-0 rounded-2xl bg-white/20 p-3">
+              <div className="shrink-0 rounded-[4px] bg-white/20 p-3">
                 <AppIcon
                   icon={faClipboardCheck}
                   className="text-2xl"
@@ -165,7 +165,7 @@ export default function MedicationActionModal({
               <div className="min-w-0">
                 <h2
                   id={titleId}
-                  className="break-words text-2xl font-black sm:text-3xl"
+                  className="break-words text-[16px] font-bold"
                 >
                   {title}
                 </h2>
@@ -185,7 +185,7 @@ export default function MedicationActionModal({
               onClick={handleClose}
               disabled={loading}
               aria-label="Close medication action"
-              className="shrink-0 rounded-xl bg-white/20 p-2 transition hover:bg-white/30 focus:outline-none focus:ring-4 focus:ring-white/30 disabled:cursor-not-allowed disabled:opacity-50"
+              className="shrink-0 rounded-[3px] bg-white/20 p-2 transition hover:bg-white/30 focus:outline-none focus:ring-4 focus:ring-white/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <AppIcon
                 icon={faXmark}
@@ -198,7 +198,7 @@ export default function MedicationActionModal({
         <div className="max-h-[calc(100vh-12rem)] overflow-y-auto">
           <main className="space-y-8 p-6 sm:p-8">
             <section className="grid gap-6 md:grid-cols-2">
-              <div className="rounded-2xl bg-slate-50 p-5">
+              <div className="rounded-[4px] bg-slate-50 p-5">
                 <p className="text-sm font-medium text-gray-500">
                   Resident
                 </p>
@@ -208,7 +208,7 @@ export default function MedicationActionModal({
                 </h3>
               </div>
 
-              <div className="rounded-2xl bg-slate-50 p-5">
+              <div className="rounded-[4px] bg-slate-50 p-5">
                 <p className="text-sm font-medium text-gray-500">
                   Medication
                 </p>
@@ -234,7 +234,7 @@ export default function MedicationActionModal({
                   setReason(event.target.value)
                 }
                 disabled={loading}
-                className="w-full rounded-2xl border border-gray-300 bg-white px-5 py-4 text-slate-900 outline-none transition focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-70"
+                className="w-full rounded-[4px] border border-gray-300 bg-white px-3 py-2.5 text-[11px] text-slate-900 outline-none transition focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-70"
               >
                 <option value="">Select reason</option>
 
@@ -301,14 +301,14 @@ export default function MedicationActionModal({
                 }
                 disabled={loading}
                 placeholder="Document clinical observations, relevant vital signs, resident response, provider instructions, or other details."
-                className="w-full resize-none rounded-2xl border border-gray-300 px-5 py-4 text-slate-900 outline-none transition placeholder:text-gray-400 focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-70"
+                className="w-full resize-none rounded-[4px] border border-gray-300 px-3 py-2.5 text-[11px] text-slate-900 outline-none transition placeholder:text-gray-400 focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-70"
               />
             </section>
 
             {error && (
               <div
                 role="alert"
-                className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-medium text-red-700"
+                className="flex items-start gap-3 rounded-[4px] border border-red-200 bg-red-50 px-3 py-2.5 text-[10px] font-medium text-red-700"
               >
                 <AppIcon
                   icon={faTriangleExclamation}
@@ -326,7 +326,7 @@ export default function MedicationActionModal({
             type="button"
             onClick={handleClose}
             disabled={loading}
-            className="rounded-2xl border border-gray-300 px-6 py-3 font-semibold text-slate-700 transition hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-[4px] border border-gray-300 px-3 py-2 text-[10px] font-semibold text-slate-700 transition hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Cancel
           </button>
@@ -335,7 +335,7 @@ export default function MedicationActionModal({
             type="button"
             onClick={handleConfirm}
             disabled={loading}
-            className={`${confirmColor} inline-flex items-center justify-center gap-2 rounded-2xl px-8 py-3 font-bold text-white transition focus:outline-none focus:ring-4 focus:ring-green-200 disabled:cursor-not-allowed disabled:opacity-50`}
+            className={`${confirmColor} inline-flex items-center justify-center gap-2 rounded-[4px] px-4 py-2 text-[10px] font-bold text-white transition focus:outline-none focus:ring-4 focus:ring-[#073B2F]/15 disabled:cursor-not-allowed disabled:opacity-50`}
           >
             {loading && (
               <AppIcon

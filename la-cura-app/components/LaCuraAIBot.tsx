@@ -259,14 +259,14 @@ export default function LaCuraAIBot() {
       {open && (
         <section
           aria-label="La-Cura AI assistant"
-          className="fixed bottom-24 right-3 z-[99999] flex h-[min(680px,calc(100vh-7rem))] w-[calc(100vw-1.5rem)] max-w-[430px] flex-col overflow-hidden rounded-[28px] border border-green-100 bg-white shadow-2xl sm:bottom-28 sm:right-6"
+          className="fixed bottom-24 right-3 z-[99999] flex h-[min(680px,calc(100vh-7rem))] w-[calc(100vw-1.5rem)] max-w-[430px] flex-col overflow-hidden rounded-[4px] border border-[#AEBAB4] bg-white shadow-lg sm:bottom-28 sm:right-6"
         >
-          <header className="relative overflow-hidden bg-gradient-to-r from-green-800 via-green-700 to-green-600 px-5 py-5 text-white">
+          <header className="relative overflow-hidden bg-[#073B2F] px-5 py-5 text-white">
             <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-white/10" />
 
             <div className="relative flex items-start justify-between gap-4">
               <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[4px] bg-white/15">
                   <AppIcon
                     icon={faRobot}
                     className="text-2xl"
@@ -293,7 +293,7 @@ export default function LaCuraAIBot() {
                   disabled={loading}
                   aria-label="Clear conversation"
                   title="Clear conversation"
-                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 transition hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-10 w-10 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <AppIcon
                     icon={faTrashCan}
@@ -305,7 +305,7 @@ export default function LaCuraAIBot() {
                   type="button"
                   onClick={() => setOpen(false)}
                   aria-label="Close La-Cura AI"
-                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 transition hover:bg-white/25"
+                  className="flex h-10 w-10 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25"
                 >
                   <AppIcon
                     icon={faXmark}
@@ -351,10 +351,10 @@ export default function LaCuraAIBot() {
                   }`}
                 >
                   <div
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[3px] ${
                       fromUser
                         ? "bg-slate-200 text-slate-700"
-                        : "bg-green-100 text-green-700"
+                        : "bg-green-100 text-[#073B2F]"
                     }`}
                   >
                     <AppIcon
@@ -368,9 +368,9 @@ export default function LaCuraAIBot() {
                   </div>
 
                   <div
-                    className={`max-w-[82%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-sm leading-6 shadow-sm ${
+                    className={`max-w-[82%] whitespace-pre-wrap rounded-[4px] px-4 py-3 text-sm leading-6 shadow-sm ${
                       fromUser
-                        ? "rounded-tr-sm bg-green-700 text-white"
+                        ? "rounded-tr-sm bg-[#073B2F] text-white"
                         : "rounded-tl-sm border border-slate-200 bg-white text-slate-700"
                     }`}
                   >
@@ -397,7 +397,7 @@ export default function LaCuraAIBot() {
                             question
                           )
                         }
-                        className="block w-full rounded-xl border border-green-200 bg-white px-4 py-3 text-left text-sm font-medium text-green-800 transition hover:border-green-400 hover:bg-green-50"
+                        className="block w-full rounded-[3px] border border-green-200 bg-white px-4 py-3 text-left text-sm font-medium text-[#0D4A3A] transition hover:border-green-400 hover:bg-green-50"
                       >
                         {question}
                       </button>
@@ -408,14 +408,14 @@ export default function LaCuraAIBot() {
 
             {loading && (
               <div className="flex items-start gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[3px] bg-green-100 text-[#073B2F]">
                   <AppIcon
                     icon={faRobot}
                     className="text-sm"
                   />
                 </div>
 
-                <div className="flex items-center gap-3 rounded-2xl rounded-tl-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
+                <div className="flex items-center gap-3 rounded-[4px] rounded-tl-sm border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
                   <AppIcon
                     icon={faSpinner}
                     spin
@@ -429,7 +429,7 @@ export default function LaCuraAIBot() {
             {error && (
               <div
                 role="alert"
-                className="flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+                className="flex items-start gap-3 rounded-[4px] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
               >
                 <AppIcon
                   icon={
@@ -475,7 +475,7 @@ export default function LaCuraAIBot() {
                   maxLength={1_200}
                   disabled={loading}
                   placeholder="Ask a health or La-Cura question…"
-                  className="max-h-32 min-h-[54px] w-full resize-none rounded-2xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-green-600 focus:ring-4 focus:ring-green-100 disabled:cursor-not-allowed disabled:bg-slate-100"
+                  className="max-h-32 min-h-[54px] w-full resize-none rounded-[4px] border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10 disabled:cursor-not-allowed disabled:bg-slate-100"
                 />
 
                 <div className="mt-1 text-right text-[11px] text-slate-400">
@@ -489,7 +489,7 @@ export default function LaCuraAIBot() {
                   loading || !input.trim()
                 }
                 aria-label="Send question"
-                className="mb-5 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-green-700 text-white transition hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-200 disabled:cursor-not-allowed disabled:opacity-50"
+                className="mb-3 flex h-9 w-9 shrink-0 items-center justify-center rounded-[3px] bg-[#073B2F] text-white transition hover:bg-[#0D4A3A] focus:outline-none focus:ring-4 focus:ring-[#073B2F]/15 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <AppIcon
                   icon={
@@ -521,7 +521,7 @@ export default function LaCuraAIBot() {
             ? "Close La-Cura AI"
             : "Open La-Cura AI"
         }
-        className="fixed bottom-5 right-4 z-[99999] flex items-center gap-3 rounded-full bg-green-700 px-5 py-4 font-bold text-white shadow-2xl transition hover:-translate-y-1 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-200 sm:bottom-7 sm:right-7"
+        className="fixed bottom-5 right-4 z-[99999] flex items-center gap-2 rounded-[4px] border border-[#063428] bg-[#073B2F] px-3 py-2.5 text-[11px] font-bold text-white shadow-lg transition hover:bg-[#0D4A3A] focus:outline-none focus:ring-4 focus:ring-[#073B2F]/15 sm:bottom-7 sm:right-7"
       >
         <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
           <AppIcon

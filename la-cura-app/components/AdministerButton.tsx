@@ -56,7 +56,7 @@ export default function AdministerButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 font-bold text-white transition hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-200"
+        className="flex w-full items-center justify-center gap-1.5 rounded-[3px] bg-[#073B2F] px-2.5 py-1.5 text-[10px] font-bold text-white transition hover:bg-[#0D4A3A] focus:outline-none focus:ring-4 focus:ring-[#073B2F]/15"
       >
         <AppIcon
           icon={faCircleCheck}
@@ -72,7 +72,7 @@ export default function AdministerButton({
         resident={resident}
         medication={medication}
         confirmText="Confirm Administration"
-        confirmColor="bg-green-700 hover:bg-green-800"
+        confirmColor="bg-[#073B2F] hover:bg-[#0D4A3A]"
         onClose={() => setOpen(false)}
         onConfirm={handleConfirm}
       />

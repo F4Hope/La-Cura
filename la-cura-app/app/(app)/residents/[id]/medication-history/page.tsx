@@ -15,7 +15,7 @@ export default async function MedicationHistoryPage({
   return (
     <div className="min-h-screen bg-gray-100">
 
-      <header className="bg-green-700 text-white p-6 shadow">
+      <header className="border-b border-[#D5A437] bg-[#073B2F] px-4 py-3 text-white">
 
         <Link
           href={`/residents/${id}`}
@@ -25,7 +25,7 @@ export default async function MedicationHistoryPage({
           Back to Resident
         </Link>
 
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-[22px] font-bold tracking-[-0.02em]">
           Medication History
         </h1>
 
@@ -37,7 +37,7 @@ export default async function MedicationHistoryPage({
 
           {history.length === 0 && (
 
-            <div className="bg-white rounded-2xl shadow p-8 text-center text-gray-500">
+            <div className="border border-[#C8D2CD] bg-white p-6 text-center text-[11px] text-[#687970]">
 
               No medication history found.
 
@@ -49,7 +49,7 @@ export default async function MedicationHistoryPage({
 
             <div
               key={item.id}
-              className="bg-white rounded-2xl shadow p-6"
+              className="border border-[#C8D2CD] bg-white p-3"
             >
 
               <div className="flex items-center gap-3 mb-4">
