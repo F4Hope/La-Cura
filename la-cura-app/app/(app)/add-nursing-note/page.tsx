@@ -9,15 +9,11 @@ import Link from "next/link";
 
 import {
   ArrowLeft,
-  BedDouble,
   CheckCircle2,
-  ClipboardPenLine,
   FileText,
   LoaderCircle,
   Save,
   Search,
-  Stethoscope,
-  UserRound,
 } from "lucide-react";
 
 import ResidentSearch from "@/components/ResidentSearch";
@@ -30,19 +26,31 @@ import {
   supabase,
 } from "@/lib/supabase/client";
 
+
 type Resident = {
   id: number;
   full_name: string;
-  room: string | null;
-  age: number | null;
+
+  room:
+    | string
+    | null;
+
+  age:
+    | number
+    | null;
 };
+
 
 type NotificationState =
   | {
-      type: "success" | "error";
+      type:
+        | "success"
+        | "error";
+
       message: string;
     }
   | null;
+
 
 export default function AddNursingNotePage() {
   const {
@@ -104,6 +112,7 @@ export default function AddNursingNotePage() {
       null
     );
 
+
   useEffect(() => {
     let active = true;
 
@@ -129,7 +138,9 @@ export default function AddNursingNotePage() {
       }
 
       const residentId =
-        Number(residentIdValue);
+        Number(
+          residentIdValue
+        );
 
       if (
         !Number.isInteger(
@@ -211,6 +222,7 @@ export default function AddNursingNotePage() {
     };
   }, []);
 
+
   useEffect(() => {
     if (!notification) {
       return;
@@ -219,7 +231,9 @@ export default function AddNursingNotePage() {
     const timer =
       window.setTimeout(
         () => {
-          setNotification(null);
+          setNotification(
+            null
+          );
         },
         4500
       );
@@ -229,10 +243,14 @@ export default function AddNursingNotePage() {
         timer
       );
     };
-  }, [notification]);
+  }, [
+    notification,
+  ]);
+
 
   function handleResidentSelected(
-    selectedResident: Resident
+    selectedResident:
+      Resident
   ) {
     setResident(
       selectedResident
@@ -242,8 +260,11 @@ export default function AddNursingNotePage() {
       false
     );
 
-    setNotification(null);
+    setNotification(
+      null
+    );
   }
+
 
   function clearNoteFields() {
     setSubjective("");
@@ -251,6 +272,7 @@ export default function AddNursingNotePage() {
     setAssessment("");
     setPlan("");
   }
+
 
   async function saveNote() {
     if (!resident) {
@@ -268,9 +290,12 @@ export default function AddNursingNotePage() {
     }
 
     const hasContent =
-      subjective.trim() !== "" ||
-      objective.trim() !== "" ||
-      assessment.trim() !== "" ||
+      subjective.trim() !==
+        "" ||
+      objective.trim() !==
+        "" ||
+      assessment.trim() !==
+        "" ||
       plan.trim() !== "";
 
     if (!hasContent) {
@@ -284,8 +309,10 @@ export default function AddNursingNotePage() {
     }
 
     const staffName =
-      staff?.full_name?.trim() ||
-      staff?.name?.trim();
+      staff?.full_name
+        ?.trim() ||
+      staff?.name
+        ?.trim();
 
     if (!staffName) {
       setNotification({
@@ -296,6 +323,7 @@ export default function AddNursingNotePage() {
 
       return;
     }
+
 
     const note = [
       "SUBJECTIVE",
@@ -315,6 +343,7 @@ export default function AddNursingNotePage() {
         "Not documented",
     ].join("\n");
 
+
     setSaving(true);
     setNotification(null);
 
@@ -322,7 +351,9 @@ export default function AddNursingNotePage() {
       const {
         error,
       } = await supabase
-        .from("nursing_notes")
+        .from(
+          "nursing_notes"
+        )
         .insert({
           resident_id:
             resident.id,
@@ -347,13 +378,6 @@ export default function AddNursingNotePage() {
 
       clearNoteFields();
 
-      /*
-       * If opened from the resident
-       * profile, retain that resident.
-       *
-       * If opened normally, clear the
-       * resident for the next entry.
-       */
       if (
         !cameFromResidentProfile
       ) {
@@ -376,186 +400,186 @@ export default function AddNursingNotePage() {
     }
   }
 
+
+  const recordedBy =
+    staff?.full_name
+      ?.trim() ||
+    staff?.name
+      ?.trim() ||
+    "Current Staff";
+
+
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
-      <header className="relative overflow-hidden bg-gradient-to-r from-green-800 via-green-700 to-green-600 text-white">
-        <div className="absolute -right-28 -top-32 h-80 w-80 rounded-full border border-white/10" />
+    <div className="min-h-[calc(100vh-119px)] bg-[#F3F2ED] text-[#1B2924]">
+      {/* PAGE HEADER */}
 
-        <div className="absolute -bottom-36 left-1/2 h-72 w-72 rounded-full bg-white/5" />
+      <section className="border-b border-[#C9D3CE] bg-white">
+        <div className="mx-auto flex max-w-[1800px] flex-col gap-2 px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#72827B]">
+              <Link
+                href="/dashboard"
+                className="hover:text-[#073B2F]"
+              >
+                Home
+              </Link>
 
-        <div className="relative px-5 py-7 lg:px-8">
+              <span>/</span>
+
+              {cameFromResidentProfile &&
+              resident ? (
+                <>
+                  <Link
+                    href={`/residents/${resident.id}`}
+                    className="font-semibold text-[#073B2F] hover:underline"
+                  >
+                    {resident.full_name}
+                  </Link>
+
+                  <span>/</span>
+                </>
+              ) : null}
+
+              <span className="font-semibold text-[#40524B]">
+                Prog Notes
+              </span>
+            </div>
+
+            <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+              <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
+                Nursing Progress Note
+              </h1>
+
+              <p className="text-xs text-[#718078]">
+                SOAP clinical documentation
+              </p>
+            </div>
+          </div>
+
+
           {cameFromResidentProfile &&
             resident && (
               <Link
-                href={`/residents/${resident.id}`}
-                className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-green-100 transition hover:text-white"
+                href={`/residents/${resident.id}?tab=prog-notes`}
+                className="
+                  inline-flex h-8
+                  items-center gap-1.5
+                  border border-[#B3C1BA]
+                  bg-white px-3
+                  text-[10px]
+                  font-bold
+                  text-[#3F534A]
+                  hover:border-[#073B2F]
+                  hover:text-[#073B2F]
+                "
               >
                 <ArrowLeft
-                  size={16}
+                  size={12}
                 />
 
-                Back to{" "}
-                {
-                  resident.full_name
-                }
+                Resident Progress Notes
               </Link>
             )}
-
-          <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-            <div>
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-green-100">
-                <ClipboardPenLine
-                  size={15}
-                />
-
-                Clinical Documentation
-              </div>
-
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
-                Nursing Note
-              </h1>
-
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-green-100">
-                Document resident
-                assessment and care using
-                the SOAP format.
-              </p>
-            </div>
-
-            {resident && (
-              <div className="rounded-xl border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm">
-                <p className="text-xs text-green-100">
-                  Current resident
-                </p>
-
-                <p className="mt-1 font-semibold text-white">
-                  {
-                    resident.full_name
-                  }
-                </p>
-              </div>
-            )}
-          </div>
         </div>
-      </header>
+      </section>
 
-      <main className="px-5 py-6 lg:px-8">
-        <div className="mx-auto max-w-6xl space-y-6">
+
+      <main className="mx-auto max-w-[1500px] p-3 sm:p-4 lg:px-6">
+        <div className="space-y-3">
           {notification && (
             <div
-              className={`flex items-start gap-3 rounded-xl border px-4 py-4 text-sm ${
-                notification.type ===
-                "success"
-                  ? "border-green-200 bg-green-50 text-green-800"
-                  : "border-red-200 bg-red-50 text-red-800"
-              }`}
+              className={`
+                flex items-center
+                gap-2 border
+                px-3 py-2.5
+                text-[11px]
+                font-medium
+
+                ${
+                  notification.type ===
+                  "success"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                    : "border-red-200 bg-red-50 text-red-800"
+                }
+              `}
             >
               {notification.type ===
               "success" ? (
                 <CheckCircle2
-                  className="mt-0.5 shrink-0"
-                  size={18}
+                  size={14}
+                  className="shrink-0"
                 />
               ) : (
                 <FileText
-                  className="mt-0.5 shrink-0"
-                  size={18}
+                  size={14}
+                  className="shrink-0"
                 />
               )}
 
-              <p>
-                {
-                  notification.message
-                }
-              </p>
+              {notification.message}
             </div>
           )}
 
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <header className="border-b border-slate-200 bg-slate-50/80 px-5 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-700">
-                  <UserRound
-                    size={19}
-                  />
-                </div>
 
-                <div>
-                  <h2 className="font-semibold text-slate-900">
-                    Resident
-                  </h2>
+          {/* RESIDENT CONTEXT */}
 
-                  <p className="mt-0.5 text-sm text-slate-500">
-                    Confirm the resident
-                    before entering
-                    clinical documentation.
-                  </p>
-                </div>
-              </div>
-            </header>
+          <section className="border border-[#C8D2CD] bg-white">
+            <div className="flex items-center justify-between border-b border-[#D3DCD7] bg-[#E7EDE9] px-3 py-1.5">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
+                Resident Context
+              </h2>
 
-            <div className="p-5">
+              {cameFromResidentProfile && (
+                <span className="text-[9px] font-bold uppercase tracking-[0.05em] text-[#8B6E27]">
+                  Profile Context
+                </span>
+              )}
+            </div>
+
+
+            <div className="p-3">
               {loadingResident ? (
-                <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center gap-2 border border-[#D4DDD8] bg-[#FBFAF7] px-3 py-3">
                   <LoaderCircle
-                    size={20}
-                    className="animate-spin text-green-700"
+                    size={15}
+                    className="animate-spin text-[#073B2F]"
                   />
 
-                  <p className="text-sm font-medium text-slate-600">
+                  <span className="text-[11px] text-[#5A6D64]">
                     Loading resident...
-                  </p>
+                  </span>
                 </div>
               ) : resident &&
                 !changingResident ? (
-                <div className="flex flex-col justify-between gap-4 rounded-xl border border-green-200 bg-green-50 p-4 sm:flex-row sm:items-center">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-700 text-white">
-                      <UserRound
-                        size={22}
-                      />
-                    </div>
+                <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                  <div className="grid gap-2 sm:grid-cols-[minmax(220px,1fr)_160px_120px]">
+                    <ResidentField
+                      label="Resident"
+                      value={
+                        resident.full_name
+                      }
+                      strong
+                    />
 
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-semibold text-slate-900">
-                          {
-                            resident.full_name
-                          }
-                        </p>
+                    <ResidentField
+                      label="Room / Bed"
+                      value={
+                        resident.room ||
+                        "Unassigned"
+                      }
+                    />
 
-                        {cameFromResidentProfile && (
-                          <span className="rounded-full bg-green-700 px-2.5 py-1 text-[11px] font-semibold text-white">
-                            From resident
-                            profile
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-                        <span className="inline-flex items-center gap-1.5">
-                          <BedDouble
-                            size={15}
-                          />
-
-                          Room{" "}
-                          {resident.room ||
-                            "Unassigned"}
-                        </span>
-
-                        {resident.age !==
+                    <ResidentField
+                      label="Age"
+                      value={
+                        resident.age !==
                           null &&
-                          resident.age !==
-                            undefined && (
-                            <span>
-                              {
-                                resident.age
-                              }{" "}
-                              years
-                            </span>
-                          )}
-                      </div>
-                    </div>
+                        resident.age !==
+                          undefined
+                          ? `${resident.age} years`
+                          : "Not recorded"
+                      }
+                    />
                   </div>
 
                   <button
@@ -565,10 +589,22 @@ export default function AddNursingNotePage() {
                         true
                       )
                     }
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-green-300 bg-white px-4 text-sm font-semibold text-green-700 transition hover:bg-green-100"
+                    className="
+                      inline-flex h-8
+                      items-center
+                      justify-center gap-1.5
+                      border
+                      border-[#AABAB2]
+                      bg-white px-3
+                      text-[10px]
+                      font-bold
+                      text-[#30483E]
+                      hover:border-[#073B2F]
+                      hover:bg-[#F2F5F3]
+                    "
                   >
                     <Search
-                      size={16}
+                      size={12}
                     />
 
                     Change Resident
@@ -591,7 +627,7 @@ export default function AddNursingNotePage() {
                             false
                           )
                         }
-                        className="mt-3 text-sm font-semibold text-green-700 hover:text-green-800"
+                        className="mt-2 text-[10px] font-bold text-[#073B2F] hover:underline"
                       >
                         Keep{" "}
                         {
@@ -604,34 +640,29 @@ export default function AddNursingNotePage() {
             </div>
           </section>
 
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <header className="border-b border-slate-200 bg-slate-50/80 px-5 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-                  <Stethoscope
-                    size={19}
-                  />
-                </div>
 
-                <div>
-                  <h2 className="font-semibold text-slate-900">
-                    SOAP Documentation
-                  </h2>
+          {/* SOAP ENTRY */}
 
-                  <p className="mt-0.5 text-sm text-slate-500">
-                    Record subjective,
-                    objective, assessment,
-                    and plan information.
-                  </p>
-                </div>
-              </div>
-            </header>
+          <section className="border border-[#C8D2CD] bg-white">
+            <div className="flex flex-col gap-1 border-b border-[#D3DCD7] bg-[#E7EDE9] px-3 py-1.5 sm:flex-row sm:items-center sm:justify-between">
+              <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
+                SOAP Documentation
+              </h2>
 
-            <div className="space-y-5 p-5">
-              <SoapField
+              <span className="text-[9px] text-[#73817A]">
+                Recorded by{" "}
+                <strong className="font-semibold text-[#40544B]">
+                  {recordedBy}
+                </strong>
+              </span>
+            </div>
+
+
+            <div className="divide-y divide-[#DCE3DF]">
+              <SoapRow
                 letter="S"
                 title="Subjective"
-                description="What the resident reports, including symptoms, concerns, and statements."
+                description="Resident-reported symptoms, concerns, statements, or changes."
                 placeholder="Document what the resident reports..."
                 value={
                   subjective
@@ -639,13 +670,12 @@ export default function AddNursingNotePage() {
                 onChange={
                   setSubjective
                 }
-                tone="green"
               />
 
-              <SoapField
+              <SoapRow
                 letter="O"
                 title="Objective"
-                description="Observable findings, measurements, vital signs, and clinical observations."
+                description="Observed findings, measurements, vital signs, and clinical observations."
                 placeholder="Document objective findings and observations..."
                 value={
                   objective
@@ -653,13 +683,12 @@ export default function AddNursingNotePage() {
                 onChange={
                   setObjective
                 }
-                tone="blue"
               />
 
-              <SoapField
+              <SoapRow
                 letter="A"
                 title="Assessment"
-                description="Clinical assessment based on the subjective and objective information."
+                description="Clinical assessment based on the documented subjective and objective findings."
                 placeholder="Document nursing assessment..."
                 value={
                   assessment
@@ -667,53 +696,66 @@ export default function AddNursingNotePage() {
                 onChange={
                   setAssessment
                 }
-                tone="amber"
               />
 
-              <SoapField
+              <SoapRow
                 letter="P"
                 title="Plan / Intervention"
-                description="Interventions completed, monitoring plan, notifications, and follow-up."
+                description="Interventions, monitoring, notifications, follow-up, and planned care."
                 placeholder="Document interventions and plan..."
                 value={plan}
-                onChange={setPlan}
-                tone="purple"
+                onChange={
+                  setPlan
+                }
               />
             </div>
           </section>
 
-          <section className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+
+          {/* SAVE BAR */}
+
+          <section className="flex flex-col gap-3 border border-[#C8D2CD] bg-[#FBFAF7] px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-700">
+              <p className="text-[11px] font-semibold text-[#344940]">
                 {resident
-                  ? `Ready to save a nursing note for ${resident.full_name}.`
+                  ? `Ready to save a progress note for ${resident.full_name}.`
                   : "Select a resident before saving."}
               </p>
 
-              <p className="mt-1 text-xs text-slate-400">
-                Recorded by{" "}
-                <span className="font-medium text-slate-600">
-                  {staff?.full_name?.trim() ||
-                    staff?.name?.trim() ||
-                    "Current Staff"}
-                </span>
+              <p className="mt-0.5 text-[9px] text-[#73817A]">
+                This entry will become part of the resident&apos;s clinical record.
               </p>
             </div>
 
             <button
               type="button"
-              onClick={saveNote}
+              onClick={
+                saveNote
+              }
               disabled={
                 saving ||
                 loadingResident ||
                 !resident
               }
-              className="inline-flex h-12 min-w-52 items-center justify-center gap-2 rounded-xl bg-green-700 px-6 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="
+                inline-flex h-9
+                min-w-[175px]
+                items-center
+                justify-center
+                gap-2 border
+                border-[#063428]
+                bg-[#073B2F]
+                px-4 text-[11px]
+                font-bold text-white
+                hover:bg-[#0D4A3A]
+                disabled:cursor-not-allowed
+                disabled:opacity-45
+              "
             >
               {saving ? (
                 <>
                   <LoaderCircle
-                    size={18}
+                    size={14}
                     className="animate-spin"
                   />
 
@@ -721,9 +763,11 @@ export default function AddNursingNotePage() {
                 </>
               ) : (
                 <>
-                  <Save size={18} />
+                  <Save
+                    size={14}
+                  />
 
-                  Save Nursing Note
+                  Save Progress Note
                 </>
               )}
             </button>
@@ -734,78 +778,127 @@ export default function AddNursingNotePage() {
   );
 }
 
-type SoapFieldProps = {
+
+function ResidentField({
+  label,
+  value,
+  strong = false,
+}: {
+  label: string;
+  value: string;
+  strong?: boolean;
+}) {
+  return (
+    <div className="min-w-0 border-l-2 border-[#D5A437] pl-2">
+      <p className="text-[9px] font-bold uppercase tracking-[0.04em] text-[#7B8982]">
+        {label}
+      </p>
+
+      <p
+        className={`
+          mt-0.5 truncate
+          text-[11px]
+
+          ${
+            strong
+              ? "font-bold text-[#073B2F]"
+              : "font-semibold text-[#40544B]"
+          }
+        `}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+
+type SoapRowProps = {
   letter: string;
   title: string;
   description: string;
   placeholder: string;
   value: string;
+
   onChange: (
     value: string
   ) => void;
-  tone:
-    | "green"
-    | "blue"
-    | "amber"
-    | "purple";
 };
 
-function SoapField({
+
+function SoapRow({
   letter,
   title,
   description,
   placeholder,
   value,
   onChange,
-  tone,
-}: SoapFieldProps) {
-  const toneClasses = {
-    green:
-      "bg-green-50 text-green-700 border-green-200",
-
-    blue:
-      "bg-blue-50 text-blue-700 border-blue-200",
-
-    amber:
-      "bg-amber-50 text-amber-700 border-amber-200",
-
-    purple:
-      "bg-purple-50 text-purple-700 border-purple-200",
-  };
-
+}: SoapRowProps) {
   return (
-    <label className="block">
-      <div className="mb-2 flex items-start gap-3">
-        <div
-          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-sm font-bold ${toneClasses[tone]}`}
-        >
-          {letter}
-        </div>
-
-        <div>
-          <span className="block text-sm font-semibold text-slate-800">
-            {title}
+    <div className="grid bg-white lg:grid-cols-[190px_minmax(0,1fr)]">
+      <div className="border-b border-[#E2E7E4] bg-[#F8F7F2] px-3 py-3 lg:border-b-0 lg:border-r">
+        <div className="flex items-start gap-2">
+          <span
+            className="
+              flex h-7 w-7
+              shrink-0 items-center
+              justify-center
+              border
+              border-[#C6D1CB]
+              bg-white
+              text-[11px]
+              font-black
+              text-[#073B2F]
+              shadow-[inset_0_-2px_0_#D5A437]
+            "
+          >
+            {letter}
           </span>
 
-          <span className="mt-0.5 block text-xs leading-5 text-slate-500">
-            {description}
-          </span>
+          <div>
+            <p className="text-[11px] font-bold text-[#30443B]">
+              {title}
+            </p>
+
+            <p className="mt-1 text-[9px] leading-4 text-[#75847D]">
+              {description}
+            </p>
+          </div>
         </div>
       </div>
 
-      <textarea
-        rows={5}
-        value={value}
-        onChange={(event) =>
-          onChange(
-            event.target.value
-          )
-        }
-        placeholder={
-          placeholder
-        }
-        className="w-full resize-y rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-sm leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-green-600 focus:ring-4 focus:ring-green-100"
-      />
-    </label>
+
+      <div className="p-3">
+        <textarea
+          rows={4}
+          value={value}
+          onChange={(
+            event
+          ) =>
+            onChange(
+              event.target
+                .value
+            )
+          }
+          placeholder={
+            placeholder
+          }
+          className="
+            w-full resize-y
+            border border-[#BFCAC4]
+            bg-white
+            px-3 py-2.5
+            text-[12px]
+            leading-5
+            text-[#24382F]
+            outline-none
+            placeholder:text-[#8A9791]
+            focus:border-[#667E72]
+            focus:ring-1
+            focus:ring-[#667E72]/20
+          "
+        />
+      </div>
+    </div>
   );
 }

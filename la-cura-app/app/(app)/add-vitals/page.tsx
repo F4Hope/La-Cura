@@ -12,15 +12,11 @@ import {
 import Link from "next/link";
 
 import {
-  Activity,
   ArrowLeft,
-  BedDouble,
   CheckCircle2,
-  HeartPulse,
   LoaderCircle,
   Save,
   Search,
-  UserRound,
   Wifi,
   WifiOff,
 } from "lucide-react";
@@ -40,12 +36,18 @@ import {
   saveOffline,
 } from "@/lib/offline";
 
+
 type Resident = {
   id: number;
   full_name: string;
-  room: string;
-  age: number;
+  room:
+    | string
+    | null;
+  age:
+    | number
+    | null;
 };
+
 
 type VitalForm = {
   temperature: string;
@@ -59,12 +61,17 @@ type VitalForm = {
   notes: string;
 };
 
+
 type NotificationState =
   | {
-      type: "success" | "error";
+      type:
+        | "success"
+        | "error";
+
       message: string;
     }
   | null;
+
 
 const EMPTY_FORM: VitalForm = {
   temperature: "",
@@ -78,20 +85,26 @@ const EMPTY_FORM: VitalForm = {
   notes: "",
 };
 
+
 function numberOrNull(
   value: string
 ): number | null {
-  if (value.trim() === "") {
+  if (
+    value.trim() === ""
+  ) {
     return null;
   }
 
   const parsed =
     Number(value);
 
-  return Number.isFinite(parsed)
+  return Number.isFinite(
+    parsed
+  )
     ? parsed
     : null;
 }
+
 
 export default function AddVitalsPage() {
   const [
@@ -141,8 +154,11 @@ export default function AddVitalsPage() {
       null
     );
 
+
   useEffect(() => {
-    setOnline(isOnline());
+    setOnline(
+      isOnline()
+    );
 
     function handleOnline() {
       setOnline(true);
@@ -175,6 +191,7 @@ export default function AddVitalsPage() {
     };
   }, []);
 
+
   useEffect(() => {
     let active = true;
 
@@ -200,7 +217,9 @@ export default function AddVitalsPage() {
       }
 
       const residentId =
-        Number(residentIdValue);
+        Number(
+          residentIdValue
+        );
 
       if (
         !Number.isInteger(
@@ -231,7 +250,10 @@ export default function AddVitalsPage() {
         .select(
           "id, full_name, room, age"
         )
-        .eq("id", residentId)
+        .eq(
+          "id",
+          residentId
+        )
         .maybeSingle();
 
       if (!active) {
@@ -279,38 +301,56 @@ export default function AddVitalsPage() {
     };
   }, []);
 
+
   function updateForm(
-    field: keyof VitalForm,
+    field:
+      keyof VitalForm,
     value: string
   ) {
-    setForm((current) => ({
-      ...current,
-      [field]: value,
-    }));
+    setForm(
+      (current) => ({
+        ...current,
+        [field]: value,
+      })
+    );
   }
 
+
   function handleResidentSelected(
-    selectedResident: Resident
+    selectedResident:
+      Resident
   ) {
     setResident(
       selectedResident
     );
 
-    setChangingResident(false);
+    setChangingResident(
+      false
+    );
 
-    setNotification(null);
+    setNotification(
+      null
+    );
   }
+
 
   function handleChangeResident() {
-    setChangingResident(true);
+    setChangingResident(
+      true
+    );
   }
+
 
   function handleCancelResidentChange() {
-    setChangingResident(false);
+    setChangingResident(
+      false
+    );
   }
 
+
   async function saveVitals(
-    event: FormEvent<HTMLFormElement>
+    event:
+      FormEvent<HTMLFormElement>
   ) {
     event.preventDefault();
 
@@ -336,7 +376,8 @@ export default function AddVitalsPage() {
         await getCurrentStaff();
 
       const now =
-        new Date().toISOString();
+        new Date()
+          .toISOString();
 
       const data = {
         resident_id:
@@ -390,8 +431,10 @@ export default function AddVitalsPage() {
           staff?.full_name ||
           "Offline Staff",
 
-        recorded_at: now,
+        recorded_at:
+          now,
       };
+
 
       if (!isOnline()) {
         saveOffline(
@@ -412,10 +455,13 @@ export default function AddVitalsPage() {
         return;
       }
 
+
       const {
         error,
       } = await supabase
-        .from("vital_signs")
+        .from(
+          "vital_signs"
+        )
         .insert(data);
 
       if (error) {
@@ -434,14 +480,6 @@ export default function AddVitalsPage() {
         ...EMPTY_FORM,
       });
 
-      /*
-       * When launched from a resident
-       * profile, keep that resident
-       * selected.
-       *
-       * When launched generally, clear
-       * the selection after saving.
-       */
       if (
         !cameFromResidentProfile
       ) {
@@ -460,195 +498,207 @@ export default function AddVitalsPage() {
     }
   }
 
+
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900">
-      <header className="relative overflow-hidden bg-gradient-to-r from-green-800 via-green-700 to-green-600 text-white">
-        <div className="absolute -right-24 -top-32 h-80 w-80 rounded-full border border-white/10" />
+    <div className="min-h-[calc(100vh-119px)] bg-[#F3F2ED] text-[#1B2924]">
+      {/* PAGE HEADER */}
 
-        <div className="absolute -bottom-32 left-1/2 h-64 w-64 rounded-full bg-white/5" />
+      <section className="border-b border-[#C9D3CE] bg-white">
+        <div className="mx-auto flex max-w-[1800px] flex-col gap-2 px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#72827B]">
+              <Link
+                href="/dashboard"
+                className="hover:text-[#073B2F]"
+              >
+                Home
+              </Link>
 
-        <div className="relative px-5 py-7 lg:px-8">
-          <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
-            <div>
+              <span>/</span>
+
               {cameFromResidentProfile &&
-                resident && (
+              resident ? (
+                <>
                   <Link
                     href={`/residents/${resident.id}`}
-                    className="mb-4 inline-flex items-center gap-2 text-sm font-medium text-green-100 transition hover:text-white"
+                    className="font-semibold text-[#073B2F] hover:underline"
                   >
-                    <ArrowLeft
-                      size={16}
-                    />
-
-                    Back to{" "}
-                    {
-                      resident.full_name
-                    }
+                    {resident.full_name}
                   </Link>
-                )}
 
-              <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-green-100">
-                <HeartPulse
-                  size={15}
-                />
+                  <span>/</span>
+                </>
+              ) : null}
 
-                Clinical Documentation
-              </div>
+              <span className="font-semibold text-[#40524B]">
+                WTS/Vitals
+              </span>
+            </div>
 
-              <h1 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
+            <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+              <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
                 Record Vital Signs
               </h1>
 
-              <p className="mt-2 text-sm text-green-100">
-                Record resident
-                observations securely
-                online or offline.
+              <p className="text-xs text-[#718078]">
+                Enter current resident observations
               </p>
             </div>
+          </div>
 
-            <div
-              className={`inline-flex items-center gap-2 self-start rounded-xl border px-4 py-3 text-sm font-medium backdrop-blur-sm lg:self-auto ${
-                online
-                  ? "border-white/15 bg-white/10 text-green-50"
-                  : "border-amber-200/30 bg-amber-400/20 text-amber-50"
-              }`}
+
+          <div className="flex items-center gap-2">
+            {cameFromResidentProfile &&
+              resident && (
+                <Link
+                  href={`/residents/${resident.id}?tab=vitals`}
+                  className="
+                    inline-flex h-8
+                    items-center gap-1.5
+                    border border-[#B3C1BA]
+                    bg-white px-3
+                    text-[10px]
+                    font-bold
+                    text-[#3F534A]
+                    hover:border-[#073B2F]
+                    hover:text-[#073B2F]
+                  "
+                >
+                  <ArrowLeft
+                    size={12}
+                  />
+
+                  Resident Vitals
+                </Link>
+              )}
+
+            <span
+              className={`
+                inline-flex h-8
+                items-center gap-1.5
+                border px-3
+                text-[10px]
+                font-bold
+
+                ${
+                  online
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : "border-amber-200 bg-amber-50 text-amber-800"
+                }
+              `}
             >
               {online ? (
-                <Wifi size={17} />
+                <Wifi size={12} />
               ) : (
                 <WifiOff
-                  size={17}
+                  size={12}
                 />
               )}
 
               {online
                 ? "Online"
-                : "Offline mode"}
-            </div>
+                : "Offline Mode"}
+            </span>
           </div>
         </div>
-      </header>
+      </section>
 
-      <main className="px-5 py-6 lg:px-8">
+
+      <main className="mx-auto max-w-[1500px] p-3 sm:p-4 lg:px-6">
         <form
-          onSubmit={saveVitals}
-          className="mx-auto max-w-6xl space-y-6"
+          onSubmit={
+            saveVitals
+          }
+          className="space-y-3"
         >
           {notification && (
             <div
-              className={`flex items-start gap-3 rounded-xl border px-4 py-4 text-sm ${
-                notification.type ===
-                "success"
-                  ? "border-green-200 bg-green-50 text-green-800"
-                  : "border-red-200 bg-red-50 text-red-800"
-              }`}
-            >
-              {notification.type ===
-              "success" ? (
-                <CheckCircle2
-                  className="mt-0.5 shrink-0"
-                  size={18}
-                />
-              ) : (
-                <Activity
-                  className="mt-0.5 shrink-0"
-                  size={18}
-                />
-              )}
+              className={`
+                flex items-center
+                gap-2 border
+                px-3 py-2.5
+                text-[11px]
+                font-medium
 
-              <p>
-                {
-                  notification.message
+                ${
+                  notification.type ===
+                  "success"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                    : "border-red-200 bg-red-50 text-red-800"
                 }
-              </p>
+              `}
+            >
+              <CheckCircle2
+                size={14}
+                className="shrink-0"
+              />
+
+              {notification.message}
             </div>
           )}
 
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <header className="border-b border-slate-200 bg-slate-50 px-5 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-50 text-green-700">
-                  <UserRound
-                    size={19}
-                  />
-                </div>
 
-                <div>
-                  <h2 className="font-semibold text-slate-900">
-                    Resident
-                  </h2>
+          {/* RESIDENT CONTEXT */}
 
-                  <p className="mt-0.5 text-sm text-slate-500">
-                    Confirm the resident
-                    before documenting
-                    vital signs.
-                  </p>
-                </div>
+          <section className="border border-[#C8D2CD] bg-white">
+            <div className="flex items-center justify-between border-b border-[#D3DCD7] bg-[#E7EDE9] px-3 py-1.5">
+              <div>
+                <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
+                  Resident Context
+                </h2>
               </div>
-            </header>
 
-            <div className="p-5">
+              {cameFromResidentProfile && (
+                <span className="text-[9px] font-bold uppercase tracking-[0.05em] text-[#8B6E27]">
+                  Profile Context
+                </span>
+              )}
+            </div>
+
+
+            <div className="p-3">
               {loadingResident ? (
-                <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center gap-2 border border-[#D4DDD8] bg-[#FBFAF7] px-3 py-3">
                   <LoaderCircle
-                    size={20}
-                    className="animate-spin text-green-700"
+                    size={15}
+                    className="animate-spin text-[#073B2F]"
                   />
 
-                  <p className="text-sm font-medium text-slate-600">
+                  <span className="text-[11px] text-[#5A6D64]">
                     Loading resident...
-                  </p>
+                  </span>
                 </div>
               ) : resident &&
                 !changingResident ? (
-                <div className="flex flex-col justify-between gap-4 rounded-xl border border-green-200 bg-green-50 p-4 sm:flex-row sm:items-center">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-700 text-white">
-                      <UserRound
-                        size={22}
-                      />
-                    </div>
+                <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                  <div className="grid gap-2 sm:grid-cols-[minmax(220px,1fr)_160px_120px]">
+                    <ResidentField
+                      label="Resident"
+                      value={
+                        resident.full_name
+                      }
+                      strong
+                    />
 
-                    <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-semibold text-slate-900">
-                          {
-                            resident.full_name
-                          }
-                        </p>
+                    <ResidentField
+                      label="Room / Bed"
+                      value={
+                        resident.room ||
+                        "Unassigned"
+                      }
+                    />
 
-                        {cameFromResidentProfile && (
-                          <span className="rounded-full bg-green-700 px-2.5 py-1 text-[11px] font-semibold text-white">
-                            From resident
-                            profile
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-slate-600">
-                        <span className="inline-flex items-center gap-1.5">
-                          <BedDouble
-                            size={15}
-                          />
-
-                          Room{" "}
-                          {resident.room ||
-                            "Unassigned"}
-                        </span>
-
-                        {resident.age !==
+                    <ResidentField
+                      label="Age"
+                      value={
+                        resident.age !==
                           null &&
-                          resident.age !==
-                            undefined && (
-                            <span>
-                              {
-                                resident.age
-                              }{" "}
-                              years
-                            </span>
-                          )}
-                      </div>
-                    </div>
+                        resident.age !==
+                          undefined
+                          ? `${resident.age} years`
+                          : "Not recorded"
+                      }
+                    />
                   </div>
 
                   <button
@@ -656,10 +706,22 @@ export default function AddVitalsPage() {
                     onClick={
                       handleChangeResident
                     }
-                    className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-green-300 bg-white px-4 text-sm font-semibold text-green-700 transition hover:bg-green-100"
+                    className="
+                      inline-flex h-8
+                      items-center
+                      justify-center gap-1.5
+                      border
+                      border-[#AABAB2]
+                      bg-white px-3
+                      text-[10px]
+                      font-bold
+                      text-[#30483E]
+                      hover:border-[#073B2F]
+                      hover:bg-[#F2F5F3]
+                    "
                   >
                     <Search
-                      size={16}
+                      size={12}
                     />
 
                     Change Resident
@@ -680,7 +742,7 @@ export default function AddVitalsPage() {
                         onClick={
                           handleCancelResidentChange
                         }
-                        className="mt-3 text-sm font-semibold text-green-700 hover:text-green-800"
+                        className="mt-2 text-[10px] font-bold text-[#073B2F] hover:underline"
                       >
                         Keep{" "}
                         {
@@ -693,36 +755,33 @@ export default function AddVitalsPage() {
             </div>
           </section>
 
-          <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <header className="border-b border-slate-200 bg-slate-50 px-5 py-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50 text-red-600">
-                  <HeartPulse
-                    size={19}
-                  />
-                </div>
 
-                <div>
-                  <h2 className="font-semibold text-slate-900">
-                    Measurements
-                  </h2>
+          {/* VITAL MEASUREMENTS */}
 
-                  <p className="mt-0.5 text-sm text-slate-500">
-                    Enter the resident's
-                    current observations.
-                  </p>
-                </div>
+          <section className="border border-[#C8D2CD] bg-white">
+            <div className="border-b border-[#D3DCD7] bg-[#E7EDE9] px-3 py-1.5">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
+                  Current Measurements
+                </h2>
+
+                <span className="text-[9px] text-[#728078]">
+                  Enter only measurements obtained during this observation
+                </span>
               </div>
-            </header>
+            </div>
 
-            <div className="grid gap-5 p-5 md:grid-cols-2 lg:grid-cols-4">
+
+            <div className="grid gap-px bg-[#D7DFDB] sm:grid-cols-2 lg:grid-cols-4">
               <VitalField
                 label="Temperature"
                 unit="°C"
                 value={
                   form.temperature
                 }
-                onChange={(value) =>
+                onChange={(
+                  value
+                ) =>
                   updateForm(
                     "temperature",
                     value
@@ -735,8 +794,12 @@ export default function AddVitalsPage() {
               <VitalField
                 label="Pulse"
                 unit="bpm"
-                value={form.pulse}
-                onChange={(value) =>
+                value={
+                  form.pulse
+                }
+                onChange={(
+                  value
+                ) =>
                   updateForm(
                     "pulse",
                     value
@@ -751,7 +814,9 @@ export default function AddVitalsPage() {
                 value={
                   form.systolic
                 }
-                onChange={(value) =>
+                onChange={(
+                  value
+                ) =>
                   updateForm(
                     "systolic",
                     value
@@ -766,7 +831,9 @@ export default function AddVitalsPage() {
                 value={
                   form.diastolic
                 }
-                onChange={(value) =>
+                onChange={(
+                  value
+                ) =>
                   updateForm(
                     "diastolic",
                     value
@@ -781,7 +848,9 @@ export default function AddVitalsPage() {
                 value={
                   form.respiratory_rate
                 }
-                onChange={(value) =>
+                onChange={(
+                  value
+                ) =>
                   updateForm(
                     "respiratory_rate",
                     value
@@ -796,7 +865,9 @@ export default function AddVitalsPage() {
                 value={
                   form.oxygen_saturation
                 }
-                onChange={(value) =>
+                onChange={(
+                  value
+                ) =>
                   updateForm(
                     "oxygen_saturation",
                     value
@@ -810,8 +881,12 @@ export default function AddVitalsPage() {
               <VitalField
                 label="Weight"
                 unit="kg"
-                value={form.weight}
-                onChange={(value) =>
+                value={
+                  form.weight
+                }
+                onChange={(
+                  value
+                ) =>
                   updateForm(
                     "weight",
                     value
@@ -827,7 +902,9 @@ export default function AddVitalsPage() {
                 value={
                   form.pain_score
                 }
-                onChange={(value) =>
+                onChange={(
+                  value
+                ) =>
                   updateForm(
                     "pain_score",
                     value
@@ -839,40 +916,69 @@ export default function AddVitalsPage() {
               />
             </div>
 
-            <div className="border-t border-slate-200 p-5">
+
+            <div className="border-t border-[#D8DFDB] bg-white p-3">
               <label className="block">
-                <span className="mb-2 block text-sm font-semibold text-slate-700">
-                  Clinical Notes
-                </span>
+                <div className="mb-1.5 flex items-center justify-between gap-3">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.03em] text-[#4D6158]">
+                    Clinical Notes
+                  </span>
+
+                  <span className="text-[9px] text-[#819088]">
+                    Optional
+                  </span>
+                </div>
 
                 <textarea
-                  rows={5}
-                  value={form.notes}
-                  onChange={(event) =>
+                  rows={4}
+                  value={
+                    form.notes
+                  }
+                  onChange={(
+                    event
+                  ) =>
                     updateForm(
                       "notes",
-                      event.target.value
+                      event
+                        .target
+                        .value
                     )
                   }
-                  placeholder="Add observations, symptoms, interventions, or other relevant notes..."
-                  className="w-full resize-y rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-green-600 focus:ring-4 focus:ring-green-100"
+                  placeholder="Clinical observations, symptoms, interventions, or follow-up..."
+                  className="
+                    w-full resize-y
+                    border border-[#BFCAC4]
+                    bg-white
+                    px-3 py-2.5
+                    text-[12px]
+                    leading-5
+                    text-[#24382F]
+                    outline-none
+                    placeholder:text-[#8A9791]
+                    focus:border-[#6B8377]
+                    focus:ring-1
+                    focus:ring-[#6B8377]/20
+                  "
                 />
               </label>
             </div>
           </section>
 
-          <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+
+          {/* SAVE BAR */}
+
+          <section className="flex flex-col gap-3 border border-[#C8D2CD] bg-[#FBFAF7] px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-700">
+              <p className="text-[11px] font-semibold text-[#344940]">
                 {resident
-                  ? `Ready to record vitals for ${resident.full_name}.`
+                  ? `Ready to record vital signs for ${resident.full_name}.`
                   : "Select a resident before saving."}
               </p>
 
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-0.5 text-[9px] text-[#73817A]">
                 {online
-                  ? "Changes will be saved to La-Cura immediately."
-                  : "Changes will be stored offline and synchronized later."}
+                  ? "The record will be saved immediately."
+                  : "The record will be stored locally and synchronized when connectivity returns."}
               </p>
             </div>
 
@@ -883,12 +989,25 @@ export default function AddVitalsPage() {
                 loadingResident ||
                 !resident
               }
-              className="inline-flex h-12 min-w-48 items-center justify-center gap-2 rounded-xl bg-green-700 px-6 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="
+                inline-flex h-9
+                min-w-[155px]
+                items-center
+                justify-center
+                gap-2 border
+                border-[#063428]
+                bg-[#073B2F]
+                px-4 text-[11px]
+                font-bold text-white
+                hover:bg-[#0D4A3A]
+                disabled:cursor-not-allowed
+                disabled:opacity-45
+              "
             >
               {saving ? (
                 <>
                   <LoaderCircle
-                    size={18}
+                    size={14}
                     className="animate-spin"
                   />
 
@@ -896,31 +1015,70 @@ export default function AddVitalsPage() {
                 </>
               ) : (
                 <>
-                  <Save size={18} />
+                  <Save
+                    size={14}
+                  />
 
                   Save Vital Signs
                 </>
               )}
             </button>
-          </div>
+          </section>
         </form>
       </main>
     </div>
   );
 }
 
+
+function ResidentField({
+  label,
+  value,
+  strong = false,
+}: {
+  label: string;
+  value: string;
+  strong?: boolean;
+}) {
+  return (
+    <div className="min-w-0 border-l-2 border-[#D5A437] pl-2">
+      <p className="text-[9px] font-bold uppercase tracking-[0.04em] text-[#7B8982]">
+        {label}
+      </p>
+
+      <p
+        className={`
+          mt-0.5 truncate
+          text-[11px]
+          ${
+            strong
+              ? "font-bold text-[#073B2F]"
+              : "font-semibold text-[#40544B]"
+          }
+        `}
+      >
+        {value}
+      </p>
+    </div>
+  );
+}
+
+
 type VitalFieldProps = {
   label: string;
   unit: string;
   value: string;
+
   onChange: (
     value: string
   ) => void;
+
   placeholder?: string;
   min?: string;
   max?: string;
   step?: string;
 };
+
 
 function VitalField({
   label,
@@ -933,8 +1091,8 @@ function VitalField({
   step,
 }: VitalFieldProps) {
   return (
-    <label className="block">
-      <span className="mb-2 block text-sm font-semibold text-slate-700">
+    <label className="bg-white px-3 py-3">
+      <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.025em] text-[#53675E]">
         {label}
       </span>
 
@@ -945,16 +1103,35 @@ function VitalField({
           max={max}
           step={step}
           value={value}
-          onChange={(event) =>
+          onChange={(
+            event
+          ) =>
             onChange(
-              event.target.value
+              event.target
+                .value
             )
           }
-          placeholder={placeholder}
-          className="h-12 w-full rounded-xl border border-slate-300 bg-white px-3.5 pr-16 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-green-600 focus:ring-4 focus:ring-green-100"
+          placeholder={
+            placeholder
+          }
+          className="
+            h-9 w-full
+            border border-[#BFCAC4]
+            bg-white
+            px-2.5 pr-14
+            text-[12px]
+            font-semibold
+            text-[#24382F]
+            outline-none
+            placeholder:font-normal
+            placeholder:text-[#9AA49F]
+            focus:border-[#667E72]
+            focus:ring-1
+            focus:ring-[#667E72]/20
+          "
         />
 
-        <span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400">
+        <span className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-[9px] font-semibold text-[#7A8982]">
           {unit}
         </span>
       </div>
