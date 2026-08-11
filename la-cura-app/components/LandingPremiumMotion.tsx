@@ -107,17 +107,74 @@ export function PremiumLandingStyles() {
         }
       }
 
-      @keyframes premiumGoldFlash {
-        0% {
-          background-position: 180% center;
-          opacity: 0;
-        }
-
         12% {
           opacity: 0.9;
         }
 
         55% {
+          opacity: 1;
+        }
+
+        100% {
+          background-position: -80% center;
+          opacity: 0;
+        }
+      }
+
+        4% {
+          opacity: 0.15;
+        }
+
+        9% {
+          opacity: 0.95;
+        }
+
+        24% {
+          background-position: -75% center;
+          opacity: 1;
+        }
+
+        30% {
+          opacity: 0;
+        }
+
+        100% {
+          background-position: -75% center;
+          opacity: 0;
+        }
+      }
+
+      @keyframes premiumGoldCycle {
+        0% {
+          background-position: 180% center;
+          opacity: 0;
+        }
+
+        3% {
+          opacity: 1;
+        }
+
+        45% {
+          background-position: -80% center;
+          opacity: 1;
+        }
+
+        48% {
+          background-position: -80% center;
+          opacity: 0;
+        }
+
+        49% {
+          background-position: 180% center;
+          opacity: 0;
+        }
+
+        52% {
+          opacity: 1;
+        }
+
+        97% {
+          background-position: -80% center;
           opacity: 1;
         }
 
@@ -199,6 +256,7 @@ export function PremiumLandingStyles() {
       }
 
       .premium-hero-image {
+        filter: contrast(1.07) saturate(1.08) brightness(0.98);
         animation: premiumHeroImage
           19s ease-in-out infinite;
         will-change: transform;
@@ -284,6 +342,18 @@ export function PremiumLandingStyles() {
         position: relative;
         isolation: isolate;
         overflow: hidden;
+      }
+
+      .premium-card {
+        transition:
+          transform 320ms cubic-bezier(0.16,1,0.3,1),
+          box-shadow 320ms ease;
+      }
+
+      .premium-card:hover {
+        transform: translateY(-4px);
+        box-shadow:
+          0 20px 44px rgba(7, 59, 47, 0.09);
       }
 
       .premium-card::after {
@@ -587,16 +657,16 @@ export function AnimatedHeroTitle() {
 
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 whitespace-nowrap bg-clip-text text-transparent"
+            className="premium-gold-glimpse pointer-events-none absolute inset-0 whitespace-nowrap bg-clip-text text-transparent"
             style={{
               backgroundImage:
-                "linear-gradient(110deg, transparent 30%, transparent 42%, #F9E6A2 48%, #D5A437 52%, #F9E6A2 56%, transparent 63%, transparent 100%)",
+                "linear-gradient(110deg, transparent 34%, transparent 43%, #FFF4C7 47%, #E8C45C 50%, #D5A437 52%, #FFF4C7 56%, transparent 63%, transparent 100%)",
 
               backgroundSize:
                 "260% 100%",
 
               animation: active
-                ? "premiumGoldFlash 1450ms cubic-bezier(0.16,1,0.3,1) 1180ms both"
+                ? "premiumGoldCycle 4.6s linear 1.1s infinite"
                 : "none",
             }}
           >
