@@ -19,6 +19,8 @@ import ResidentAllergiesTab from "@/components/allergies/ResidentAllergiesTab";
 
 import ResidentResultsTab from "@/components/results/ResidentResultsTab";
 
+import ResidentImmunizationsTab from "@/components/immunizations/ResidentImmunizationsTab";
+
 import {
   getMedicationHistory,
 } from "@/lib/medicationHistory";
@@ -1274,14 +1276,18 @@ function ResidentTabContent({
     tab === "immun"
   ) {
     return (
-      <EmptyModule
-        title="Immunizations"
-        description="No immunization records are connected to this resident record yet."
+      <ResidentImmunizationsTab
+        residentId={
+          resident.id
+        }
+        residentName={
+          getResidentName(
+            resident
+          )
+        }
       />
     );
   }
-
-
   if (
     tab === "results"
   ) {
