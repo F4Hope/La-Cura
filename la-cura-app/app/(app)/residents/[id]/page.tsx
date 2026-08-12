@@ -15,6 +15,8 @@ import ResidentClinicalTabs, {
 
 import ResidentOrdersTab from "@/components/orders/ResidentOrdersTab";
 
+import ResidentAllergiesTab from "@/components/allergies/ResidentAllergiesTab";
+
 import {
   getMedicationHistory,
 } from "@/lib/medicationHistory";
@@ -1161,40 +1163,18 @@ function ResidentTabContent({
     tab === "allergies"
   ) {
     return (
-      <RecordPanel title="Allergies">
-        <div className="p-3">
-          <div
-            className={`
-              border p-3
-              ${
-                hasRecordedAllergy
-                  ? "border-red-200 bg-red-50"
-                  : "border-emerald-200 bg-emerald-50"
-              }
-            `}
-          >
-            <p
-              className={`
-                text-[11px]
-                font-bold
-                ${
-                  hasRecordedAllergy
-                    ? "text-red-800"
-                    : "text-emerald-800"
-                }
-              `}
-            >
-              {hasRecordedAllergy
-                ? allergies
-                : "No known allergies recorded"}
-            </p>
-          </div>
-        </div>
-      </RecordPanel>
+      <ResidentAllergiesTab
+        residentId={
+          resident.id
+        }
+        residentName={
+          getResidentName(
+            resident
+          )
+        }
+      />
     );
   }
-
-
   if (
     tab === "vitals"
   ) {

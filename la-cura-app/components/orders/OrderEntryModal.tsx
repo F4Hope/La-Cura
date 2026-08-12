@@ -13,6 +13,7 @@ import {
 import {
   LoaderCircle,
   Save,
+  TriangleAlert,
   X,
 } from "lucide-react";
 
@@ -24,6 +25,20 @@ import type {
   OrderCategory,
   ResidentOrder,
 } from "@/lib/orderTypes";
+
+
+type ActiveAllergy = {
+  id: number;
+  allergen: string;
+
+  reaction:
+    | string
+    | null;
+
+  severity:
+    | string
+    | null;
+};
 
 
 type Props = {
@@ -475,6 +490,18 @@ export default function OrderEntryModal({
     setError,
   ] = useState("");
 
+  const [
+    activeAllergies,
+    setActiveAllergies,
+  ] = useState<
+    ActiveAllergy[]
+  >([]);
+
+  const [
+    allergyLoading,
+    setAllergyLoading,
+  ] = useState(false);
+
   const editing =
     Boolean(
       initialOrder
@@ -512,6 +539,145 @@ export default function OrderEntryModal({
     category,
     primaryDoctor,
     initialOrder,
+  ]);
+
+
+  useEffect(() => {
+    if (
+      !open ||
+      category !==
+        "Pharmacy"
+    ) {
+      setActiveAllergies(
+        []
+      );
+
+      setAllergyLoading(
+        false
+      );
+
+      return;
+    }
+
+
+    let cancelled =
+      false;
+
+
+    async function loadActiveAllergies() {
+      setAllergyLoading(
+        true
+      );
+
+
+      const {
+        data,
+        error:
+          allergyError,
+      } =
+        await supabase
+          .from(
+            "resident_allergies"
+          )
+          .select(
+            "id, allergen, reaction, severity"
+          )
+          .eq(
+            "resident_id",
+            residentId
+          )
+          .eq(
+            "status",
+            "Active"
+          )
+          .order(
+            "allergen",
+            {
+              ascending:
+                true,
+            }
+          );
+
+
+      if (cancelled) {
+        return;
+      }
+
+
+      if (
+        allergyError
+      ) {
+        console.error(
+          "Unable to load active resident allergies:",
+          allergyError
+        );
+
+        setActiveAllergies(
+          []
+        );
+      } else {
+        const records =
+          (data ??
+            []) as ActiveAllergy[];
+
+
+        const severityRank:
+          Record<
+            string,
+            number
+          > = {
+            Severe: 0,
+            Moderate: 1,
+            Mild: 2,
+            Unknown: 3,
+          };
+
+
+        records.sort(
+          (
+            a,
+            b
+          ) =>
+            (
+              severityRank[
+                a.severity ??
+                  "Unknown"
+              ] ?? 4
+            ) -
+              (
+                severityRank[
+                  b.severity ??
+                    "Unknown"
+                ] ?? 4
+              ) ||
+            a.allergen.localeCompare(
+              b.allergen
+            )
+        );
+
+
+        setActiveAllergies(
+          records
+        );
+      }
+
+
+      setAllergyLoading(
+        false
+      );
+    }
+
+
+    void loadActiveAllergies();
+
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    open,
+    category,
+    residentId,
   ]);
 
 
@@ -1026,6 +1192,95 @@ export default function OrderEntryModal({
             <X size={13} />
           </button>
         </header>
+
+
+        {category ===
+          "Pharmacy" && (
+          <div
+            className={`
+              flex gap-2 border-b px-3 py-2
+
+              ${
+                activeAllergies.length >
+                0
+                  ? "border-red-300 bg-red-50"
+                  : "border-[#D7DEDA] bg-[#F5F6F2]"
+              }
+            `}
+          >
+            <TriangleAlert
+              size={16}
+              className={
+                activeAllergies.length >
+                0
+                  ? "mt-0.5 shrink-0 text-red-700"
+                  : "mt-0.5 shrink-0 text-[#687970]"
+              }
+            />
+
+            <div className="min-w-0">
+              <p
+                className={`
+                  text-[10px] font-extrabold uppercase tracking-[0.03em]
+
+                  ${
+                    activeAllergies.length >
+                    0
+                      ? "text-red-800"
+                      : "text-[#40534B]"
+                  }
+                `}
+              >
+                Active Allergies
+              </p>
+
+
+              {allergyLoading ? (
+                <p className="mt-0.5 text-[10px] text-[#687970]">
+                  Checking resident allergy record...
+                </p>
+              ) : activeAllergies.length >
+                0 ? (
+                <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
+                  {activeAllergies.map(
+                    (
+                      allergy
+                    ) => (
+                      <p
+                        key={
+                          allergy.id
+                        }
+                        className="text-[10px] font-semibold text-red-800"
+                      >
+                        {allergy.allergen}
+
+                        {allergy.severity && (
+                          <>
+                            {" "}
+                            —{" "}
+                            {allergy.severity}
+                          </>
+                        )}
+
+                        {allergy.reaction && (
+                          <>
+                            {" "}
+                            —{" "}
+                            {allergy.reaction}
+                          </>
+                        )}
+                      </p>
+                    )
+                  )}
+                </div>
+              ) : (
+                <p className="mt-0.5 text-[10px] text-[#687970]">
+                  No active structured allergy records were found for this resident.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
 
 
         <div className="min-h-0 flex-1 overflow-y-auto">
