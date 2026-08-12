@@ -17,6 +17,8 @@ import ResidentOrdersTab from "@/components/orders/ResidentOrdersTab";
 
 import ResidentAllergiesTab from "@/components/allergies/ResidentAllergiesTab";
 
+import ResidentResultsTab from "@/components/results/ResidentResultsTab";
+
 import {
   getMedicationHistory,
 } from "@/lib/medicationHistory";
@@ -1284,24 +1286,18 @@ function ResidentTabContent({
     tab === "results"
   ) {
     return (
-      <EmptyModule
-        title="Results"
-        description="Laboratory and diagnostic result records will appear here when the results module is connected."
+      <ResidentResultsTab
+        residentId={
+          resident.id
+        }
+        residentName={
+          getResidentName(
+            resident
+          )
+        }
       />
     );
   }
-
-
-  if (tab === "mds") {
-    return (
-      <EmptyModule
-        title="MDS"
-        description="MDS assessment records will appear in this resident module."
-      />
-    );
-  }
-
-
   if (
     tab === "assmnts"
   ) {
