@@ -21,6 +21,8 @@ import ResidentResultsTab from "@/components/results/ResidentResultsTab";
 
 import ResidentImmunizationsTab from "@/components/immunizations/ResidentImmunizationsTab";
 
+import ResidentVitalsTab from "@/components/vitals/ResidentVitalsTab";
+
 import {
   getMedicationHistory,
 } from "@/lib/medicationHistory";
@@ -1183,15 +1185,18 @@ function ResidentTabContent({
     tab === "vitals"
   ) {
     return (
-      <VitalsTable
-        vitals={
-          recentVitals
+      <ResidentVitalsTab
+        residentId={
+          resident.id
+        }
+        residentName={
+          getResidentName(
+            resident
+          )
         }
       />
     );
   }
-
-
   if (
     tab === "prog-notes"
   ) {
