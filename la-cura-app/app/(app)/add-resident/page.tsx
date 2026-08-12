@@ -41,14 +41,14 @@ import { supabase } from "@/lib/supabase/client";
 const PHOTO_BUCKET =
   "resident-photos";
 
-const MAX_PHOTO_SIZE =
-  5 * 1024 * 1024;
+const MAX_SOURCE_PHOTO_SIZE =
+  20 * 1024 * 1024;
 
-const ALLOWED_PHOTO_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-];
+const NORMALIZED_PHOTO_SIZE =
+  640;
+
+const NORMALIZED_PHOTO_QUALITY =
+  0.82;
 
 type ResidentForm = {
   full_name: string;
@@ -173,22 +173,190 @@ function calculateAge(
     : "";
 }
 
-function getPhotoExtension(
+async function normalizeResidentPhoto(
   file: File
-): string {
-  const typeExtensions: Record<
-    string,
-    string
-  > = {
-    "image/jpeg": "jpg",
-    "image/png": "png",
-    "image/webp": "webp",
-  };
+): Promise<File> {
+  const objectUrl =
+    URL.createObjectURL(file);
 
-  return (
-    typeExtensions[file.type] ||
-    "jpg"
-  );
+  try {
+    const image =
+      await new Promise<HTMLImageElement>(
+        (
+          resolve,
+          reject
+        ) => {
+          const element =
+            new Image();
+
+          element.onload =
+            () =>
+              resolve(
+                element
+              );
+
+          element.onerror =
+            () =>
+              reject(
+                new Error(
+                  "This image format could not be processed by your browser."
+                )
+              );
+
+          element.src =
+            objectUrl;
+        }
+      );
+
+
+    const width =
+      image.naturalWidth;
+
+    const height =
+      image.naturalHeight;
+
+
+    if (
+      !width ||
+      !height
+    ) {
+      throw new Error(
+        "The selected photo could not be read."
+      );
+    }
+
+
+    /*
+     * Center-crop the original image to a square.
+     * This avoids distorted resident headshots.
+     */
+    const sourceSize =
+      Math.min(
+        width,
+        height
+      );
+
+    const sourceX =
+      Math.max(
+        0,
+        (
+          width -
+          sourceSize
+        ) /
+          2
+      );
+
+    const sourceY =
+      Math.max(
+        0,
+        (
+          height -
+          sourceSize
+        ) /
+          2
+      );
+
+
+    const canvas =
+      document.createElement(
+        "canvas"
+      );
+
+    canvas.width =
+      NORMALIZED_PHOTO_SIZE;
+
+    canvas.height =
+      NORMALIZED_PHOTO_SIZE;
+
+
+    const context =
+      canvas.getContext(
+        "2d"
+      );
+
+
+    if (!context) {
+      throw new Error(
+        "The resident photo could not be prepared."
+      );
+    }
+
+
+    /*
+     * White background prevents transparent PNGs
+     * from appearing black in some environments.
+     */
+    context.fillStyle =
+      "#ffffff";
+
+    context.fillRect(
+      0,
+      0,
+      NORMALIZED_PHOTO_SIZE,
+      NORMALIZED_PHOTO_SIZE
+    );
+
+
+    context.drawImage(
+      image,
+      sourceX,
+      sourceY,
+      sourceSize,
+      sourceSize,
+      0,
+      0,
+      NORMALIZED_PHOTO_SIZE,
+      NORMALIZED_PHOTO_SIZE
+    );
+
+
+    const blob =
+      await new Promise<Blob>(
+        (
+          resolve,
+          reject
+        ) => {
+          canvas.toBlob(
+            (
+              result
+            ) => {
+              if (!result) {
+                reject(
+                  new Error(
+                    "The resident photo could not be compressed."
+                  )
+                );
+
+                return;
+              }
+
+              resolve(
+                result
+              );
+            },
+            "image/webp",
+            NORMALIZED_PHOTO_QUALITY
+          );
+        }
+      );
+
+
+    return new File(
+      [blob],
+      `resident-${crypto.randomUUID()}.webp`,
+      {
+        type:
+          "image/webp",
+
+        lastModified:
+          Date.now(),
+      }
+    );
+  } finally {
+    URL.revokeObjectURL(
+      objectUrl
+    );
+  }
 }
 
 function getResidentInitials(
@@ -246,6 +414,11 @@ export default function AddResidentPage() {
     photoError,
     setPhotoError,
   ] = useState("");
+
+  const [
+    isProcessingPhoto,
+    setIsProcessingPhoto,
+  ] = useState(false);
 
   const [
     isSubmitting,
@@ -327,7 +500,7 @@ export default function AddResidentPage() {
     }
   }
 
-  function handlePhotoChange(
+  async function handlePhotoChange(
     event: ChangeEvent<HTMLInputElement>
   ) {
     const file =
@@ -339,37 +512,78 @@ export default function AddResidentPage() {
       return;
     }
 
+
     if (
-      !ALLOWED_PHOTO_TYPES.includes(
-        file.type
+      !file.type.startsWith(
+        "image/"
       )
     ) {
-      setSelectedPhoto(null);
-
-      setPhotoError(
-        "Choose a JPG, PNG, or WebP image."
+      setSelectedPhoto(
+        null
       );
 
-      event.target.value = "";
+      setPhotoError(
+        "Choose an image file."
+      );
+
+      event.target.value =
+        "";
 
       return;
     }
+
 
     if (
-      file.size > MAX_PHOTO_SIZE
+      file.size >
+      MAX_SOURCE_PHOTO_SIZE
     ) {
-      setSelectedPhoto(null);
-
-      setPhotoError(
-        "The selected photo is larger than 5 MB."
+      setSelectedPhoto(
+        null
       );
 
-      event.target.value = "";
+      setPhotoError(
+        "The selected photo is larger than 20 MB."
+      );
+
+      event.target.value =
+        "";
 
       return;
     }
 
-    setSelectedPhoto(file);
+
+    setIsProcessingPhoto(
+      true
+    );
+
+
+    try {
+      const normalizedPhoto =
+        await normalizeResidentPhoto(
+          file
+        );
+
+      setSelectedPhoto(
+        normalizedPhoto
+      );
+    } catch (error) {
+      setSelectedPhoto(
+        null
+      );
+
+      setPhotoError(
+        error instanceof Error
+          ? error.message
+          : "The selected photo could not be processed."
+      );
+
+      event.target.value =
+        "";
+    } finally {
+      setIsProcessingPhoto(
+        false
+      );
+    }
   }
 
   function removeSelectedPhoto() {
@@ -412,34 +626,40 @@ export default function AddResidentPage() {
   }
 
   async function uploadPhoto(): Promise<{
-    publicUrl: string;
     storagePath: string;
   } | null> {
     if (!selectedPhoto) {
       return null;
     }
 
-    const extension =
-      getPhotoExtension(
-        selectedPhoto
-      );
 
     const storagePath =
-      `residents/${crypto.randomUUID()}.${extension}`;
+      `residents/${crypto.randomUUID()}.webp`;
 
-    const { error: uploadError } =
+
+    const {
+      error:
+        uploadError,
+    } =
       await supabase.storage
-        .from(PHOTO_BUCKET)
+        .from(
+          PHOTO_BUCKET
+        )
         .upload(
           storagePath,
           selectedPhoto,
           {
-            cacheControl: "3600",
+            cacheControl:
+              "21600",
+
             contentType:
-              selectedPhoto.type,
-            upsert: false,
+              "image/webp",
+
+            upsert:
+              false,
           }
         );
+
 
     if (uploadError) {
       throw new Error(
@@ -447,19 +667,8 @@ export default function AddResidentPage() {
       );
     }
 
-    const { data } =
-      supabase.storage
-        .from(PHOTO_BUCKET)
-        .getPublicUrl(storagePath);
-
-    if (!data.publicUrl) {
-      throw new Error(
-        "The photo was uploaded, but its URL could not be created."
-      );
-    }
 
     return {
-      publicUrl: data.publicUrl,
       storagePath,
     };
   }
@@ -500,11 +709,24 @@ export default function AddResidentPage() {
       return;
     }
 
+
+    if (
+      isProcessingPhoto
+    ) {
+      setNotification({
+        type: "error",
+        message:
+          "Wait for the resident photo to finish processing.",
+      });
+
+      return;
+    }
+
+
     setIsSubmitting(true);
 
     let uploadedPhoto:
       | {
-          publicUrl: string;
           storagePath: string;
         }
       | null = null;
@@ -572,7 +794,7 @@ export default function AddResidentPage() {
               null,
 
             photo_url:
-              uploadedPhoto?.publicUrl ||
+              uploadedPhoto?.storagePath ||
               null,
           },
         ])
@@ -580,6 +802,20 @@ export default function AddResidentPage() {
         .single();
 
       if (insertError) {
+        if (
+          uploadedPhoto
+            ?.storagePath
+        ) {
+          await supabase.storage
+            .from(
+              PHOTO_BUCKET
+            )
+            .remove([
+              uploadedPhoto
+                .storagePath,
+            ]);
+        }
+
         throw new Error(
           insertError.message
         );
@@ -688,8 +924,9 @@ export default function AddResidentPage() {
               </h2>
 
               <p className="mt-1 text-xs leading-5 text-[#073B2F]">
-                JPG, PNG, or WebP. Maximum
-                file size 5 MB.
+                Photos are automatically
+                cropped, resized to 640 × 640,
+                and compressed to WebP.
               </p>
             </div>
 
@@ -725,7 +962,7 @@ export default function AddResidentPage() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/jpeg,image/png,image/webp"
+                accept="image/*"
                 onChange={
                   handlePhotoChange
                 }
@@ -737,14 +974,28 @@ export default function AddResidentPage() {
                 onClick={() =>
                   fileInputRef.current?.click()
                 }
-                disabled={isSubmitting}
+                disabled={
+                  isSubmitting ||
+                  isProcessingPhoto
+                }
                 className="mt-6 inline-flex h-9 w-full items-center justify-center gap-2 rounded-[3px] bg-[#073B2F] px-3 text-[11px] font-bold text-white transition hover:bg-[#0D4A3A] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <Upload size={17} />
+                {isProcessingPhoto ? (
+                  <LoaderCircle
+                    size={17}
+                    className="animate-spin"
+                  />
+                ) : (
+                  <Upload
+                    size={17}
+                  />
+                )}
 
-                {selectedPhoto
-                  ? "Change Photo"
-                  : "Choose Photo"}
+                {isProcessingPhoto
+                  ? "Preparing Photo..."
+                  : selectedPhoto
+                    ? "Change Photo"
+                    : "Choose Photo"}
               </button>
 
               {selectedPhoto && (

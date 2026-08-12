@@ -22,6 +22,10 @@ import {
 } from "@/lib/residentTimelineServer";
 
 import {
+  getResidentPhotoSignedUrl,
+} from "@/lib/residentPhotos";
+
+import {
   createClient,
 } from "@/lib/supabase/server";
 
@@ -490,6 +494,12 @@ export default async function ResidentPage({
   const resident =
     residentResult.data as
       ResidentRecord;
+
+  resident.photo_url =
+    await getResidentPhotoSignedUrl(
+      supabase,
+      resident.photo_url
+    );
 
   const timeline =
     (timelineResult ??
