@@ -13,6 +13,8 @@ import ResidentClinicalTabs, {
   type ResidentTabKey,
 } from "@/components/ResidentClinicalTabs";
 
+import ResidentOrdersTab from "@/components/orders/ResidentOrdersTab";
+
 import {
   getMedicationHistory,
 } from "@/lib/medicationHistory";
@@ -1267,9 +1269,20 @@ function ResidentTabContent({
     tab === "orders"
   ) {
     return (
-      <EmptyModule
-        title="Orders"
-        description="No resident order records are connected to this workspace yet. The tab is ready for the La-Cura orders module."
+      <ResidentOrdersTab
+        residentId={
+          resident.id
+        }
+        residentName={
+          getResidentName(
+            resident
+          )
+        }
+        primaryDoctor={
+          cleanText(
+            resident.primary_doctor
+          )
+        }
       />
     );
   }

@@ -1,0 +1,2225 @@
+"use client";
+
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
+import {
+  createPortal,
+} from "react-dom";
+
+import {
+  LoaderCircle,
+  Save,
+  X,
+} from "lucide-react";
+
+import {
+  supabase,
+} from "@/lib/supabase/client";
+
+import type {
+  OrderCategory,
+  ResidentOrder,
+} from "@/lib/orderTypes";
+
+
+type Props = {
+  open: boolean;
+
+  category:
+    OrderCategory | null;
+
+  residentId: number;
+  residentName: string;
+
+  primaryDoctor?: string;
+
+  initialOrder?:
+    ResidentOrder | null;
+
+  onClose: () => void;
+
+  onSaved: () => void;
+};
+
+
+type OrderForm = {
+  orderDate: string;
+  orderTime: string;
+
+  communicationMethod:
+    string;
+
+  orderedBy: string;
+
+  orderName: string;
+
+  dosage: string;
+
+  orderType: string;
+
+  route: string;
+
+  scheduleType: string;
+
+  frequency: string;
+
+  administrationTime:
+    string;
+
+  indication: string;
+
+  priority: string;
+
+  specimen: string;
+
+  source: string;
+
+  pharmacy: string;
+
+  startDate: string;
+
+  endDate: string;
+
+  reviewDate: string;
+
+  directions: string;
+
+  notes: string;
+
+  daw: boolean;
+
+  bodySite: string;
+
+  fastingRequired:
+    boolean;
+
+  texture: string;
+
+  liquidConsistency:
+    string;
+
+  restrictions: string;
+
+  amount: string;
+
+  rate: string;
+
+  flush: string;
+
+  holdParameters: string;
+};
+
+
+function dateInputValue(
+  date = new Date()
+) {
+  const year =
+    date.getFullYear();
+
+  const month =
+    String(
+      date.getMonth() +
+        1
+    ).padStart(
+      2,
+      "0"
+    );
+
+  const day =
+    String(
+      date.getDate()
+    ).padStart(
+      2,
+      "0"
+    );
+
+  return `${year}-${month}-${day}`;
+}
+
+
+function timeInputValue(
+  date = new Date()
+) {
+  return `${String(
+    date.getHours()
+  ).padStart(
+    2,
+    "0"
+  )}:${String(
+    date.getMinutes()
+  ).padStart(
+    2,
+    "0"
+  )}`;
+}
+
+
+function cleanText(
+  value: unknown
+) {
+  return typeof value ===
+    "string"
+    ? value.trim()
+    : "";
+}
+
+
+function sourceForCategory(
+  category:
+    OrderCategory
+) {
+  if (
+    category ===
+    "Pharmacy"
+  ) {
+    return "Pharmacy";
+  }
+
+  if (
+    category ===
+    "Diagnostic"
+  ) {
+    return "Diagnostic";
+  }
+
+  if (
+    category ===
+    "Laboratory"
+  ) {
+    return "Laboratory";
+  }
+
+  if (
+    category === "Diet"
+  ) {
+    return "Dietary";
+  }
+
+  if (
+    category ===
+    "Supplement" ||
+    category ===
+      "Enteral Feed"
+  ) {
+    return "Nutrition";
+  }
+
+  return "Facility";
+}
+
+
+function createInitialForm(
+  category:
+    OrderCategory,
+  primaryDoctor = "",
+  initialOrder?:
+    ResidentOrder | null
+): OrderForm {
+  const metadata =
+    initialOrder
+      ?.metadata ??
+    {};
+
+
+  let orderDate =
+    dateInputValue();
+
+  let orderTime =
+    timeInputValue();
+
+
+  if (
+    initialOrder
+      ?.order_date
+  ) {
+    const date =
+      new Date(
+        initialOrder.order_date
+      );
+
+    if (
+      !Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      orderDate =
+        dateInputValue(
+          date
+        );
+
+      orderTime =
+        timeInputValue(
+          date
+        );
+    }
+  }
+
+
+  return {
+    orderDate,
+    orderTime,
+
+    communicationMethod:
+      initialOrder
+        ?.communication_method ??
+      "Prescriber Entered",
+
+    orderedBy:
+      initialOrder
+        ?.ordered_by ??
+      primaryDoctor,
+
+    orderName:
+      initialOrder
+        ?.order_name ??
+      "",
+
+    dosage:
+      initialOrder
+        ?.dosage ??
+      "",
+
+    orderType:
+      initialOrder
+        ?.order_type ??
+      "",
+
+    route:
+      initialOrder
+        ?.route ??
+      "",
+
+    scheduleType:
+      initialOrder
+        ?.schedule_type ??
+      "Routine",
+
+    frequency:
+      initialOrder
+        ?.frequency ??
+      "",
+
+    administrationTime:
+      initialOrder
+        ?.administration_time ??
+      "",
+
+    indication:
+      initialOrder
+        ?.indication ??
+      "",
+
+    priority:
+      initialOrder
+        ?.priority ??
+      "Routine",
+
+    specimen:
+      initialOrder
+        ?.specimen ??
+      "",
+
+    source:
+      initialOrder
+        ?.source ??
+      sourceForCategory(
+        category
+      ),
+
+    pharmacy:
+      initialOrder
+        ?.pharmacy ??
+      "",
+
+    startDate:
+      initialOrder
+        ?.start_date ??
+      dateInputValue(),
+
+    endDate:
+      initialOrder
+        ?.end_date ??
+      "",
+
+    reviewDate:
+      initialOrder
+        ?.review_date ??
+      "",
+
+    directions:
+      initialOrder
+        ?.directions ??
+      "",
+
+    notes:
+      initialOrder
+        ?.notes ??
+      "",
+
+    daw:
+      Boolean(
+        metadata.daw
+      ),
+
+    bodySite:
+      cleanText(
+        metadata.body_site
+      ),
+
+    fastingRequired:
+      Boolean(
+        metadata.fasting_required
+      ),
+
+    texture:
+      cleanText(
+        metadata.texture
+      ),
+
+    liquidConsistency:
+      cleanText(
+        metadata.liquid_consistency
+      ),
+
+    restrictions:
+      cleanText(
+        metadata.restrictions
+      ),
+
+    amount:
+      cleanText(
+        metadata.amount
+      ),
+
+    rate:
+      cleanText(
+        metadata.rate
+      ),
+
+    flush:
+      cleanText(
+        metadata.flush
+      ),
+
+    holdParameters:
+      cleanText(
+        metadata.hold_parameters
+      ),
+  };
+}
+
+
+function labelForOrder(
+  category:
+    OrderCategory
+) {
+  switch (category) {
+    case "Pharmacy":
+      return "Medication";
+
+    case "Diagnostic":
+      return "Diagnostic / Procedure";
+
+    case "Laboratory":
+      return "Laboratory Test / Panel";
+
+    case "Diet":
+      return "Diet Order";
+
+    case "Supplement":
+      return "Supplement";
+
+    case "Enteral Feed":
+      return "Formula / Enteral Order";
+
+    default:
+      return "Order";
+  }
+}
+
+
+export default function OrderEntryModal({
+  open,
+  category,
+  residentId,
+  residentName,
+  primaryDoctor = "",
+  initialOrder = null,
+  onClose,
+  onSaved,
+}: Props) {
+  const [
+    mounted,
+    setMounted,
+  ] = useState(false);
+
+  const [
+    form,
+    setForm,
+  ] =
+    useState<OrderForm | null>(
+      null
+    );
+
+  const [
+    saving,
+    setSaving,
+  ] = useState(false);
+
+  const [
+    error,
+    setError,
+  ] = useState("");
+
+  const editing =
+    Boolean(
+      initialOrder
+    );
+
+
+  useEffect(() => {
+    setMounted(true);
+
+    return () => {
+      setMounted(false);
+    };
+  }, []);
+
+
+  useEffect(() => {
+    if (
+      !open ||
+      !category
+    ) {
+      return;
+    }
+
+    setForm(
+      createInitialForm(
+        category,
+        primaryDoctor,
+        initialOrder
+      )
+    );
+
+    setError("");
+  }, [
+    open,
+    category,
+    primaryDoctor,
+    initialOrder,
+  ]);
+
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const previous =
+      document.body.style
+        .overflow;
+
+    function handleEscape(
+      event:
+        KeyboardEvent
+    ) {
+      if (
+        event.key ===
+          "Escape" &&
+        !saving
+      ) {
+        onClose();
+      }
+    }
+
+    document.body.style
+      .overflow =
+      "hidden";
+
+    window.addEventListener(
+      "keydown",
+      handleEscape
+    );
+
+    return () => {
+      document.body.style
+        .overflow =
+        previous;
+
+      window.removeEventListener(
+        "keydown",
+        handleEscape
+      );
+    };
+  }, [
+    open,
+    saving,
+    onClose,
+  ]);
+
+
+  const summaryDirections =
+    useMemo(() => {
+      if (!form) {
+        return "";
+      }
+
+      if (
+        form.directions.trim()
+      ) {
+        return form.directions
+          .trim();
+      }
+
+      return [
+        form.dosage,
+        form.route,
+        form.frequency,
+        form.administrationTime,
+      ]
+        .filter(
+          (value) =>
+            value.trim()
+        )
+        .join(" • ");
+    }, [
+      form,
+    ]);
+
+
+  if (
+    !mounted ||
+    !open ||
+    !category ||
+    !form
+  ) {
+    return null;
+  }
+
+
+  function update(
+    field:
+      keyof OrderForm,
+    value:
+      string | boolean
+  ) {
+    setForm(
+      (current) =>
+        current
+          ? {
+              ...current,
+              [field]:
+                value,
+            }
+          : current
+    );
+
+    setError("");
+  }
+
+
+  function chooseSchedule(
+    schedule:
+      string
+  ) {
+    const now =
+      new Date();
+
+    setForm(
+      (current) => {
+        if (!current) {
+          return current;
+        }
+
+        const next = {
+          ...current,
+          scheduleType:
+            schedule,
+        };
+
+
+        if (
+          schedule ===
+          "One Time Only"
+        ) {
+          next.frequency =
+            "One Time";
+
+          next.administrationTime =
+            next.administrationTime ||
+            timeInputValue(
+              now
+            );
+        }
+
+
+        if (
+          schedule ===
+          "STAT"
+        ) {
+          next.frequency =
+            "STAT";
+
+          next.administrationTime =
+            timeInputValue(
+              now
+            );
+        }
+
+
+        return next;
+      }
+    );
+  }
+
+
+  function validate() {
+    if (
+      !form ||
+      !category
+    ) {
+      return "The order form is not ready.";
+    }
+
+    if (
+      !form.orderName.trim()
+    ) {
+      return `${labelForOrder(
+        category
+      )} is required.`;
+    }
+
+
+    if (
+      !form.orderedBy.trim()
+    ) {
+      return "Ordered By is required.";
+    }
+
+
+    if (
+      category ===
+        "Pharmacy" &&
+      !form.dosage.trim()
+    ) {
+      return "Medication dosage is required.";
+    }
+
+
+    if (
+      category ===
+        "Pharmacy" &&
+      !form.route.trim()
+    ) {
+      return "Route of administration is required.";
+    }
+
+
+    if (
+      category ===
+        "Enteral Feed" &&
+      !form.rate.trim()
+    ) {
+      return "Enteral feeding rate is required.";
+    }
+
+
+    return "";
+  }
+
+
+  async function saveOrder(
+    queueNew:
+      boolean
+  ) {
+    if (saving) {
+      return;
+    }
+
+    if (
+      !form ||
+      !category
+    ) {
+      setError(
+        "The order form is not ready."
+      );
+
+      return;
+    }
+
+    const validation =
+      validate();
+
+    if (validation) {
+      setError(
+        validation
+      );
+
+      return;
+    }
+
+
+    setSaving(true);
+    setError("");
+
+
+    try {
+      const localDate =
+        new Date(
+          `${form.orderDate}T${
+            form.orderTime ||
+            "00:00"
+          }`
+        );
+
+
+      const metadata = {
+        daw:
+          form.daw,
+
+        body_site:
+          form.bodySite,
+
+        fasting_required:
+          form.fastingRequired,
+
+        texture:
+          form.texture,
+
+        liquid_consistency:
+          form.liquidConsistency,
+
+        restrictions:
+          form.restrictions,
+
+        amount:
+          form.amount,
+
+        rate:
+          form.rate,
+
+        flush:
+          form.flush,
+
+        hold_parameters:
+          form.holdParameters,
+      };
+
+
+      const payload = {
+        resident_id:
+          residentId,
+
+        category,
+
+        order_name:
+          form.orderName.trim(),
+
+        order_date:
+          Number.isNaN(
+            localDate.getTime()
+          )
+            ? new Date()
+                .toISOString()
+            : localDate
+                .toISOString(),
+
+        dosage:
+          form.dosage.trim(),
+
+        directions:
+          form.directions.trim(),
+
+        order_type:
+          form.orderType.trim(),
+
+        route:
+          form.route.trim(),
+
+        communication_method:
+          form.communicationMethod,
+
+        ordered_by:
+          form.orderedBy.trim(),
+
+        schedule_type:
+          form.scheduleType,
+
+        frequency:
+          form.frequency.trim(),
+
+        administration_time:
+          form.administrationTime,
+
+        indication:
+          form.indication.trim(),
+
+        priority:
+          form.priority,
+
+        specimen:
+          form.specimen.trim(),
+
+        source:
+          form.source.trim(),
+
+        pharmacy:
+          form.pharmacy.trim(),
+
+        start_date:
+          form.startDate,
+
+        end_date:
+          form.endDate,
+
+        review_date:
+          form.reviewDate,
+
+        notes:
+          form.notes.trim(),
+
+        metadata,
+      };
+
+
+      if (
+        editing &&
+        initialOrder
+      ) {
+        const {
+          error:
+            updateError,
+        } =
+          await supabase.rpc(
+            "la_cura_update_order",
+            {
+              p_order_id:
+                initialOrder.id,
+
+              p_payload:
+                payload,
+            }
+          );
+
+
+        if (updateError) {
+          throw updateError;
+        }
+      } else {
+        const {
+          error:
+            createError,
+        } =
+          await supabase.rpc(
+            "la_cura_create_order",
+            {
+              p_payload:
+                payload,
+            }
+          );
+
+
+        if (createError) {
+          throw createError;
+        }
+      }
+
+
+      onSaved();
+
+
+      if (
+        queueNew &&
+        !editing
+      ) {
+        setForm(
+          createInitialForm(
+            category,
+            primaryDoctor
+          )
+        );
+
+        return;
+      }
+
+
+      onClose();
+    } catch (
+      caughtError
+    ) {
+      console.error(
+        "Unable to save order:",
+        caughtError
+      );
+
+      setError(
+        caughtError instanceof
+        Error
+          ? caughtError.message
+          : "The order could not be saved."
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/45 p-2 sm:p-4"
+      onMouseDown={() => {
+        if (!saving) {
+          onClose();
+        }
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        onMouseDown={(
+          event
+        ) =>
+          event.stopPropagation()
+        }
+        className="
+          flex max-h-[95vh]
+          w-full max-w-[1320px]
+          flex-col
+          overflow-hidden
+          border
+          border-[#9FAC9F]
+          bg-white
+          shadow-xl
+        "
+      >
+        {/* TITLE */}
+
+        <header className="flex items-center justify-between gap-3 border-b border-[#85957E] bg-[#073B2F] px-3 py-2 text-white">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.04em] text-[#CAD8D1]">
+              Resident:{" "}
+              {residentName}
+            </p>
+
+            <h2 className="text-[15px] font-bold">
+              {editing
+                ? `Revise ${category} Order`
+                : `${category} Order Entry`}
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            onClick={
+              onClose
+            }
+            disabled={
+              saving
+            }
+            className="flex h-7 w-7 items-center justify-center border border-white/25 bg-white/10 hover:bg-white/20"
+          >
+            <X size={13} />
+          </button>
+        </header>
+
+
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <div className="grid min-h-full xl:grid-cols-[minmax(0,1fr)_300px]">
+            {/* MAIN FORM */}
+
+            <div className="min-w-0 border-r border-[#C6D0C1]">
+              <FormSection title="Order Details">
+                <div className="grid gap-x-4 gap-y-2 p-3 md:grid-cols-2">
+                  <div className="grid grid-cols-[minmax(0,1fr)_95px] gap-1">
+                    <TextField
+                      label="Order Date"
+                      required
+                      type="date"
+                      value={
+                        form.orderDate
+                      }
+                      onChange={(
+                        value
+                      ) =>
+                        update(
+                          "orderDate",
+                          value
+                        )
+                      }
+                    />
+
+                    <TextField
+                      label="Time"
+                      required
+                      type="time"
+                      value={
+                        form.orderTime
+                      }
+                      onChange={(
+                        value
+                      ) =>
+                        update(
+                          "orderTime",
+                          value
+                        )
+                      }
+                    />
+                  </div>
+
+
+                  <SelectField
+                    label="Order Category"
+                    required
+                    value={
+                      category
+                    }
+                    disabled
+                    options={[
+                      category,
+                    ]}
+                    onChange={() => {}}
+                  />
+
+
+                  <div className="md:col-span-2">
+                    <p className="mb-1 text-[10px] font-bold text-[#33483F]">
+                      Communication Method{" "}
+                      <span className="text-red-600">
+                        *
+                      </span>
+                    </p>
+
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-[#40534B]">
+                      {[
+                        "Phone",
+                        "Verbal",
+                        "Prescriber Written",
+                        "Prescriber Entered",
+                      ].map(
+                        (
+                          method
+                        ) => (
+                          <label
+                            key={
+                              method
+                            }
+                            className="inline-flex items-center gap-1"
+                          >
+                            <input
+                              type="radio"
+                              name="communication-method"
+                              checked={
+                                form.communicationMethod ===
+                                method
+                              }
+                              onChange={() =>
+                                update(
+                                  "communicationMethod",
+                                  method
+                                )
+                              }
+                            />
+
+                            {method}
+                          </label>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+
+                  <TextField
+                    label="Ordered By"
+                    required
+                    value={
+                      form.orderedBy
+                    }
+                    onChange={(
+                      value
+                    ) =>
+                      update(
+                        "orderedBy",
+                        value
+                      )
+                    }
+                    placeholder="Ordering provider"
+                  />
+
+
+                  <div className="hidden md:block" />
+
+
+                  <div className="md:col-span-2">
+                    <CategoryFields
+                      category={
+                        category
+                      }
+                      form={form}
+                      update={
+                        update
+                      }
+                    />
+                  </div>
+                </div>
+              </FormSection>
+
+
+              {/* SCHEDULING */}
+
+              <FormSection title="Scheduling Details">
+                <div className="p-3">
+                  <div className="flex flex-wrap items-center gap-1">
+                    <span className="mr-1 text-[10px] font-bold text-[#33483F]">
+                      Add Schedule:
+                    </span>
+
+                    {[
+                      "Routine",
+                      "PRN",
+                      "One Time Only",
+                      "Titration",
+                      "STAT",
+                    ].map(
+                      (
+                        schedule
+                      ) => (
+                        <button
+                          key={
+                            schedule
+                          }
+                          type="button"
+                          onClick={() =>
+                            chooseSchedule(
+                              schedule
+                            )
+                          }
+                          className={`
+                            h-7 border
+                            px-2.5
+                            text-[10px]
+                            font-bold
+
+                            ${
+                              form.scheduleType ===
+                              schedule
+                                ? "border-[#073B2F] bg-[#073B2F] text-white"
+                                : "border-[#AEBBB3] bg-white text-[#3F534A] hover:bg-[#EEF2EF]"
+                            }
+                          `}
+                        >
+                          {schedule}
+                        </button>
+                      )
+                    )}
+                  </div>
+
+
+                  <div className="mt-3 grid gap-3 md:grid-cols-3">
+                    <TextField
+                      label="Frequency"
+                      value={
+                        form.frequency
+                      }
+                      onChange={(
+                        value
+                      ) =>
+                        update(
+                          "frequency",
+                          value
+                        )
+                      }
+                      placeholder="BID, Daily, q6h, q4h PRN..."
+                    />
+
+                    <TextField
+                      label="Administration Time"
+                      type="time"
+                      value={
+                        form.administrationTime
+                      }
+                      onChange={(
+                        value
+                      ) =>
+                        update(
+                          "administrationTime",
+                          value
+                        )
+                      }
+                    />
+
+                    <TextField
+                      label="Indication"
+                      value={
+                        form.indication
+                      }
+                      onChange={(
+                        value
+                      ) =>
+                        update(
+                          "indication",
+                          value
+                        )
+                      }
+                      placeholder={
+                        form.scheduleType ===
+                        "PRN"
+                          ? "Required for PRN orders"
+                          : "Clinical indication"
+                      }
+                    />
+                  </div>
+
+
+                  <div className="mt-3 grid gap-3 md:grid-cols-3">
+                    <TextField
+                      label="Start Date"
+                      type="date"
+                      value={
+                        form.startDate
+                      }
+                      onChange={(
+                        value
+                      ) =>
+                        update(
+                          "startDate",
+                          value
+                        )
+                      }
+                    />
+
+                    <TextField
+                      label="End Date"
+                      type="date"
+                      value={
+                        form.endDate
+                      }
+                      onChange={(
+                        value
+                      ) =>
+                        update(
+                          "endDate",
+                          value
+                        )
+                      }
+                    />
+
+                    <TextField
+                      label="Next Review Date"
+                      type="date"
+                      value={
+                        form.reviewDate
+                      }
+                      onChange={(
+                        value
+                      ) =>
+                        update(
+                          "reviewDate",
+                          value
+                        )
+                      }
+                    />
+                  </div>
+
+
+                  <label className="mt-3 block">
+                    <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
+                      Directions
+                    </span>
+
+                    <textarea
+                      rows={3}
+                      value={
+                        form.directions
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        update(
+                          "directions",
+                          event.target
+                            .value
+                        )
+                      }
+                      placeholder="Complete order directions..."
+                      className="w-full resize-y border border-[#B8C5BE] px-2.5 py-2 text-[11px] outline-none focus:border-[#667F73]"
+                    />
+                  </label>
+                </div>
+              </FormSection>
+
+
+              {/* SOURCE */}
+
+              <FormSection title="Source Details">
+                <div className="grid gap-3 p-3 md:grid-cols-2">
+                  <TextField
+                    label="Order Source"
+                    value={
+                      form.source
+                    }
+                    onChange={(
+                      value
+                    ) =>
+                      update(
+                        "source",
+                        value
+                      )
+                    }
+                  />
+
+
+                  {category ===
+                    "Pharmacy" && (
+                    <TextField
+                      label="Pharmacy"
+                      value={
+                        form.pharmacy
+                      }
+                      onChange={(
+                        value
+                      ) =>
+                        update(
+                          "pharmacy",
+                          value
+                        )
+                      }
+                      placeholder="Pharmacy name"
+                    />
+                  )}
+
+
+                  <label className="md:col-span-2">
+                    <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
+                      {category ===
+                      "Pharmacy"
+                        ? "Pharmacy Notes"
+                        : "Order Notes"}
+                    </span>
+
+                    <textarea
+                      rows={2}
+                      value={
+                        form.notes
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        update(
+                          "notes",
+                          event.target
+                            .value
+                        )
+                      }
+                      className="w-full resize-y border border-[#B8C5BE] px-2.5 py-2 text-[11px] outline-none focus:border-[#667F73]"
+                    />
+                  </label>
+                </div>
+              </FormSection>
+
+
+              {error && (
+                <div className="m-3 border border-red-200 bg-red-50 px-3 py-2 text-[10px] font-semibold text-red-700">
+                  {error}
+                </div>
+              )}
+            </div>
+
+
+            {/* ORDER SUMMARY */}
+
+            <aside className="bg-[#F5F4DF] p-3">
+              <div className="border border-[#AAA982] bg-[#FFFEEB]">
+                <div className="border-b border-[#C8C6A1] px-2.5 py-1.5">
+                  <p className="text-[11px] font-bold italic text-[#273C33]">
+                    Order Summary:
+                  </p>
+                </div>
+
+                <div className="min-h-[250px] p-3 text-[10px] leading-5 text-[#3F5049]">
+                  <SummaryLine
+                    label="Resident"
+                    value={
+                      residentName
+                    }
+                  />
+
+                  <SummaryLine
+                    label="Category"
+                    value={
+                      category
+                    }
+                  />
+
+                  <SummaryLine
+                    label={
+                      labelForOrder(
+                        category
+                      )
+                    }
+                    value={
+                      form.orderName
+                    }
+                  />
+
+                  {form.dosage && (
+                    <SummaryLine
+                      label="Dose"
+                      value={
+                        form.dosage
+                      }
+                    />
+                  )}
+
+                  {form.route && (
+                    <SummaryLine
+                      label="Route"
+                      value={
+                        form.route
+                      }
+                    />
+                  )}
+
+                  <SummaryLine
+                    label="Schedule"
+                    value={
+                      [
+                        form.scheduleType,
+                        form.frequency,
+                        form.administrationTime,
+                      ]
+                        .filter(
+                          Boolean
+                        )
+                        .join(
+                          " • "
+                        )
+                    }
+                  />
+
+                  <SummaryLine
+                    label="Directions"
+                    value={
+                      summaryDirections
+                    }
+                  />
+
+                  <SummaryLine
+                    label="Ordered By"
+                    value={
+                      form.orderedBy
+                    }
+                  />
+                </div>
+              </div>
+
+
+              <div className="mt-2 border border-[#AAA982] bg-[#FFFEEB] px-2.5 py-2">
+                <p className="text-[10px] font-bold text-[#33483F]">
+                  Additional Information
+                </p>
+
+                <p className="mt-1 text-[9px] leading-4 text-[#68766F]">
+                  This order will be added to the resident&apos;s permanent Orders record.
+                  {category ===
+                  "Pharmacy"
+                    ? " A synchronized medication order will also be created for Medications and MAR."
+                    : ""}
+                </p>
+              </div>
+            </aside>
+          </div>
+        </div>
+
+
+        {/* FOOTER */}
+
+        <footer className="flex justify-center gap-1.5 border-t border-[#BFC9C3] bg-[#F3F2ED] px-3 py-2">
+          <button
+            type="button"
+            disabled={
+              saving
+            }
+            onClick={() =>
+              void saveOrder(
+                false
+              )
+            }
+            className="inline-flex h-8 items-center gap-1.5 border border-[#073B2F] bg-[#073B2F] px-3 text-[10px] font-bold text-white hover:bg-[#0D4A3A] disabled:opacity-50"
+          >
+            {saving ? (
+              <LoaderCircle
+                size={11}
+                className="animate-spin"
+              />
+            ) : (
+              <Save size={11} />
+            )}
+
+            {editing
+              ? "Save Revision"
+              : "Save"}
+          </button>
+
+
+          {!editing && (
+            <button
+              type="button"
+              disabled={
+                saving
+              }
+              onClick={() =>
+                void saveOrder(
+                  true
+                )
+              }
+              className="h-8 border border-[#8E9D95] bg-white px-3 text-[10px] font-bold text-[#33483F] hover:bg-[#EDF1EE] disabled:opacity-50"
+            >
+              Queue &amp; New
+            </button>
+          )}
+
+
+          <button
+            type="button"
+            disabled={
+              saving
+            }
+            onClick={
+              onClose
+            }
+            className="h-8 border border-[#8E9D95] bg-white px-3 text-[10px] font-bold text-[#33483F] hover:bg-[#EDF1EE] disabled:opacity-50"
+          >
+            Cancel
+          </button>
+        </footer>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+
+function CategoryFields({
+  category,
+  form,
+  update,
+}: {
+  category:
+    OrderCategory;
+
+  form: OrderForm;
+
+  update: (
+    field:
+      keyof OrderForm,
+    value:
+      string | boolean
+  ) => void;
+}) {
+  return (
+    <div className="grid gap-3 md:grid-cols-2">
+      <TextField
+        label={
+          labelForOrder(
+            category
+          )
+        }
+        required
+        value={
+          form.orderName
+        }
+        onChange={(
+          value
+        ) =>
+          update(
+            "orderName",
+            value
+          )
+        }
+      />
+
+
+      {category ===
+        "Pharmacy" && (
+        <>
+          <TextField
+            label="Dosage"
+            required
+            value={
+              form.dosage
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "dosage",
+                value
+              )
+            }
+            placeholder="10 mg, 1 tablet, 5 mL..."
+          />
+
+          <SelectField
+            label="Order Type"
+            value={
+              form.orderType
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "orderType",
+                value
+              )
+            }
+            options={[
+              "",
+              "Medication",
+              "Treatment",
+              "Controlled Medication",
+            ]}
+          />
+
+          <SelectField
+            label="Route of Administration"
+            required
+            value={
+              form.route
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "route",
+                value
+              )
+            }
+            options={[
+              "",
+              "Oral",
+              "G-Tube",
+              "PEG-Tube",
+              "Sublingual",
+              "Topical",
+              "Inhalation",
+              "Subcutaneous",
+              "Intramuscular",
+              "Intravenous",
+              "Rectal",
+              "Ophthalmic",
+              "Otic",
+              "Transdermal",
+              "Other",
+            ]}
+          />
+
+          <label className="inline-flex items-center gap-2 text-[10px] font-semibold text-[#40534B]">
+            <input
+              type="checkbox"
+              checked={
+                form.daw
+              }
+              onChange={(
+                event
+              ) =>
+                update(
+                  "daw",
+                  event.target
+                    .checked
+                )
+              }
+            />
+
+            Dispense as Written (DAW)
+          </label>
+        </>
+      )}
+
+
+      {category ===
+        "Diagnostic" && (
+        <>
+          <TextField
+            label="Body Site"
+            value={
+              form.bodySite
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "bodySite",
+                value
+              )
+            }
+            placeholder="Chest, left hip, abdomen..."
+          />
+
+          <SelectField
+            label="Priority"
+            value={
+              form.priority
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "priority",
+                value
+              )
+            }
+            options={[
+              "Routine",
+              "Urgent",
+              "STAT",
+            ]}
+          />
+        </>
+      )}
+
+
+      {category ===
+        "Laboratory" && (
+        <>
+          <TextField
+            label="Specimen"
+            value={
+              form.specimen
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "specimen",
+                value
+              )
+            }
+            placeholder="Blood, urine, stool..."
+          />
+
+          <SelectField
+            label="Priority"
+            value={
+              form.priority
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "priority",
+                value
+              )
+            }
+            options={[
+              "Routine",
+              "Urgent",
+              "STAT",
+            ]}
+          />
+
+          <label className="inline-flex items-center gap-2 text-[10px] font-semibold text-[#40534B]">
+            <input
+              type="checkbox"
+              checked={
+                form.fastingRequired
+              }
+              onChange={(
+                event
+              ) =>
+                update(
+                  "fastingRequired",
+                  event.target
+                    .checked
+                )
+              }
+            />
+
+            Fasting Required
+          </label>
+        </>
+      )}
+
+
+      {category ===
+        "Diet" && (
+        <>
+          <TextField
+            label="Texture"
+            value={
+              form.texture
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "texture",
+                value
+              )
+            }
+            placeholder="Regular, mechanical soft, pureed..."
+          />
+
+          <TextField
+            label="Liquid Consistency"
+            value={
+              form.liquidConsistency
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "liquidConsistency",
+                value
+              )
+            }
+            placeholder="Thin, nectar thick, honey thick..."
+          />
+
+          <TextField
+            label="Restrictions"
+            value={
+              form.restrictions
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "restrictions",
+                value
+              )
+            }
+            placeholder="Low sodium, diabetic, renal..."
+          />
+        </>
+      )}
+
+
+      {category ===
+        "Supplement" && (
+        <>
+          <TextField
+            label="Amount / Dose"
+            value={
+              form.amount
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "amount",
+                value
+              )
+            }
+            placeholder="30 mL, 1 packet..."
+          />
+
+          <SelectField
+            label="Route"
+            value={
+              form.route
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "route",
+                value
+              )
+            }
+            options={[
+              "",
+              "Oral",
+              "G-Tube",
+              "PEG-Tube",
+            ]}
+          />
+        </>
+      )}
+
+
+      {category ===
+        "Enteral Feed" && (
+        <>
+          <SelectField
+            label="Enteral Route"
+            required
+            value={
+              form.route
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "route",
+                value
+              )
+            }
+            options={[
+              "",
+              "G-Tube",
+              "PEG-Tube",
+              "J-Tube",
+              "NG Tube",
+              "NJ Tube",
+              "Other",
+            ]}
+          />
+
+          <TextField
+            label="Rate"
+            required
+            value={
+              form.rate
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "rate",
+                value
+              )
+            }
+            placeholder="35 mL/hr"
+          />
+
+          <TextField
+            label="Free-Water Flush"
+            value={
+              form.flush
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "flush",
+                value
+              )
+            }
+            placeholder="60 mL every 4 hours"
+          />
+
+          <TextField
+            label="Hold Parameters"
+            value={
+              form.holdParameters
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "holdParameters",
+                value
+              )
+            }
+            placeholder="Hold for residual >..."
+          />
+        </>
+      )}
+
+
+      {category ===
+        "Other" && (
+        <>
+          <TextField
+            label="Order Type"
+            value={
+              form.orderType
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "orderType",
+                value
+              )
+            }
+            placeholder="Wound care, oxygen, monitoring..."
+          />
+
+          <TextField
+            label="Route / Delivery Method"
+            value={
+              form.route
+            }
+            onChange={(
+              value
+            ) =>
+              update(
+                "route",
+                value
+              )
+            }
+          />
+        </>
+      )}
+    </div>
+  );
+}
+
+
+function FormSection({
+  title,
+  children,
+}: {
+  title: string;
+  children:
+    React.ReactNode;
+}) {
+  return (
+    <section>
+      <div className="border-y border-[#889B7A] bg-[#91A47E] px-2 py-1 first:border-t-0">
+        <h3 className="text-[11px] font-bold text-white">
+          {title}
+        </h3>
+      </div>
+
+      {children}
+    </section>
+  );
+}
+
+
+function TextField({
+  label,
+  value,
+  onChange,
+  type = "text",
+  placeholder = "",
+  required = false,
+}: {
+  label: string;
+  value: string;
+
+  onChange: (
+    value: string
+  ) => void;
+
+  type?: string;
+  placeholder?: string;
+  required?: boolean;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
+        {label}
+
+        {required && (
+          <span className="ml-0.5 text-red-600">
+            *
+          </span>
+        )}
+      </span>
+
+      <input
+        type={type}
+        value={value}
+        onChange={(
+          event
+        ) =>
+          onChange(
+            event.target
+              .value
+          )
+        }
+        placeholder={
+          placeholder
+        }
+        className="h-8 w-full border border-[#B8C5BE] bg-white px-2 text-[11px] text-[#253A31] outline-none focus:border-[#667F73]"
+      />
+    </label>
+  );
+}
+
+
+function SelectField({
+  label,
+  value,
+  options,
+  onChange,
+  required = false,
+  disabled = false,
+}: {
+  label: string;
+  value: string;
+
+  options: string[];
+
+  onChange: (
+    value: string
+  ) => void;
+
+  required?: boolean;
+  disabled?: boolean;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
+        {label}
+
+        {required && (
+          <span className="ml-0.5 text-red-600">
+            *
+          </span>
+        )}
+      </span>
+
+      <select
+        value={value}
+        disabled={
+          disabled
+        }
+        onChange={(
+          event
+        ) =>
+          onChange(
+            event.target
+              .value
+          )
+        }
+        className="h-8 w-full border border-[#B8C5BE] bg-white px-2 text-[11px] text-[#253A31] outline-none focus:border-[#667F73] disabled:bg-[#F3F3EF]"
+      >
+        {options.map(
+          (option) => (
+            <option
+              key={
+                option ||
+                "__blank"
+              }
+              value={option}
+            >
+              {option ||
+                "Select..."}
+            </option>
+          )
+        )}
+      </select>
+    </label>
+  );
+}
+
+
+function SummaryLine({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  if (!value) {
+    return null;
+  }
+
+  return (
+    <p>
+      <strong>
+        {label}:
+      </strong>{" "}
+      {value}
+    </p>
+  );
+}
