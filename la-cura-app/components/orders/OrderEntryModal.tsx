@@ -183,6 +183,78 @@ function cleanText(
 }
 
 
+function getSupabaseErrorMessage(
+  value: unknown
+): string {
+  if (
+    value instanceof Error
+  ) {
+    return value.message;
+  }
+
+
+  if (
+    value &&
+    typeof value ===
+      "object"
+  ) {
+    const record =
+      value as Record<
+        string,
+        unknown
+      >;
+
+    const message =
+      cleanText(
+        record.message
+      );
+
+    const details =
+      cleanText(
+        record.details
+      );
+
+    const hint =
+      cleanText(
+        record.hint
+      );
+
+    const code =
+      cleanText(
+        record.code
+      );
+
+
+    const parts = [
+      message,
+      details &&
+        details !== message
+        ? details
+        : "",
+      hint
+        ? `Hint: ${hint}`
+        : "",
+      code
+        ? `Code: ${code}`
+        : "",
+    ].filter(Boolean);
+
+
+    if (
+      parts.length >
+      0
+    ) {
+      return parts.join(
+        " — "
+      );
+    }
+  }
+
+
+  return "The order could not be saved.";
+}
+
+
 function sourceForCategory(
   category:
     OrderCategory
@@ -1124,10 +1196,9 @@ export default function OrderEntryModal({
       );
 
       setError(
-        caughtError instanceof
-        Error
-          ? caughtError.message
-          : "The order could not be saved."
+        getSupabaseErrorMessage(
+          caughtError
+        )
       );
     } finally {
       setSaving(false);
