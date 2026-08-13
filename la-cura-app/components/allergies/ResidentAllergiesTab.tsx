@@ -7,9 +7,12 @@ import {
   useState,
 } from "react";
 
+import type {
+  ReactNode,
+} from "react";
+
 import {
   AlertTriangle,
-  ChevronDown,
   LoaderCircle,
   Plus,
   RefreshCw,
@@ -18,42 +21,48 @@ import {
 } from "lucide-react";
 
 import {
+  useLanguage,
+} from "@/components/i18n/LanguageProvider";
+
+import {
+  allergyHistoryActionLabel,
+  allergyLocale,
+  allergySeverityLabel,
+  allergyStatusConfirmation,
+  allergyStatusLabel,
+  allergyText,
+  allergyTypeLabel,
+  type AllergySeverityValue,
+  type AllergyStatusValue,
+  type AllergyTypeValue,
+} from "@/lib/i18n/allergies";
+
+import {
   supabase,
 } from "@/lib/supabase/client";
-
-
-type AllergyStatus =
-  | "Active"
-  | "Inactive";
-
-
-type AllergySeverity =
-  | "Mild"
-  | "Moderate"
-  | "Severe"
-  | "Unknown";
 
 
 type AllergyRecord = {
   id: number;
 
-  resident_id: number;
-  resident_name: string;
+  resident_id:
+    number;
 
-  allergen: string;
+  resident_name:
+    string;
+
+  allergen:
+    string;
 
   allergy_type:
-    | "Medication"
-    | "Food"
-    | "Environmental"
-    | "Other";
+    AllergyTypeValue;
 
   reaction:
     | string
     | null;
 
   severity:
-    AllergySeverity;
+    AllergySeverityValue;
 
   onset_date:
     | string
@@ -64,7 +73,7 @@ type AllergyRecord = {
     | null;
 
   status:
-    AllergyStatus;
+    AllergyStatusValue;
 
   notes:
     | string
@@ -88,10 +97,14 @@ type AllergyRecord = {
 
 
 type AllergyHistory = {
-  id: number;
-  allergy_id: number;
+  id:
+    number;
 
-  action: string;
+  allergy_id:
+    number;
+
+  action:
+    string;
 
   previous_status:
     | string
@@ -105,51 +118,70 @@ type AllergyHistory = {
     | string
     | null;
 
-  changed_by: string;
-  changed_at: string;
+  changed_by:
+    string;
+
+  changed_at:
+    string;
 };
 
 
 type Props = {
-  residentId: number;
-  residentName: string;
+  residentId:
+    number;
+
+  residentName:
+    string;
 };
 
 
 type FormState = {
-  allergen: string;
+  allergen:
+    string;
 
   allergyType:
-    AllergyRecord["allergy_type"];
+    AllergyTypeValue;
 
-  reaction: string;
+  reaction:
+    string;
 
   severity:
-    AllergySeverity;
+    AllergySeverityValue;
 
-  onsetDate: string;
+  onsetDate:
+    string;
 
-  source: string;
+  source:
+    string;
 
-  notes: string;
+  notes:
+    string;
 };
 
 
-const EMPTY_FORM: FormState = {
+const EMPTY_FORM:
+  FormState = {
   allergen: "",
+
   allergyType:
     "Medication",
+
   reaction: "",
+
   severity:
     "Unknown",
+
   onsetDate: "",
+
   source: "",
+
   notes: "",
 };
 
 
 function cleanText(
-  value: unknown
+  value:
+    unknown
 ) {
   return typeof value ===
     "string"
@@ -158,18 +190,89 @@ function cleanText(
 }
 
 
+function errorMessage(
+  value:
+    unknown,
+
+  fallback:
+    string
+) {
+  if (
+    value instanceof
+    Error
+  ) {
+    return (
+      value.message ||
+      fallback
+    );
+  }
+
+
+  if (
+    value &&
+    typeof value ===
+      "object"
+  ) {
+    const record =
+      value as Record<
+        string,
+        unknown
+      >;
+
+
+    const message =
+      cleanText(
+        record.message
+      );
+
+
+    const details =
+      cleanText(
+        record.details
+      );
+
+
+    if (
+      message &&
+      details &&
+      details !==
+        message
+    ) {
+      return `${message} — ${details}`;
+    }
+
+
+    return (
+      message ||
+      details ||
+      fallback
+    );
+  }
+
+
+  return fallback;
+}
+
+
 function formatDate(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+
+  language:
+    "en" | "fr"
 ) {
   if (!value) {
     return "—";
   }
 
+
   const date =
-    new Date(value);
+    new Date(
+      value
+    );
+
 
   if (
     Number.isNaN(
@@ -179,8 +282,11 @@ function formatDate(
     return value;
   }
 
+
   return new Intl.DateTimeFormat(
-    "en-US",
+    allergyLocale(
+      language
+    ),
     {
       month:
         "numeric",
@@ -191,7 +297,9 @@ function formatDate(
       year:
         "numeric",
     }
-  ).format(date);
+  ).format(
+    date
+  );
 }
 
 
@@ -199,14 +307,21 @@ function formatDateTime(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+
+  language:
+    "en" | "fr"
 ) {
   if (!value) {
     return "—";
   }
 
+
   const date =
-    new Date(value);
+    new Date(
+      value
+    );
+
 
   if (
     Number.isNaN(
@@ -216,8 +331,11 @@ function formatDateTime(
     return value;
   }
 
+
   return new Intl.DateTimeFormat(
-    "en-US",
+    allergyLocale(
+      language
+    ),
     {
       month:
         "short",
@@ -234,23 +352,27 @@ function formatDateTime(
       minute:
         "2-digit",
     }
-  ).format(date);
+  ).format(
+    date
+  );
 }
 
 
 function severityClass(
   severity:
-    AllergySeverity
+    AllergySeverityValue
 ) {
-  switch (severity) {
+  switch (
+    severity
+  ) {
     case "Severe":
-      return "text-red-700 font-bold";
+      return "font-bold text-red-700";
 
     case "Moderate":
-      return "text-amber-700 font-semibold";
+      return "font-semibold text-amber-700";
 
     case "Mild":
-      return "text-[#1D6550] font-semibold";
+      return "font-semibold text-[#1D6550]";
 
     default:
       return "text-[#596A62]";
@@ -262,6 +384,12 @@ export default function ResidentAllergiesTab({
   residentId,
   residentName,
 }: Props) {
+  const {
+    language,
+  } =
+    useLanguage();
+
+
   const [
     allergies,
     setAllergies,
@@ -269,64 +397,104 @@ export default function ResidentAllergiesTab({
     AllergyRecord[]
   >([]);
 
+
   const [
     loading,
     setLoading,
-  ] = useState(true);
+  ] = useState(
+    true
+  );
+
 
   const [
     refreshing,
     setRefreshing,
-  ] = useState(false);
+  ] = useState(
+    false
+  );
+
 
   const [
     error,
     setError,
-  ] = useState("");
+  ] = useState(
+    ""
+  );
+
 
   const [
     search,
     setSearch,
-  ] = useState("");
+  ] = useState(
+    ""
+  );
+
 
   const [
     typeFilter,
     setTypeFilter,
-  ] = useState("All");
+  ] = useState<
+    AllergyTypeValue
+    | "All"
+  >(
+    "All"
+  );
+
 
   const [
     statusFilter,
     setStatusFilter,
-  ] = useState("Active");
+  ] = useState<
+    AllergyStatusValue
+    | "All"
+  >(
+    "Active"
+  );
+
 
   const [
     formOpen,
     setFormOpen,
-  ] = useState(false);
+  ] = useState(
+    false
+  );
+
 
   const [
     editing,
     setEditing,
   ] =
-    useState<AllergyRecord | null>(
+    useState<
+      AllergyRecord
+      | null
+    >(
       null
     );
+
 
   const [
     viewing,
     setViewing,
   ] =
-    useState<AllergyRecord | null>(
+    useState<
+      AllergyRecord
+      | null
+    >(
       null
     );
+
 
   const [
     historyAllergy,
     setHistoryAllergy,
   ] =
-    useState<AllergyRecord | null>(
+    useState<
+      AllergyRecord
+      | null
+    >(
       null
     );
+
 
   const [
     history,
@@ -335,18 +503,24 @@ export default function ResidentAllergiesTab({
     AllergyHistory[]
   >([]);
 
+
   const [
     historyLoading,
     setHistoryLoading,
-  ] = useState(false);
+  ] = useState(
+    false
+  );
 
 
   const loadAllergies =
     useCallback(
       async (
-        quiet = false
+        quiet =
+          false
       ) => {
-        if (quiet) {
+        if (
+          quiet
+        ) {
           setRefreshing(
             true
           );
@@ -356,7 +530,10 @@ export default function ResidentAllergiesTab({
           );
         }
 
-        setError("");
+
+        setError(
+          ""
+        );
 
 
         try {
@@ -369,7 +546,9 @@ export default function ResidentAllergiesTab({
               .from(
                 "resident_allergies"
               )
-              .select("*")
+              .select(
+                "*"
+              )
               .eq(
                 "resident_id",
                 residentId
@@ -390,14 +569,18 @@ export default function ResidentAllergiesTab({
               );
 
 
-          if (loadError) {
+          if (
+            loadError
+          ) {
             throw loadError;
           }
 
 
           setAllergies(
-            (data ??
-              []) as AllergyRecord[]
+            (
+              data ??
+              []
+            ) as AllergyRecord[]
           );
         } catch (
           caughtError
@@ -407,11 +590,15 @@ export default function ResidentAllergiesTab({
             caughtError
           );
 
+
           setError(
-            caughtError instanceof
-            Error
-              ? caughtError.message
-              : "Resident allergies could not be loaded."
+            errorMessage(
+              caughtError,
+              allergyText(
+                language,
+                "loadError"
+              )
+            )
           );
         } finally {
           setLoading(
@@ -424,80 +611,99 @@ export default function ResidentAllergiesTab({
         }
       },
       [
+        language,
         residentId,
       ]
     );
 
 
-  useEffect(() => {
-    void loadAllergies();
-  }, [
-    loadAllergies,
-  ]);
+  useEffect(
+    () => {
+      void loadAllergies();
+    },
+    [
+      loadAllergies,
+    ]
+  );
 
 
   const filtered =
-    useMemo(() => {
-      const query =
-        search
-          .trim()
-          .toLowerCase();
+    useMemo(
+      () => {
+        const query =
+          search
+            .trim()
+            .toLowerCase();
 
 
-      return allergies.filter(
-        (
-          allergy
-        ) => {
-          const matchesType =
-            typeFilter ===
-              "All" ||
-            allergy.allergy_type ===
-              typeFilter;
+        return allergies.filter(
+          (
+            allergy
+          ) => {
+            const matchesType =
+              typeFilter ===
+                "All" ||
+              allergy
+                .allergy_type ===
+                typeFilter;
 
 
-          const matchesStatus =
-            statusFilter ===
-              "All" ||
-            allergy.status ===
-              statusFilter;
+            const matchesStatus =
+              statusFilter ===
+                "All" ||
+              allergy.status ===
+                statusFilter;
 
 
-          const matchesSearch =
-            !query ||
-            [
-              allergy.allergen,
-              allergy.allergy_type,
-              allergy.reaction,
-              allergy.severity,
-              allergy.source,
-              allergy.notes,
-            ].some(
-              (
-                value
-              ) =>
-                cleanText(
+            const matchesSearch =
+              !query ||
+              [
+                allergy
+                  .allergen,
+
+                allergy
+                  .allergy_type,
+
+                allergy
+                  .reaction,
+
+                allergy
+                  .severity,
+
+                allergy
+                  .source,
+
+                allergy
+                  .notes,
+              ].some(
+                (
                   value
-                )
-                  .toLowerCase()
-                  .includes(
-                    query
+                ) =>
+                  cleanText(
+                    value
                   )
+                    .toLowerCase()
+                    .includes(
+                      query
+                    )
+              );
+
+
+            return (
+              matchesType &&
+              matchesStatus &&
+              matchesSearch
             );
-
-
-          return (
-            matchesType &&
-            matchesStatus &&
-            matchesSearch
-          );
-        }
-      );
-    }, [
-      allergies,
-      search,
-      typeFilter,
-      statusFilter,
-    ]);
+          }
+        );
+      },
+      [
+        allergies,
+        search,
+        statusFilter,
+        typeFilter,
+      ]
+    );
 
 
   const activeCount =
@@ -513,19 +719,23 @@ export default function ResidentAllergiesTab({
   async function changeStatus(
     allergy:
       AllergyRecord,
+
     status:
-      AllergyStatus
+      AllergyStatusValue
   ) {
     const confirmed =
       window.confirm(
-        status ===
-          "Inactive"
-          ? `Inactivate the allergy to "${allergy.allergen}"?`
-          : `Reactivate the allergy to "${allergy.allergen}"?`
+        allergyStatusConfirmation(
+          language,
+          status,
+          allergy.allergen
+        )
       );
 
 
-    if (!confirmed) {
+    if (
+      !confirmed
+    ) {
       return;
     }
 
@@ -549,9 +759,17 @@ export default function ResidentAllergiesTab({
       );
 
 
-    if (actionError) {
+    if (
+      actionError
+    ) {
       window.alert(
-        actionError.message
+        errorMessage(
+          actionError,
+          allergyText(
+            language,
+            "statusError"
+          )
+        )
       );
 
       return;
@@ -572,7 +790,10 @@ export default function ResidentAllergiesTab({
       allergy
     );
 
-    setHistory([]);
+    setHistory(
+      []
+    );
+
     setHistoryLoading(
       true
     );
@@ -587,7 +808,9 @@ export default function ResidentAllergiesTab({
         .from(
           "resident_allergy_history"
         )
-        .select("*")
+        .select(
+          "*"
+        )
         .eq(
           "allergy_id",
           allergy.id
@@ -605,8 +828,10 @@ export default function ResidentAllergiesTab({
       !historyError
     ) {
       setHistory(
-        (data ??
-          []) as AllergyHistory[]
+        (
+          data ??
+          []
+        ) as AllergyHistory[]
       );
     }
 
@@ -620,76 +845,70 @@ export default function ResidentAllergiesTab({
   function handleAction(
     allergy:
       AllergyRecord,
-    action: string
+
+    action:
+      string
   ) {
-    if (
-      action === "view"
+    switch (
+      action
     ) {
-      setViewing(
-        allergy
-      );
+      case "view":
+        setViewing(
+          allergy
+        );
 
-      return;
-    }
-
-
-    if (
-      action === "edit"
-    ) {
-      setEditing(
-        allergy
-      );
-
-      setFormOpen(
-        true
-      );
-
-      return;
-    }
+        return;
 
 
-    if (
-      action ===
-      "inactive"
-    ) {
-      void changeStatus(
-        allergy,
-        "Inactive"
-      );
+      case "edit":
+        setEditing(
+          allergy
+        );
 
-      return;
-    }
+        setFormOpen(
+          true
+        );
 
-
-    if (
-      action ===
-      "active"
-    ) {
-      void changeStatus(
-        allergy,
-        "Active"
-      );
-
-      return;
-    }
+        return;
 
 
-    if (
-      action ===
-      "history"
-    ) {
-      void openHistory(
-        allergy
-      );
+      case "inactive":
+        void changeStatus(
+          allergy,
+          "Inactive"
+        );
+
+        return;
+
+
+      case "active":
+        void changeStatus(
+          allergy,
+          "Active"
+        );
+
+        return;
+
+
+      case "history":
+        void openHistory(
+          allergy
+        );
+
+        return;
     }
   }
 
 
-  if (loading) {
+  if (
+    loading
+  ) {
     return (
       <div className="flex min-h-[260px] items-center justify-center bg-white">
         <LoaderCircle
-          size={20}
+          size={
+            20
+          }
           className="animate-spin text-[#073B2F]"
         />
       </div>
@@ -718,16 +937,23 @@ export default function ResidentAllergiesTab({
               className="inline-flex h-7 items-center gap-1 border border-[#58694A] bg-white px-2.5 text-[10px] font-bold text-[#243A30]"
             >
               <Plus
-                size={11}
+                size={
+                  11
+                }
               />
 
-              New Allergy
+              {allergyText(
+                language,
+                "newAllergy"
+              )}
             </button>
 
 
             <div className="relative min-w-[230px] flex-1 sm:max-w-[420px]">
               <Search
-                size={11}
+                size={
+                  11
+                }
                 className="absolute left-2 top-1/2 -translate-y-1/2 text-[#6A776F]"
               />
 
@@ -744,7 +970,12 @@ export default function ResidentAllergiesTab({
                       .value
                   )
                 }
-                placeholder="Search allergies..."
+                placeholder={
+                  allergyText(
+                    language,
+                    "searchPlaceholder"
+                  )
+                }
                 className="h-7 w-full border border-[#788A6D] bg-white pl-7 pr-2 text-[10px] outline-none"
               />
             </div>
@@ -764,7 +995,9 @@ export default function ResidentAllergiesTab({
             className="inline-flex h-7 items-center gap-1 border border-[#58694A] bg-white px-2.5 text-[10px] font-bold text-[#243A30] disabled:opacity-50"
           >
             <RefreshCw
-              size={10}
+              size={
+                10
+              }
               className={
                 refreshing
                   ? "animate-spin"
@@ -772,12 +1005,15 @@ export default function ResidentAllergiesTab({
               }
             />
 
-            Refresh
+            {allergyText(
+              language,
+              "refresh"
+            )}
           </button>
         </div>
 
 
-        {/* SUMMARY / FILTERS */}
+        {/* FILTERS */}
 
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#BCC8C1] bg-[#F1F2ED] px-2 py-1.5">
           <div className="flex items-center gap-1.5">
@@ -790,29 +1026,46 @@ export default function ResidentAllergiesTab({
               ) =>
                 setTypeFilter(
                   event.target
-                    .value
+                    .value as
+                    AllergyTypeValue
+                    | "All"
                 )
               }
               className="h-6 border border-[#AEBAB3] bg-white px-1.5 text-[10px]"
             >
-              <option>
-                All
+              <option value="All">
+                {allergyText(
+                  language,
+                  "all"
+                )}
               </option>
 
-              <option>
-                Medication
+              <option value="Medication">
+                {allergyTypeLabel(
+                  language,
+                  "Medication"
+                )}
               </option>
 
-              <option>
-                Food
+              <option value="Food">
+                {allergyTypeLabel(
+                  language,
+                  "Food"
+                )}
               </option>
 
-              <option>
-                Environmental
+              <option value="Environmental">
+                {allergyTypeLabel(
+                  language,
+                  "Environmental"
+                )}
               </option>
 
-              <option>
-                Other
+              <option value="Other">
+                {allergyTypeLabel(
+                  language,
+                  "Other"
+                )}
               </option>
             </select>
 
@@ -826,21 +1079,32 @@ export default function ResidentAllergiesTab({
               ) =>
                 setStatusFilter(
                   event.target
-                    .value
+                    .value as
+                    AllergyStatusValue
+                    | "All"
                 )
               }
               className="h-6 border border-[#AEBAB3] bg-white px-1.5 text-[10px]"
             >
-              <option>
-                All
+              <option value="All">
+                {allergyText(
+                  language,
+                  "all"
+                )}
               </option>
 
-              <option>
-                Active
+              <option value="Active">
+                {allergyStatusLabel(
+                  language,
+                  "Active"
+                )}
               </option>
 
-              <option>
-                Inactive
+              <option value="Inactive">
+                {allergyStatusLabel(
+                  language,
+                  "Inactive"
+                )}
               </option>
             </select>
           </div>
@@ -848,15 +1112,22 @@ export default function ResidentAllergiesTab({
 
           <div className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[#33483F]">
             <AlertTriangle
-              size={12}
+              size={
+                12
+              }
               className={
-                activeCount > 0
+                activeCount >
+                0
                   ? "text-red-700"
                   : "text-[#687970]"
               }
             />
 
-            Active Allergies:{" "}
+            {allergyText(
+              language,
+              "activeAllergies"
+            )}
+            :{" "}
             {activeCount}
           </div>
         </div>
@@ -878,35 +1149,59 @@ export default function ResidentAllergiesTab({
               <thead>
                 <tr className="bg-[#E5EEF4] text-[9px] font-bold text-[#233A31]">
                   <Head>
-                    Actions
+                    {allergyText(
+                      language,
+                      "actions"
+                    )}
                   </Head>
 
                   <Head>
-                    Allergen
+                    {allergyText(
+                      language,
+                      "allergen"
+                    )}
                   </Head>
 
                   <Head>
-                    Type
+                    {allergyText(
+                      language,
+                      "type"
+                    )}
                   </Head>
 
                   <Head>
-                    Reaction
+                    {allergyText(
+                      language,
+                      "reaction"
+                    )}
                   </Head>
 
                   <Head>
-                    Severity
+                    {allergyText(
+                      language,
+                      "severity"
+                    )}
                   </Head>
 
                   <Head>
-                    Status
+                    {allergyText(
+                      language,
+                      "status"
+                    )}
                   </Head>
 
                   <Head>
-                    Onset
+                    {allergyText(
+                      language,
+                      "onset"
+                    )}
                   </Head>
 
                   <Head>
-                    Revision
+                    {allergyText(
+                      language,
+                      "revision"
+                    )}
                   </Head>
                 </tr>
               </thead>
@@ -923,7 +1218,8 @@ export default function ResidentAllergiesTab({
                         allergy.id
                       }
                       className={`
-                        border-b border-[#D7DEDA]
+                        border-b
+                        border-[#D7DEDA]
                         text-[10px]
 
                         ${
@@ -935,7 +1231,7 @@ export default function ResidentAllergiesTab({
                         }
                       `}
                     >
-                      <td className="w-[95px] border-r border-[#D7DEDA] px-1 py-1">
+                      <td className="w-[105px] border-r border-[#D7DEDA] px-1 py-1">
                         <select
                           defaultValue=""
                           onChange={(
@@ -951,33 +1247,51 @@ export default function ResidentAllergiesTab({
                               .value =
                               "";
                           }}
-                          className="h-6 w-[84px] border border-[#AEB8B3] bg-white px-1 text-[9px] font-semibold text-[#174F75]"
+                          className="h-6 w-[96px] border border-[#AEB8B3] bg-white px-1 text-[9px] font-semibold text-[#174F75]"
                         >
                           <option value="">
-                            Actions
+                            {allergyText(
+                              language,
+                              "actions"
+                            )}
                           </option>
 
                           <option value="view">
-                            View
+                            {allergyText(
+                              language,
+                              "view"
+                            )}
                           </option>
 
                           <option value="edit">
-                            Edit / Revise
+                            {allergyText(
+                              language,
+                              "editRevise"
+                            )}
                           </option>
 
                           {allergy.status ===
                           "Active" ? (
                             <option value="inactive">
-                              Inactivate
+                              {allergyText(
+                                language,
+                                "inactivate"
+                              )}
                             </option>
                           ) : (
                             <option value="active">
-                              Reactivate
+                              {allergyText(
+                                language,
+                                "reactivate"
+                              )}
                             </option>
                           )}
 
                           <option value="history">
-                            History
+                            {allergyText(
+                              language,
+                              "history"
+                            )}
                           </option>
                         </select>
                       </td>
@@ -989,7 +1303,10 @@ export default function ResidentAllergiesTab({
 
 
                       <td className="border-r border-[#D7DEDA] px-2 py-1">
-                        {allergy.allergy_type}
+                        {allergyTypeLabel(
+                          language,
+                          allergy.allergy_type
+                        )}
                       </td>
 
 
@@ -1006,25 +1323,33 @@ export default function ResidentAllergiesTab({
                           allergy.severity
                         )}`}
                       >
-                        {allergy.severity}
+                        {allergySeverityLabel(
+                          language,
+                          allergy.severity
+                        )}
                       </td>
 
 
                       <td className="border-r border-[#D7DEDA] px-2 py-1 font-semibold">
-                        {allergy.status}
+                        {allergyStatusLabel(
+                          language,
+                          allergy.status
+                        )}
                       </td>
 
 
                       <td className="whitespace-nowrap border-r border-[#D7DEDA] px-2 py-1">
                         {formatDate(
-                          allergy.onset_date
+                          allergy.onset_date,
+                          language
                         )}
                       </td>
 
 
                       <td className="whitespace-nowrap px-2 py-1">
                         {formatDate(
-                          allergy.revision_date
+                          allergy.revision_date,
+                          language
                         )}
                       </td>
                     </tr>
@@ -1036,11 +1361,17 @@ export default function ResidentAllergiesTab({
         ) : (
           <div className="px-6 py-12 text-center">
             <p className="text-[11px] font-semibold text-[#465A50]">
-              No allergy records match the selected filters.
+              {allergyText(
+                language,
+                "noMatchingRecords"
+              )}
             </p>
 
             <p className="mt-1 text-[10px] text-[#75837C]">
-              Do not interpret an empty structured allergy list as confirmation of no known allergies.
+              {allergyText(
+                language,
+                "emptyListWarning"
+              )}
             </p>
           </div>
         )}
@@ -1079,7 +1410,12 @@ export default function ResidentAllergiesTab({
 
       {viewing && (
         <InfoModal
-          title="Allergy Details"
+          title={
+            allergyText(
+              language,
+              "allergyDetails"
+            )
+          }
           onClose={() =>
             setViewing(
               null
@@ -1088,58 +1424,108 @@ export default function ResidentAllergiesTab({
         >
           <div className="grid gap-px bg-[#D8DFDB] sm:grid-cols-2">
             <Detail
-              label="Allergen"
+              label={
+                allergyText(
+                  language,
+                  "allergen"
+                )
+              }
               value={
                 viewing.allergen
               }
             />
 
             <Detail
-              label="Type"
+              label={
+                allergyText(
+                  language,
+                  "type"
+                )
+              }
               value={
-                viewing.allergy_type
+                allergyTypeLabel(
+                  language,
+                  viewing.allergy_type
+                )
               }
             />
 
             <Detail
-              label="Reaction"
+              label={
+                allergyText(
+                  language,
+                  "reaction"
+                )
+              }
               value={
                 viewing.reaction
               }
             />
 
             <Detail
-              label="Severity"
-              value={
-                viewing.severity
+              label={
+                allergyText(
+                  language,
+                  "severity"
+                )
               }
-            />
-
-            <Detail
-              label="Status"
               value={
-                viewing.status
-              }
-            />
-
-            <Detail
-              label="Onset Date"
-              value={
-                formatDate(
-                  viewing.onset_date
+                allergySeverityLabel(
+                  language,
+                  viewing.severity
                 )
               }
             />
 
             <Detail
-              label="Source"
+              label={
+                allergyText(
+                  language,
+                  "status"
+                )
+              }
+              value={
+                allergyStatusLabel(
+                  language,
+                  viewing.status
+                )
+              }
+            />
+
+            <Detail
+              label={
+                allergyText(
+                  language,
+                  "onsetDate"
+                )
+              }
+              value={
+                formatDate(
+                  viewing.onset_date,
+                  language
+                )
+              }
+            />
+
+            <Detail
+              label={
+                allergyText(
+                  language,
+                  "source"
+                )
+              }
               value={
                 viewing.source
               }
             />
 
             <Detail
-              label="Recorded By"
+              label={
+                allergyText(
+                  language,
+                  "recordedBy"
+                )
+              }
               value={
                 viewing.created_by
               }
@@ -1149,14 +1535,20 @@ export default function ResidentAllergiesTab({
 
           <div className="border-t border-[#D7DEDA] p-3">
             <p className="text-[9px] font-bold uppercase text-[#718078]">
-              Clinical Notes
+              {allergyText(
+                language,
+                "clinicalNotes"
+              )}
             </p>
 
             <p className="mt-1 whitespace-pre-wrap text-[11px] leading-5 text-[#34483F]">
               {cleanText(
                 viewing.notes
               ) ||
-                "No notes recorded."}
+                allergyText(
+                  language,
+                  "noNotes"
+                )}
             </p>
           </div>
         </InfoModal>
@@ -1165,19 +1557,26 @@ export default function ResidentAllergiesTab({
 
       {historyAllergy && (
         <InfoModal
-          title={`Allergy History — ${historyAllergy.allergen}`}
+          title={`${allergyText(
+            language,
+            "allergyHistory"
+          )} — ${historyAllergy.allergen}`}
           onClose={() => {
             setHistoryAllergy(
               null
             );
 
-            setHistory([]);
+            setHistory(
+              []
+            );
           }}
         >
           {historyLoading ? (
             <div className="flex h-32 items-center justify-center">
               <LoaderCircle
-                size={18}
+                size={
+                  18
+                }
                 className="animate-spin text-[#073B2F]"
               />
             </div>
@@ -1188,23 +1587,38 @@ export default function ResidentAllergiesTab({
                 <thead>
                   <tr className="bg-[#E7EDE9] text-[9px] font-bold uppercase text-[#40544B]">
                     <Head>
-                      Date / Time
+                      {allergyText(
+                        language,
+                        "dateTime"
+                      )}
                     </Head>
 
                     <Head>
-                      Action
+                      {allergyText(
+                        language,
+                        "action"
+                      )}
                     </Head>
 
                     <Head>
-                      Previous
+                      {allergyText(
+                        language,
+                        "previous"
+                      )}
                     </Head>
 
                     <Head>
-                      New
+                      {allergyText(
+                        language,
+                        "new"
+                      )}
                     </Head>
 
                     <Head>
-                      Staff
+                      {allergyText(
+                        language,
+                        "staff"
+                      )}
                     </Head>
                   </tr>
                 </thead>
@@ -1223,22 +1637,34 @@ export default function ResidentAllergiesTab({
                       >
                         <td className="px-2 py-1.5">
                           {formatDateTime(
-                            item.changed_at
+                            item.changed_at,
+                            language
                           )}
                         </td>
 
                         <td className="px-2 py-1.5 font-semibold">
-                          {item.action}
+                          {allergyHistoryActionLabel(
+                            language,
+                            item.action
+                          )}
                         </td>
 
                         <td className="px-2 py-1.5">
-                          {item.previous_status ||
-                            "—"}
+                          {item.previous_status
+                            ? allergyStatusLabel(
+                                language,
+                                item.previous_status
+                              )
+                            : "—"}
                         </td>
 
                         <td className="px-2 py-1.5">
-                          {item.new_status ||
-                            "—"}
+                          {item.new_status
+                            ? allergyStatusLabel(
+                                language,
+                                item.new_status
+                              )
+                            : "—"}
                         </td>
 
                         <td className="px-2 py-1.5">
@@ -1252,7 +1678,10 @@ export default function ResidentAllergiesTab({
             </div>
           ) : (
             <div className="p-8 text-center text-[11px] text-[#687970]">
-              No allergy history is available.
+              {allergyText(
+                language,
+                "noHistory"
+              )}
             </div>
           )}
         </InfoModal>
@@ -1270,18 +1699,31 @@ function AllergyFormModal({
   onClose,
   onSaved,
 }: {
-  open: boolean;
+  open:
+    boolean;
 
-  residentId: number;
-  residentName: string;
+  residentId:
+    number;
+
+  residentName:
+    string;
 
   initialRecord:
     | AllergyRecord
     | null;
 
-  onClose: () => void;
-  onSaved: () => void;
+  onClose:
+    () => void;
+
+  onSaved:
+    () => void;
 }) {
+  const {
+    language,
+  } =
+    useLanguage();
+
+
   const [
     form,
     setForm,
@@ -1290,75 +1732,93 @@ function AllergyFormModal({
       EMPTY_FORM
     );
 
+
   const [
     saving,
     setSaving,
-  ] = useState(false);
+  ] = useState(
+    false
+  );
+
 
   const [
     error,
     setError,
-  ] = useState("");
+  ] = useState(
+    ""
+  );
 
 
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
+  useEffect(
+    () => {
+      if (
+        !open
+      ) {
+        return;
+      }
 
 
-    if (
-      initialRecord
-    ) {
-      setForm({
-        allergen:
-          initialRecord.allergen,
+      if (
+        initialRecord
+      ) {
+        setForm({
+          allergen:
+            initialRecord.allergen,
 
-        allergyType:
-          initialRecord.allergy_type,
+          allergyType:
+            initialRecord.allergy_type,
 
-        reaction:
-          initialRecord.reaction ??
-          "",
+          reaction:
+            initialRecord.reaction ??
+            "",
 
-        severity:
-          initialRecord.severity,
+          severity:
+            initialRecord.severity,
 
-        onsetDate:
-          initialRecord.onset_date ??
-          "",
+          onsetDate:
+            initialRecord.onset_date ??
+            "",
 
-        source:
-          initialRecord.source ??
-          "",
+          source:
+            initialRecord.source ??
+            "",
 
-        notes:
-          initialRecord.notes ??
-          "",
-      });
-    } else {
-      setForm(
-        EMPTY_FORM
+          notes:
+            initialRecord.notes ??
+            "",
+        });
+      } else {
+        setForm(
+          EMPTY_FORM
+        );
+      }
+
+
+      setError(
+        ""
       );
-    }
+    },
+    [
+      initialRecord,
+      open,
+    ]
+  );
 
 
-    setError("");
-  }, [
-    open,
-    initialRecord,
-  ]);
-
-
-  if (!open) {
+  if (
+    !open
+  ) {
     return null;
   }
 
 
   function update<
-    K extends keyof FormState
+    K extends
+      keyof FormState
   >(
-    key: K,
+    key:
+      K,
+
     value:
       FormState[K]
   ) {
@@ -1367,29 +1827,43 @@ function AllergyFormModal({
         current
       ) => ({
         ...current,
+
         [key]:
           value,
       })
     );
 
-    setError("");
+
+    setError(
+      ""
+    );
   }
 
 
   async function save() {
     if (
-      !form.allergen.trim()
+      !form
+        .allergen
+        .trim()
     ) {
       setError(
-        "Allergen is required."
+        allergyText(
+          language,
+          "allergenRequired"
+        )
       );
 
       return;
     }
 
 
-    setSaving(true);
-    setError("");
+    setSaving(
+      true
+    );
+
+    setError(
+      ""
+    );
 
 
     const payload = {
@@ -1397,13 +1871,15 @@ function AllergyFormModal({
         residentId,
 
       allergen:
-        form.allergen.trim(),
+        form.allergen
+          .trim(),
 
       allergy_type:
         form.allergyType,
 
       reaction:
-        form.reaction.trim(),
+        form.reaction
+          .trim(),
 
       severity:
         form.severity,
@@ -1412,10 +1888,12 @@ function AllergyFormModal({
         form.onsetDate,
 
       source:
-        form.source.trim(),
+        form.source
+          .trim(),
 
       notes:
-        form.notes.trim(),
+        form.notes
+          .trim(),
     };
 
 
@@ -1439,7 +1917,9 @@ function AllergyFormModal({
           );
 
 
-        if (updateError) {
+        if (
+          updateError
+        ) {
           throw updateError;
         }
       } else {
@@ -1456,7 +1936,9 @@ function AllergyFormModal({
           );
 
 
-        if (createError) {
+        if (
+          createError
+        ) {
           throw createError;
         }
       }
@@ -1472,11 +1954,15 @@ function AllergyFormModal({
         caughtError
       );
 
+
       setError(
-        caughtError instanceof
-        Error
-          ? caughtError.message
-          : "The allergy record could not be saved."
+        errorMessage(
+          caughtError,
+          allergyText(
+            language,
+            "saveError"
+          )
+        )
       );
     } finally {
       setSaving(
@@ -1490,7 +1976,9 @@ function AllergyFormModal({
     <div
       className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/45 p-3"
       onMouseDown={() => {
-        if (!saving) {
+        if (
+          !saving
+        ) {
           onClose();
         }
       }}
@@ -1508,16 +1996,27 @@ function AllergyFormModal({
         <header className="flex items-center justify-between border-b border-[#617966] bg-[#073B2F] px-3 py-2 text-white">
           <div>
             <p className="text-[9px] font-semibold uppercase text-[#CAD8D1]">
-              Resident:{" "}
+              {allergyText(
+                language,
+                "resident"
+              )}
+              :{" "}
               {residentName}
             </p>
 
             <h2 className="text-[14px] font-bold">
               {initialRecord
-                ? "Revise Allergy"
-                : "New Allergy"}
+                ? allergyText(
+                    language,
+                    "reviseAllergy"
+                  )
+                : allergyText(
+                    language,
+                    "newAllergy"
+                  )}
             </h2>
           </div>
+
 
           <button
             type="button"
@@ -1530,20 +2029,30 @@ function AllergyFormModal({
             className="flex h-7 w-7 items-center justify-center border border-white/25 bg-white/10"
           >
             <X
-              size={13}
+              size={
+                13
+              }
             />
           </button>
         </header>
 
 
         <div className="border-b border-[#889B7A] bg-[#91A47E] px-2 py-1 text-[11px] font-bold text-white">
-          Allergy Details
+          {allergyText(
+            language,
+            "allergyDetails"
+          )}
         </div>
 
 
         <div className="grid gap-3 p-3 md:grid-cols-2">
           <Field
-            label="Allergen"
+            label={
+              allergyText(
+                language,
+                "allergen"
+              )
+            }
             required
             value={
               form.allergen
@@ -1556,35 +2065,80 @@ function AllergyFormModal({
                 value
               )
             }
-            placeholder="Penicillin, shellfish, latex..."
-          />
-
-
-          <SelectField
-            label="Allergy Type"
-            required
-            value={
-              form.allergyType
-            }
-            options={[
-              "Medication",
-              "Food",
-              "Environmental",
-              "Other",
-            ]}
-            onChange={(
-              value
-            ) =>
-              update(
-                "allergyType",
-                value as FormState["allergyType"]
+            placeholder={
+              allergyText(
+                language,
+                "allergenPlaceholder"
               )
             }
           />
 
 
+          <label>
+            <FieldLabel
+              label={
+                allergyText(
+                  language,
+                  "allergyType"
+                )
+              }
+              required
+            />
+
+            <select
+              value={
+                form.allergyType
+              }
+              onChange={(
+                event
+              ) =>
+                update(
+                  "allergyType",
+                  event.target
+                    .value as
+                    AllergyTypeValue
+                )
+              }
+              className="h-8 w-full border border-[#B8C5BE] bg-white px-2 text-[11px] text-[#253A31] outline-none focus:border-[#667F73]"
+            >
+              {(
+                [
+                  "Medication",
+                  "Food",
+                  "Environmental",
+                  "Other",
+                ] as
+                  AllergyTypeValue[]
+              ).map(
+                (
+                  value
+                ) => (
+                  <option
+                    key={
+                      value
+                    }
+                    value={
+                      value
+                    }
+                  >
+                    {allergyTypeLabel(
+                      language,
+                      value
+                    )}
+                  </option>
+                )
+              )}
+            </select>
+          </label>
+
+
           <Field
-            label="Reaction"
+            label={
+              allergyText(
+                language,
+                "reaction"
+              )
+            }
             value={
               form.reaction
             }
@@ -1596,35 +2150,80 @@ function AllergyFormModal({
                 value
               )
             }
-            placeholder="Rash, swelling, anaphylaxis..."
-          />
-
-
-          <SelectField
-            label="Severity"
-            required
-            value={
-              form.severity
-            }
-            options={[
-              "Unknown",
-              "Mild",
-              "Moderate",
-              "Severe",
-            ]}
-            onChange={(
-              value
-            ) =>
-              update(
-                "severity",
-                value as AllergySeverity
+            placeholder={
+              allergyText(
+                language,
+                "reactionPlaceholder"
               )
             }
           />
 
 
+          <label>
+            <FieldLabel
+              label={
+                allergyText(
+                  language,
+                  "severity"
+                )
+              }
+              required
+            />
+
+            <select
+              value={
+                form.severity
+              }
+              onChange={(
+                event
+              ) =>
+                update(
+                  "severity",
+                  event.target
+                    .value as
+                    AllergySeverityValue
+                )
+              }
+              className="h-8 w-full border border-[#B8C5BE] bg-white px-2 text-[11px] text-[#253A31] outline-none focus:border-[#667F73]"
+            >
+              {(
+                [
+                  "Unknown",
+                  "Mild",
+                  "Moderate",
+                  "Severe",
+                ] as
+                  AllergySeverityValue[]
+              ).map(
+                (
+                  value
+                ) => (
+                  <option
+                    key={
+                      value
+                    }
+                    value={
+                      value
+                    }
+                  >
+                    {allergySeverityLabel(
+                      language,
+                      value
+                    )}
+                  </option>
+                )
+              )}
+            </select>
+          </label>
+
+
           <Field
-            label="Onset Date"
+            label={
+              allergyText(
+                language,
+                "onsetDate"
+              )
+            }
             type="date"
             value={
               form.onsetDate
@@ -1641,7 +2240,12 @@ function AllergyFormModal({
 
 
           <Field
-            label="Information Source"
+            label={
+              allergyText(
+                language,
+                "informationSource"
+              )
+            }
             value={
               form.source
             }
@@ -1653,17 +2257,29 @@ function AllergyFormModal({
                 value
               )
             }
-            placeholder="Resident, family, hospital record..."
+            placeholder={
+              allergyText(
+                language,
+                "sourcePlaceholder"
+              )
+            }
           />
 
 
           <label className="md:col-span-2">
-            <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
-              Clinical Notes
-            </span>
+            <FieldLabel
+              label={
+                allergyText(
+                  language,
+                  "clinicalNotes"
+                )
+              }
+            />
 
             <textarea
-              rows={4}
+              rows={
+                4
+              }
               value={
                 form.notes
               }
@@ -1702,14 +2318,22 @@ function AllergyFormModal({
           >
             {saving && (
               <LoaderCircle
-                size={11}
+                size={
+                  11
+                }
                 className="animate-spin"
               />
             )}
 
             {initialRecord
-              ? "Save Revision"
-              : "Save Allergy"}
+              ? allergyText(
+                  language,
+                  "saveRevision"
+                )
+              : allergyText(
+                  language,
+                  "saveAllergy"
+                )}
           </button>
 
 
@@ -1723,7 +2347,10 @@ function AllergyFormModal({
             }
             className="h-8 border border-[#8E9D95] bg-white px-4 text-[10px] font-bold text-[#33483F]"
           >
-            Cancel
+            {allergyText(
+              language,
+              "cancel"
+            )}
           </button>
         </footer>
       </div>
@@ -1737,14 +2364,21 @@ function InfoModal({
   children,
   onClose,
 }: {
-  title: string;
+  title:
+    string;
 
   children:
-    React.ReactNode;
+    ReactNode;
 
   onClose:
     () => void;
 }) {
+  const {
+    language,
+  } =
+    useLanguage();
+
+
   return (
     <div
       className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/40 p-4"
@@ -1772,7 +2406,10 @@ function InfoModal({
             }
             className="h-7 border border-white/25 px-2 text-[10px] font-bold"
           >
-            Close
+            {allergyText(
+              language,
+              "close"
+            )}
           </button>
         </header>
 
@@ -1787,7 +2424,7 @@ function Head({
   children,
 }: {
   children:
-    React.ReactNode;
+    ReactNode;
 }) {
   return (
     <th className="border-r border-[#BFCAD0] px-2 py-1 text-left last:border-r-0">
@@ -1801,7 +2438,8 @@ function Detail({
   label,
   value,
 }: {
-  label: string;
+  label:
+    string;
 
   value:
     | string
@@ -1817,9 +2455,35 @@ function Detail({
       <p className="mt-0.5 text-[11px] font-semibold text-[#33483F]">
         {cleanText(
           value
-        ) || "—"}
+        ) ||
+          "—"}
       </p>
     </div>
+  );
+}
+
+
+function FieldLabel({
+  label,
+  required =
+    false,
+}: {
+  label:
+    string;
+
+  required?:
+    boolean;
+}) {
+  return (
+    <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
+      {label}
+
+      {required && (
+        <span className="ml-0.5 text-red-600">
+          *
+        </span>
+      )}
+    </span>
   );
 }
 
@@ -1828,33 +2492,44 @@ function Field({
   label,
   value,
   onChange,
-  type = "text",
-  placeholder = "",
-  required = false,
+  type =
+    "text",
+  placeholder =
+    "",
+  required =
+    false,
 }: {
-  label: string;
-  value: string;
+  label:
+    string;
+
+  value:
+    string;
 
   onChange:
     (
-      value: string
+      value:
+        string
     ) => void;
 
-  type?: string;
-  placeholder?: string;
-  required?: boolean;
+  type?:
+    string;
+
+  placeholder?:
+    string;
+
+  required?:
+    boolean;
 }) {
   return (
     <label>
-      <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
-        {label}
-
-        {required && (
-          <span className="ml-0.5 text-red-600">
-            *
-          </span>
-        )}
-      </span>
+      <FieldLabel
+        label={
+          label
+        }
+        required={
+          required
+        }
+      />
 
       <input
         type={
@@ -1876,75 +2551,6 @@ function Field({
         }
         className="h-8 w-full border border-[#B8C5BE] bg-white px-2 text-[11px] text-[#253A31] outline-none focus:border-[#667F73]"
       />
-    </label>
-  );
-}
-
-
-function SelectField({
-  label,
-  value,
-  options,
-  onChange,
-  required = false,
-}: {
-  label: string;
-  value: string;
-
-  options:
-    string[];
-
-  onChange:
-    (
-      value: string
-    ) => void;
-
-  required?:
-    boolean;
-}) {
-  return (
-    <label>
-      <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
-        {label}
-
-        {required && (
-          <span className="ml-0.5 text-red-600">
-            *
-          </span>
-        )}
-      </span>
-
-      <select
-        value={
-          value
-        }
-        onChange={(
-          event
-        ) =>
-          onChange(
-            event.target
-              .value
-          )
-        }
-        className="h-8 w-full border border-[#B8C5BE] bg-white px-2 text-[11px] text-[#253A31] outline-none focus:border-[#667F73]"
-      >
-        {options.map(
-          (
-            option
-          ) => (
-            <option
-              key={
-                option
-              }
-              value={
-                option
-              }
-            >
-              {option}
-            </option>
-          )
-        )}
-      </select>
     </label>
   );
 }
