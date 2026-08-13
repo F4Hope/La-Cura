@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+
 import {
   usePathname,
 } from "next/navigation";
@@ -19,18 +20,17 @@ import {
   Pill,
   Settings,
   ShieldCheck,
-  Stethoscope,
-  UserRound,
   Users,
 } from "lucide-react";
+
+import {
+  useLanguage,
+} from "@/components/i18n/LanguageProvider";
 
 import {
   useStaffSession,
 } from "@/components/StaffSessionProvider";
 
-/* ============================================================
-   TYPES
-   ============================================================ */
 
 type StaffRole =
   | "administrator"
@@ -38,96 +38,187 @@ type StaffRole =
   | "physician"
   | "staff";
 
+
 type NavLink = {
   label: string;
   href: string;
-  icon?: React.ComponentType<{
-    size?: number;
-    className?: string;
-  }>;
+
+  icon?:
+    React.ComponentType<{
+      size?: number;
+      className?: string;
+    }>;
 };
+
 
 type NavMenu = {
   label: string;
-  match: string[];
-  items: NavLink[];
+
+  match:
+    string[];
+
+  items:
+    NavLink[];
 };
 
-
-/* ============================================================
-   STAFF HELPERS
-   ============================================================ */
 
 function normalizeRole(
   value: unknown
 ): StaffRole {
   const role =
-    String(value ?? "")
+    String(
+      value ??
+        ""
+    )
       .trim()
       .toLowerCase();
 
+
   if (
-    role === "administrator" ||
-    role === "admin"
+    role ===
+      "administrator" ||
+    role ===
+      "admin"
   ) {
     return "administrator";
   }
 
+
   if (
-    role === "physician" ||
-    role === "doctor"
+    role ===
+      "physician" ||
+    role ===
+      "doctor"
   ) {
     return "physician";
   }
 
-  if (role === "nurse") {
+
+  if (
+    role ===
+    "nurse"
+  ) {
     return "nurse";
   }
+
 
   return "staff";
 }
 
 
 function getString(
-  object: Record<string, unknown>,
-  keys: string[]
+  object:
+    Record<
+      string,
+      unknown
+    >,
+
+  keys:
+    string[]
 ) {
-  for (const key of keys) {
+  for (
+    const key
+    of keys
+  ) {
     const value =
       object[key];
 
+
     if (
-      typeof value === "string" &&
+      typeof value ===
+        "string" &&
       value.trim()
     ) {
       return value.trim();
     }
   }
 
+
   return "";
 }
 
 
-function getGreeting() {
+function getGreeting(
+  language:
+    "en" | "fr"
+) {
   const hour =
-    new Date().getHours();
+    new Date()
+      .getHours();
 
-  if (hour < 12) {
+
+  if (
+    language ===
+    "fr"
+  ) {
+    if (
+      hour < 12
+    ) {
+      return "Bonjour";
+    }
+
+
+    if (
+      hour < 18
+    ) {
+      return "Bon après-midi";
+    }
+
+
+    return "Bonsoir";
+  }
+
+
+  if (
+    hour < 12
+  ) {
     return "Good morning";
   }
 
-  if (hour < 17) {
+
+  if (
+    hour < 17
+  ) {
     return "Good afternoon";
   }
+
 
   return "Good evening";
 }
 
 
 function getRoleMessage(
-  role: StaffRole
+  role:
+    StaffRole,
+
+  language:
+    "en" | "fr"
 ) {
-  switch (role) {
+  if (
+    language ===
+    "fr"
+  ) {
+    switch (
+      role
+    ) {
+      case "nurse":
+        return "Merci pour les soins que vous apportez à chaque résident, à chaque service.";
+
+      case "physician":
+        return "Votre jugement clinique contribue à la continuité des soins de chaque résident.";
+
+      case "administrator":
+        return "Merci de maintenir les équipes de soins coordonnées, soutenues et opérationnelles.";
+
+      default:
+        return "Merci de contribuer aujourd’hui à des soins sûrs et de qualité.";
+    }
+  }
+
+
+  switch (
+    role
+  ) {
     case "nurse":
       return "Thank you for the care you give every resident, every shift.";
 
@@ -144,29 +235,83 @@ function getRoleMessage(
 
 
 function getGreetingName(
-  role: StaffRole,
-  name: string
+  role:
+    StaffRole,
+
+  name:
+    string,
+
+  language:
+    "en" | "fr"
 ) {
   const firstName =
-    name.split(/\s+/)[0] ||
-    "Clinician";
+    name
+      .split(
+        /\s+/
+      )[0] ||
+    (
+      language ===
+      "fr"
+        ? "Clinicien"
+        : "Clinician"
+    );
 
-  if (role === "physician") {
+
+  if (
+    role ===
+    "physician"
+  ) {
     return `Dr. ${firstName}`;
   }
 
-  if (role === "nurse") {
-    return `Nurse ${firstName}`;
+
+  if (
+    role ===
+    "nurse"
+  ) {
+    return language ===
+      "fr"
+      ? `Infirmier(ère) ${firstName}`
+      : `Nurse ${firstName}`;
   }
+
 
   return firstName;
 }
 
 
 function formatRole(
-  role: StaffRole
+  role:
+    StaffRole,
+
+  language:
+    "en" | "fr"
 ) {
-  switch (role) {
+  if (
+    language ===
+    "fr"
+  ) {
+    switch (
+      role
+    ) {
+      case "administrator":
+        return "Administrateur";
+
+      case "physician":
+        return "Médecin";
+
+      case "nurse":
+        return "Infirmier(ère)";
+
+      default:
+        return "Personnel clinique";
+    }
+  }
+
+
+  switch (
+    role
+  ) {
     case "administrator":
       return "Administrator";
 
@@ -182,20 +327,27 @@ function formatRole(
 }
 
 
-/* ============================================================
-   ROUTE HELPERS
-   ============================================================ */
-
 function isPathActive(
-  pathname: string,
-  href: string
+  pathname:
+    string,
+
+  href:
+    string
 ) {
-  if (href === "/dashboard") {
-    return pathname === "/dashboard";
+  if (
+    href ===
+    "/dashboard"
+  ) {
+    return (
+      pathname ===
+      "/dashboard"
+    );
   }
 
+
   return (
-    pathname === href ||
+    pathname ===
+      href ||
     pathname.startsWith(
       `${href}/`
     )
@@ -204,12 +356,18 @@ function isPathActive(
 
 
 function isAnyPathActive(
-  pathname: string,
-  paths: string[]
+  pathname:
+    string,
+
+  paths:
+    string[]
 ) {
   return paths.some(
-    (path) =>
-      pathname === path ||
+    (
+      path
+    ) =>
+      pathname ===
+        path ||
       pathname.startsWith(
         `${path}/`
       )
@@ -217,16 +375,15 @@ function isAnyPathActive(
 }
 
 
-/* ============================================================
-   DROPDOWN
-   ============================================================ */
-
 function ClinicalMenu({
   menu,
   pathname,
 }: {
-  menu: NavMenu;
-  pathname: string;
+  menu:
+    NavMenu;
+
+  pathname:
+    string;
 }) {
   const active =
     isAnyPathActive(
@@ -234,13 +391,15 @@ function ClinicalMenu({
       menu.match
     );
 
+
   return (
     <details className="group relative h-full">
       <summary
         className={`
-          flex h-full cursor-pointer list-none
-          items-center gap-1.5 border-b-2
-          px-4 text-[13px] font-bold
+          flex h-full cursor-pointer
+          list-none items-center gap-1.5
+          border-b-2 px-4
+          text-[13px] font-bold
           uppercase tracking-[0.045em]
           transition
           [&::-webkit-details-marker]:hidden
@@ -256,24 +415,22 @@ function ClinicalMenu({
 
         <ChevronDown
           size={14}
-          strokeWidth={2}
+          strokeWidth={
+            2
+          }
           className="transition-transform group-open:rotate-180"
         />
       </summary>
 
-      <div
-        className="
-          absolute left-0 top-full z-[100]
-          min-w-[255px] overflow-hidden
-          rounded-b-lg border border-[#D9E0DC]
-          bg-white py-2
-          shadow-[0_16px_40px_rgba(7,59,47,0.12)]
-        "
-      >
+
+      <div className="absolute left-0 top-full z-[100] min-w-[275px] overflow-hidden border border-[#D9E0DC] bg-white py-2 shadow-[0_16px_40px_rgba(7,59,47,0.12)]">
         {menu.items.map(
-          (item) => {
+          (
+            item
+          ) => {
             const Icon =
               item.icon;
+
 
             const itemActive =
               isPathActive(
@@ -281,13 +438,16 @@ function ClinicalMenu({
                 item.href
               );
 
+
             return (
               <Link
                 key={`${menu.label}-${item.href}`}
-                href={item.href}
+                href={
+                  item.href
+                }
                 className={`
-                  flex items-center gap-3
-                  px-4 py-2.5
+                  flex items-center
+                  gap-3 px-4 py-2.5
                   text-sm transition
 
                   ${
@@ -299,7 +459,9 @@ function ClinicalMenu({
               >
                 {Icon && (
                   <Icon
-                    size={16}
+                    size={
+                      16
+                    }
                     className={
                       itemActive
                         ? "text-[#D5A437]"
@@ -319,28 +481,38 @@ function ClinicalMenu({
 }
 
 
-/* ============================================================
-   MAIN TOP NAV
-   ============================================================ */
-
 export default function ClinicalTopNav() {
   const pathname =
     usePathname();
 
+
   const {
     staff,
-  } = useStaffSession();
+  } =
+    useStaffSession();
+
+
+  const {
+    language,
+    locale,
+    t,
+  } =
+    useLanguage();
+
 
   const profile =
-    (staff ?? {}) as Record<
+    (staff ??
+      {}) as Record<
       string,
       unknown
     >;
+
 
   const role =
     normalizeRole(
       profile.role
     );
+
 
   const fullName =
     getString(
@@ -352,345 +524,318 @@ export default function ClinicalTopNav() {
         "display_name",
         "first_name",
       ]
-    ) || "Clinical Staff";
+    ) ||
+    t(
+      "staff.clinical"
+    );
+
 
   const greetingName =
     getGreetingName(
       role,
-      fullName
+      fullName,
+      language
     );
+
 
   const initial =
     fullName
-      .charAt(0)
-      .toUpperCase() || "L";
+      .charAt(
+        0
+      )
+      .toUpperCase() ||
+    "L";
+
 
   const currentDate =
     new Intl.DateTimeFormat(
-      undefined,
+      locale,
       {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
+        weekday:
+          "short",
+
+        month:
+          "short",
+
+        day:
+          "numeric",
       }
     ).format(
       new Date()
     );
 
+
   const clinicalMenu:
     NavMenu = {
-      label: "Clinical",
-      match: [
-        "/care-plans",
-        "/add-vitals",
-        "/add-nursing-note",
-        "/add-incident-report",
-        "/medication-administration",
-        "/appointments",
-      ],
-      items: [
-        {
-          label:
-            "Care Plans",
-          href:
-            "/care-plans",
-          icon:
-            ClipboardList,
-        },
-        {
-          label:
-            "Record Vitals",
-          href:
-            "/add-vitals",
-          icon:
-            HeartPulse,
-        },
-        {
-          label:
-            "Nursing Notes",
-          href:
-            "/add-nursing-note",
-          icon:
-            NotebookPen,
-        },
-        {
-          label:
-            "Incident Reports",
-          href:
-            "/add-incident-report",
-          icon:
-            ShieldCheck,
-        },
-        {
-          label:
-            "Medication Administration",
-          href:
-            "/medication-administration",
-          icon:
-            Pill,
-        },
-        {
-          label:
-            "Appointments",
-          href:
-            "/appointments",
-          icon:
-            CalendarDays,
-        },
-      ],
-    };
+    label:
+      t(
+        "nav.clinical"
+      ),
+
+    match: [
+      "/care-plans",
+      "/add-vitals",
+      "/add-nursing-note",
+      "/add-incident-report",
+      "/medication-administration",
+      "/appointments",
+    ],
+
+    items: [
+      {
+        label:
+          t(
+            "nav.carePlans"
+          ),
+
+        href:
+          "/care-plans",
+
+        icon:
+          ClipboardList,
+      },
+
+      {
+        label:
+          t(
+            "nav.recordVitals"
+          ),
+
+        href:
+          "/add-vitals",
+
+        icon:
+          HeartPulse,
+      },
+
+      {
+        label:
+          t(
+            "nav.nursingNotes"
+          ),
+
+        href:
+          "/add-nursing-note",
+
+        icon:
+          NotebookPen,
+      },
+
+      {
+        label:
+          t(
+            "nav.incidentReports"
+          ),
+
+        href:
+          "/add-incident-report",
+
+        icon:
+          ShieldCheck,
+      },
+
+      {
+        label:
+          t(
+            "nav.medicationAdministration"
+          ),
+
+        href:
+          "/medication-administration",
+
+        icon:
+          Pill,
+      },
+
+      {
+        label:
+          t(
+            "nav.appointments"
+          ),
+
+        href:
+          "/appointments",
+
+        icon:
+          CalendarDays,
+      },
+    ],
+  };
+
 
   const adminMenu:
     NavMenu = {
-      label: "Admin",
-      match: [
-        "/staff",
-        "/settings",
-      ],
-      items: [
-        {
-          label:
-            "Staff Management",
-          href:
-            "/staff",
-          icon:
-            Users,
-        },
-        {
-          label:
-            "Settings",
-          href:
-            "/settings",
-          icon:
-            Settings,
-        },
-      ],
-    };
+    label:
+      t(
+        "nav.admin"
+      ),
+
+    match: [
+      "/staff",
+      "/settings",
+    ],
+
+    items: [
+      {
+        label:
+          t(
+            "nav.staffManagement"
+          ),
+
+        href:
+          "/staff",
+
+        icon:
+          Users,
+      },
+
+      {
+        label:
+          t(
+            "nav.settings"
+          ),
+
+        href:
+          "/settings",
+
+        icon:
+          Settings,
+      },
+    ],
+  };
+
 
   return (
-    <header
-      className="
-        sticky top-0 z-50
-        border-t-[3px] border-[#073B2F]
-        bg-[#F7F5EF]
-        text-[#10231E]
-        shadow-[0_1px_0_rgba(7,59,47,0.12)]
-      "
-    >
-      {/* =====================================================
-          TOP IDENTITY BAR
-          ===================================================== */}
-
+    <header className="sticky top-0 z-50 border-t-[3px] border-[#073B2F] bg-[#F7F5EF] text-[#10231E] shadow-[0_1px_0_rgba(7,59,47,0.12)]">
       <div className="border-b border-[#DCE3DF]">
-        <div
-          className="
-            mx-auto flex min-h-[72px]
-            max-w-[1800px]
-            items-center justify-between
-            gap-6 px-4
-            sm:px-5 lg:px-6
-          "
-        >
-          {/* BRAND */}
-
+        <div className="mx-auto flex min-h-[72px] max-w-[1800px] items-center justify-between gap-6 px-4 sm:px-5 lg:px-6">
           <div className="flex min-w-0 items-center gap-4">
             <Link
               href="/dashboard"
               className="flex shrink-0 items-center gap-3"
             >
-              <div
-                className="
-                  flex h-10 w-10
-                  items-center justify-center
-                  rounded-lg border border-[#D9E0DC]
-                  bg-white
-                "
-              >
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#D9E0DC] bg-white">
                 <Image
                   src="/logo.png"
                   alt="La-Cura"
-                  width={35}
-                  height={35}
+                  width={
+                    35
+                  }
+                  height={
+                    35
+                  }
                   className="h-8 w-8 object-contain"
                 />
               </div>
 
+
               <div className="hidden sm:block">
-                <p
-                  className="
-                    text-[24px] font-black
-                    leading-none
-                    tracking-[-0.035em]
-                    text-[#073B2F]
-                  "
-                >
+                <p className="text-[24px] font-black leading-none tracking-[-0.035em] text-[#073B2F]">
                   La-Cura
                 </p>
 
-                <p
-                  className="
-                    mt-1 text-[10px]
-                    font-bold uppercase
-                    tracking-[0.15em]
-                    text-[#9B782A]
-                  "
-                >
-                  Clinical Workspace
+                <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.15em] text-[#9B782A]">
+                  {t(
+                    "brand.workspace"
+                  )}
                 </p>
               </div>
             </Link>
 
-            {/* WELCOME NOTE */}
 
-            <div
-              className="
-                hidden min-w-0
-                border-l border-[#D7DFDB]
-                pl-5 lg:block
-              "
-            >
+            <div className="hidden min-w-0 border-l border-[#D7DFDB] pl-5 lg:block">
               <div className="flex items-center gap-2">
-                <p
-                  className="
-                    truncate text-[14px]
-                    font-bold text-[#10231E]
-                  "
-                >
-                  {getGreeting()},
-                  {" "}
+                <p className="truncate text-[14px] font-bold text-[#10231E]">
+                  {getGreeting(
+                    language
+                  )}
+                  ,{" "}
                   <span className="text-[#073B2F]">
                     {greetingName}
                   </span>
                 </p>
 
-                <span
-                  className="
-                    h-1.5 w-1.5
-                    shrink-0 rounded-full
-                    bg-[#D5A437]
-                  "
-                />
+                <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#D5A437]" />
               </div>
 
-              <p
-                className="
-                  mt-0.5 max-w-[540px]
-                  truncate text-[12px]
-                  text-[#66766F]
-                "
-              >
-                {getRoleMessage(role)}
+
+              <p className="mt-0.5 max-w-[570px] truncate text-[12px] text-[#66766F]">
+                {getRoleMessage(
+                  role,
+                  language
+                )}
               </p>
             </div>
           </div>
 
-          {/* SESSION / STAFF */}
 
           <div className="flex shrink-0 items-center gap-3">
-            <div
-              className="
-                hidden items-center gap-2
-                rounded-full border
-                border-[#DCE3DF]
-                bg-white px-3 py-1.5
-                xl:flex
-              "
-            >
-              <span
-                className="
-                  h-2 w-2 rounded-full
-                  bg-[#0F9D6A]
-                  shadow-[0_0_0_3px_rgba(15,157,106,0.10)]
-                "
-              />
+            <div className="hidden items-center gap-2 rounded-full border border-[#DCE3DF] bg-white px-3 py-1.5 xl:flex">
+              <span className="h-2 w-2 rounded-full bg-[#0F9D6A] shadow-[0_0_0_3px_rgba(15,157,106,0.10)]" />
 
-              <span
-                className="
-                  text-[11px] font-semibold
-                  text-[#53675F]
-                "
-              >
-                Secure clinical session
+              <span className="text-[11px] font-semibold text-[#53675F]">
+                {t(
+                  "session.secure"
+                )}
               </span>
             </div>
 
-            <div
-              className="
-                hidden text-right
-                md:block
-              "
-            >
-              <p
-                className="
-                  text-[11px] font-semibold
-                  text-[#7A8A83]
-                "
-              >
+
+            <div className="hidden text-right md:block">
+              <p className="text-[11px] font-semibold text-[#7A8A83]">
                 {currentDate}
               </p>
 
-              <p
-                className="
-                  mt-0.5 text-[12px]
-                  font-bold text-[#30453D]
-                "
-              >
-                {formatRole(role)}
+              <p className="mt-0.5 text-[12px] font-bold text-[#30453D]">
+                {formatRole(
+                  role,
+                  language
+                )}
               </p>
             </div>
 
+
             <Link
               href="/settings"
-              className="
-                flex items-center gap-2
-                rounded-full border
-                border-[#D7DFDB]
-                bg-white p-1 pr-2.5
-                transition
-                hover:border-[#B8C8C0]
-                hover:bg-[#FBFAF6]
-              "
+              aria-label={
+                t(
+                  "nav.settings"
+                )
+              }
+              className="hidden h-9 w-9 items-center justify-center border border-[#D7DFDB] bg-white text-[#53675F] transition hover:bg-[#F1F2ED] hover:text-[#073B2F] sm:flex"
             >
-              <span
-                className="
-                  flex h-8 w-8
-                  items-center justify-center
-                  rounded-full
-                  bg-[#073B2F]
-                  text-xs font-black
-                  text-white
-                "
-              >
+              <Settings
+                size={
+                  15
+                }
+              />
+            </Link>
+
+
+            <Link
+              href="/settings"
+              className="flex items-center gap-2 rounded-full border border-[#D7DFDB] bg-white p-1 pr-2.5 transition hover:border-[#B8C8C0] hover:bg-[#FBFAF6]"
+            >
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#073B2F] text-xs font-black text-white">
                 {initial}
               </span>
 
-              <div
-                className="
-                  hidden max-w-[150px]
-                  text-left xl:block
-                "
-              >
-                <p
-                  className="
-                    truncate text-[12px]
-                    font-bold text-[#172A23]
-                  "
-                >
+              <div className="hidden max-w-[150px] text-left xl:block">
+                <p className="truncate text-[12px] font-bold text-[#172A23]">
                   {fullName}
                 </p>
 
-                <p
-                  className="
-                    truncate text-[10px]
-                    text-[#74847D]
-                  "
-                >
-                  My account
+                <p className="truncate text-[10px] text-[#74847D]">
+                  {t(
+                    "account.my"
+                  )}
                 </p>
               </div>
 
               <ChevronDown
-                size={13}
+                size={
+                  13
+                }
                 className="text-[#6F8179]"
               />
             </Link>
@@ -699,171 +844,175 @@ export default function ClinicalTopNav() {
       </div>
 
 
-      {/* =====================================================
-          PCC-STYLE PRIMARY NAVIGATION
-          ===================================================== */}
-
-      <div
-        className="
-          h-[44px]
-          border-b border-[#CED8D3]
-          bg-white
-        "
-      >
-        <div
-          className="
-            mx-auto flex h-full
-            max-w-[1800px]
-            items-stretch
-            overflow-x-auto px-2
-            sm:px-3 lg:px-4
-          "
-        >
-          <Link
+      <div className="h-[44px] border-b border-[#CED8D3] bg-white">
+        <div className="mx-auto flex h-full max-w-[1800px] items-stretch overflow-x-auto px-2 sm:px-3 lg:px-4">
+          <PrimaryLink
+            pathname={
+              pathname
+            }
             href="/dashboard"
-            className={`
-              flex shrink-0
-              items-center gap-2
-              border-b-2 px-4
-              text-[13px] font-bold
-              uppercase tracking-[0.045em]
-              transition
-
-              ${
-                isPathActive(
-                  pathname,
-                  "/dashboard"
-                )
-                  ? "border-[#D5A437] bg-[#E9EEE9] text-[#073B2F]"
-                  : "border-transparent text-[#30423C] hover:bg-[#F1F2ED]"
-              }
-            `}
-          >
-            <Home
-              size={14}
-              strokeWidth={2.2}
-            />
-
-            Home
-          </Link>
-
-          <Link
-            href="/residents"
-            className={`
-              flex shrink-0
-              items-center gap-2
-              border-b-2 px-4
-              text-[13px] font-bold
-              uppercase tracking-[0.045em]
-              transition
-
-              ${
-                isPathActive(
-                  pathname,
-                  "/residents"
-                )
-                  ? "border-[#D5A437] bg-[#E9EEE9] text-[#073B2F]"
-                  : "border-transparent text-[#30423C] hover:bg-[#F1F2ED]"
-              }
-            `}
-          >
-            <Bed
-              size={14}
-              strokeWidth={2.2}
-            />
-
-            Residents
-          </Link>
-
-          <ClinicalMenu
-            menu={clinicalMenu}
-            pathname={pathname}
+            label={
+              t(
+                "nav.home"
+              )
+            }
+            icon={
+              Home
+            }
           />
 
-          <Link
+
+          <PrimaryLink
+            pathname={
+              pathname
+            }
+            href="/residents"
+            label={
+              t(
+                "nav.residents"
+              )
+            }
+            icon={
+              Bed
+            }
+          />
+
+
+          <ClinicalMenu
+            menu={
+              clinicalMenu
+            }
+            pathname={
+              pathname
+            }
+          />
+
+
+          <PrimaryLink
+            pathname={
+              pathname
+            }
             href="/medications"
-            className={`
-              flex shrink-0
-              items-center gap-2
-              border-b-2 px-4
-              text-[13px] font-bold
-              uppercase tracking-[0.045em]
-              transition
+            label={
+              t(
+                "nav.medications"
+              )
+            }
+            icon={
+              Pill
+            }
+          />
 
-              ${
-                isPathActive(
-                  pathname,
-                  "/medications"
-                )
-                  ? "border-[#D5A437] bg-[#E9EEE9] text-[#073B2F]"
-                  : "border-transparent text-[#30423C] hover:bg-[#F1F2ED]"
-              }
-            `}
-          >
-            <Pill
-              size={14}
-              strokeWidth={2.2}
-            />
 
-            Medications
-          </Link>
-
-          <Link
+          <PrimaryLink
+            pathname={
+              pathname
+            }
             href="/reports"
-            className={`
-              flex shrink-0
-              items-center gap-2
-              border-b-2 px-4
-              text-[13px] font-bold
-              uppercase tracking-[0.045em]
-              transition
+            label={
+              t(
+                "nav.reports"
+              )
+            }
+            icon={
+              FileBarChart
+            }
+          />
 
-              ${
-                isPathActive(
-                  pathname,
-                  "/reports"
-                )
-                  ? "border-[#D5A437] bg-[#E9EEE9] text-[#073B2F]"
-                  : "border-transparent text-[#30423C] hover:bg-[#F1F2ED]"
-              }
-            `}
-          >
-            <FileBarChart
-              size={14}
-              strokeWidth={2.2}
-            />
-
-            Reports
-          </Link>
 
           {role ===
             "administrator" && (
             <ClinicalMenu
-              menu={adminMenu}
+              menu={
+                adminMenu
+              }
               pathname={
                 pathname
               }
             />
           )}
 
+
           <div className="ml-auto hidden items-center px-4 2xl:flex">
-            <div
-              className="
-                flex items-center gap-2
-                text-[11px] font-semibold
-                text-[#73847D]
-              "
-            >
+            <div className="flex items-center gap-2 text-[11px] font-semibold text-[#73847D]">
               <Activity
-                size={14}
+                size={
+                  14
+                }
                 className="text-[#0F8B62]"
               />
 
-              La-Cura Clinical
+              {t(
+                "nav.clinicalBrand"
+              )}
             </div>
           </div>
         </div>
       </div>
     </header>
+  );
+}
+
+
+function PrimaryLink({
+  pathname,
+  href,
+  label,
+  icon:
+    Icon,
+}: {
+  pathname:
+    string;
+
+  href:
+    string;
+
+  label:
+    string;
+
+  icon:
+    React.ComponentType<{
+      size?: number;
+      strokeWidth?: number;
+    }>;
+}) {
+  const active =
+    isPathActive(
+      pathname,
+      href
+    );
+
+
+  return (
+    <Link
+      href={
+        href
+      }
+      className={`
+        flex shrink-0
+        items-center gap-2
+        border-b-2 px-4
+        text-[13px] font-bold
+        uppercase tracking-[0.045em]
+        transition
+
+        ${
+          active
+            ? "border-[#D5A437] bg-[#E9EEE9] text-[#073B2F]"
+            : "border-transparent text-[#30423C] hover:bg-[#F1F2ED]"
+        }
+      `}
+    >
+      <Icon
+        size={
+          14
+        }
+        strokeWidth={
+          2.2
+        }
+      />
+
+      {label}
+    </Link>
   );
 }

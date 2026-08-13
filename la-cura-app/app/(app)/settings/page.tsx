@@ -1,5 +1,7 @@
 "use client";
 
+import StaffLanguageSettings from "@/components/settings/StaffLanguageSettings";
+
 import {
   useCallback,
   useEffect,
@@ -508,6 +510,7 @@ export default function SettingsPage() {
 
 
       <main className="mx-auto max-w-[1500px] p-3 sm:p-4 lg:px-6">
+        <StaffLanguageSettings />
         {staffSessionError && (
           <div className="mb-3 border border-red-200 bg-red-50 px-3 py-2 text-[11px] font-semibold text-red-700">
             {

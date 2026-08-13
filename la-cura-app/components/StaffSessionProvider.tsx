@@ -26,6 +26,7 @@ export type StaffSessionRecord = {
 
   role?: string | null;
   staff_code?: string | null;
+  preferred_language?: "en" | "fr" | null;
 
   active?: boolean | null;
 

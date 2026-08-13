@@ -71,7 +71,7 @@ const ROUTE_PERMISSIONS: RoutePermission[] = [
 
   {
     path: "/settings",
-    roles: ADMIN_ONLY,
+    roles: ALL_CLINICAL_ROLES,
   },
 
   {
