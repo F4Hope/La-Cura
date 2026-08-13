@@ -39,6 +39,13 @@ import {
   createClient,
 } from "@/lib/supabase/server";
 
+import {
+  normalizeResidentLanguage,
+  residentLocale,
+  residentText,
+  type ResidentLanguage,
+} from "@/lib/i18n/resident";
+
 export const dynamic =
   "force-dynamic";
 
@@ -156,14 +163,23 @@ function formatDate(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+
+  language:
+    ResidentLanguage =
+      "en"
 ) {
   if (!value) {
-    return "Not recorded";
+    return residentText(
+      language,
+      "common.notRecorded"
+    );
   }
+
 
   const date =
     new Date(value);
+
 
   if (
     Number.isNaN(
@@ -173,8 +189,11 @@ function formatDate(
     return value;
   }
 
+
   return new Intl.DateTimeFormat(
-    "en-US",
+    residentLocale(
+      language
+    ),
     {
       month: "short",
       day: "numeric",
@@ -188,14 +207,23 @@ function formatDateTime(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+
+  language:
+    ResidentLanguage =
+      "en"
 ) {
   if (!value) {
-    return "Not recorded";
+    return residentText(
+      language,
+      "common.notRecorded"
+    );
   }
+
 
   const date =
     new Date(value);
+
 
   if (
     Number.isNaN(
@@ -205,8 +233,11 @@ function formatDateTime(
     return value;
   }
 
+
   return new Intl.DateTimeFormat(
-    "en-US",
+    residentLocale(
+      language
+    ),
     {
       month: "short",
       day: "numeric",
@@ -222,28 +253,49 @@ function formatAge(
   value:
     | number
     | null
-    | undefined
+    | undefined,
+
+  language:
+    ResidentLanguage =
+      "en"
 ) {
   if (
     typeof value !==
       "number" ||
-    !Number.isFinite(value)
+    !Number.isFinite(
+      value
+    )
   ) {
-    return "Not recorded";
+    return residentText(
+      language,
+      "common.notRecorded"
+    );
   }
 
-  return `${value} years`;
+
+  return `${value} ${residentText(
+    language,
+    "common.years"
+  )}`;
 }
 
 
 function getResidentName(
-  resident: ResidentRecord
+  resident:
+    ResidentRecord,
+
+  language:
+    ResidentLanguage =
+      "en"
 ) {
   return (
     cleanText(
       resident.full_name
     ) ||
-    "Unnamed Resident"
+    residentText(
+      language,
+      "shell.unnamedResident"
+    )
   );
 }
 
@@ -376,48 +428,109 @@ function medicationStatusStyle(
 
 
 function tabTitle(
-  tab: ResidentTabKey
-) {
-  const titles:
-    Record<
-      ResidentTabKey,
-      string
-    > = {
-      dash:
-        "Resident Dashboard",
-      profile:
-        "Resident Profile",
-      census:
-        "Census Information",
-      "med-diag":
-        "Medical Diagnosis",
-      allergies:
-        "Allergies",
-      immun:
-        "Immunizations",
-      orders:
-        "Orders",
-      vitals:
-        "Weights / Vitals",
-      results:
-        "Results",
-      mds:
-        "MDS",
-      assmnts:
-        "Assessments",
-      therapy:
-        "Therapy",
-      "prog-notes":
-        "Progress Notes",
-      "care-plan":
-        "Care Plan",
-      tasks:
-        "Tasks",
-      misc:
-        "Miscellaneous",
-    };
+  tab:
+    ResidentTabKey,
 
-  return titles[tab];
+  language:
+    ResidentLanguage
+) {
+  switch (tab) {
+    case "dash":
+      return residentText(
+        language,
+        "title.dash"
+      );
+
+    case "profile":
+      return residentText(
+        language,
+        "title.profile"
+      );
+
+    case "census":
+      return residentText(
+        language,
+        "title.census"
+      );
+
+    case "med-diag":
+      return residentText(
+        language,
+        "title.medDiag"
+      );
+
+    case "allergies":
+      return residentText(
+        language,
+        "title.allergies"
+      );
+
+    case "immun":
+      return residentText(
+        language,
+        "title.immun"
+      );
+
+    case "orders":
+      return residentText(
+        language,
+        "title.orders"
+      );
+
+    case "vitals":
+      return residentText(
+        language,
+        "title.vitals"
+      );
+
+    case "results":
+      return residentText(
+        language,
+        "title.results"
+      );
+
+    case "mds":
+      return residentText(
+        language,
+        "title.mds"
+      );
+
+    case "assmnts":
+      return residentText(
+        language,
+        "title.assmnts"
+      );
+
+    case "therapy":
+      return residentText(
+        language,
+        "title.therapy"
+      );
+
+    case "prog-notes":
+      return residentText(
+        language,
+        "title.progNotes"
+      );
+
+    case "care-plan":
+      return residentText(
+        language,
+        "title.carePlan"
+      );
+
+    case "tasks":
+      return residentText(
+        language,
+        "title.tasks"
+      );
+
+    case "misc":
+      return residentText(
+        language,
+        "title.misc"
+      );
+  }
 }
 
 
@@ -452,6 +565,33 @@ export default async function ResidentPage({
 
   const supabase =
     await createClient();
+
+
+  const {
+    data:
+      staffLanguage,
+    error:
+      staffLanguageError,
+  } =
+    await supabase.rpc(
+      "la_cura_current_language"
+    );
+
+
+  if (
+    staffLanguageError
+  ) {
+    console.error(
+      "Unable to load staff language:",
+      staffLanguageError
+    );
+  }
+
+
+  const language =
+    normalizeResidentLanguage(
+      staffLanguage
+    );
 
   const [
     residentResult,
@@ -529,7 +669,8 @@ export default async function ResidentPage({
 
   const residentName =
     getResidentName(
-      resident
+      resident,
+      language
     );
 
   const allergies =
@@ -546,7 +687,10 @@ export default async function ResidentPage({
     cleanText(
       resident.status
     ) ||
-    "Not recorded";
+    residentText(
+      language,
+      "common.notRecorded"
+    );
 
   const progressNotes =
     timeline.filter(
@@ -596,7 +740,10 @@ export default async function ResidentPage({
               href="/residents"
               className="font-semibold text-[#073B2F] hover:underline"
             >
-              Residents
+              {residentText(
+                language,
+                "shell.residents"
+              )}
             </Link>
 
             <span className="text-[#94A09A]">
@@ -611,23 +758,23 @@ export default async function ResidentPage({
           <div className="flex flex-wrap items-center gap-1.5">
             <ClinicalAction
               href={`/add-vitals${residentQuery}`}
-              label="Record Vitals"
+              label={residentText(language, "shell.recordVitals")}
               primary
             />
 
             <ClinicalAction
               href={`/add-medication${residentQuery}`}
-              label="Add Medication"
+              label={residentText(language, "shell.addMedication")}
             />
 
             <ClinicalAction
               href={`/add-nursing-note${residentQuery}`}
-              label="Progress Note"
+              label={residentText(language, "shell.progressNote")}
             />
 
             <ClinicalAction
               href={`/add-incident-report${residentQuery}`}
-              label="Incident"
+              label={residentText(language, "shell.incident")}
               danger
             />
           </div>
@@ -693,47 +840,61 @@ export default async function ResidentPage({
                 </div>
 
                 <p className="mt-0.5 text-[10px] font-medium text-[#75847D]">
-                  Resident #
+                  {residentText(
+                    language,
+                    "shell.residentNumber"
+                  )}{" "}
                   {resident.id}
                 </p>
 
                 <div className="mt-3 grid gap-x-6 gap-y-1.5 text-[11px] sm:grid-cols-2 xl:grid-cols-4">
                   <ResidentBannerField
-                    label="DOB / Age"
+                    label={residentText(language, "shell.dobAge")}
                     value={`${formatDate(
-                      resident.date_of_birth
+                      resident.date_of_birth,
+                      language
                     )} • ${formatAge(
-                      resident.age
+                      resident.age,
+                      language
                     )}`}
                   />
 
                   <ResidentBannerField
-                    label="Sex"
+                    label={residentText(language, "shell.sex")}
                     value={
                       cleanText(
                         resident.gender
                       ) ||
-                      "Not recorded"
+                      residentText(
+                        language,
+                        "common.notRecorded"
+                      )
                     }
                   />
 
                   <ResidentBannerField
-                    label="Room"
+                    label={residentText(language, "shell.room")}
                     value={
                       cleanText(
                         resident.room
                       ) ||
-                      "Unassigned"
+                      residentText(
+                        language,
+                        "common.unassigned"
+                      )
                     }
                   />
 
                   <ResidentBannerField
-                    label="Physician"
+                    label={residentText(language, "shell.physician")}
                     value={
                       cleanText(
                         resident.primary_doctor
                       ) ||
-                      "Not assigned"
+                      residentText(
+                        language,
+                        "common.notAssigned"
+                      )
                     }
                   />
                 </div>
@@ -747,22 +908,29 @@ export default async function ResidentPage({
               <div className="border-b border-[#D4DDD8] px-2.5 py-1.5">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-[10px] font-bold uppercase tracking-[0.05em] text-[#4D6158]">
-                    Most Recent Vitals
+                    {residentText(
+                      language,
+                      "shell.recentVitals"
+                    )}
                   </p>
 
                   <p className="text-[9px] text-[#839089]">
                     {latestVital
                       ? formatDateTime(
-                          latestVital.recorded_at
+                          latestVital.recorded_at,
+                          language
                         )
-                      : "No vitals recorded"}
+                      : residentText(
+                          language,
+                          "shell.noVitals"
+                        )}
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-px bg-[#D7DFDB] sm:grid-cols-5">
                 <HeaderVital
-                  label="BP"
+                  label={residentText(language, "shell.bp")}
                   value={
                     latestVital
                       ?.systolic !==
@@ -782,7 +950,7 @@ export default async function ResidentPage({
                 />
 
                 <HeaderVital
-                  label="Temp"
+                  label={residentText(language, "shell.temp")}
                   value={displayVital(
                     latestVital
                       ?.temperature,
@@ -791,7 +959,7 @@ export default async function ResidentPage({
                 />
 
                 <HeaderVital
-                  label="Pulse"
+                  label={residentText(language, "shell.pulse")}
                   value={displayVital(
                     latestVital
                       ?.pulse,
@@ -800,7 +968,7 @@ export default async function ResidentPage({
                 />
 
                 <HeaderVital
-                  label="O₂"
+                  label={residentText(language, "shell.oxygen")}
                   value={displayVital(
                     latestVital
                       ?.oxygen_saturation,
@@ -809,7 +977,7 @@ export default async function ResidentPage({
                 />
 
                 <HeaderVital
-                  label="Pain"
+                  label={residentText(language, "shell.pain")}
                   value={displayVital(
                     latestVital
                       ?.pain_score,
@@ -863,7 +1031,10 @@ export default async function ResidentPage({
                   }
                 `}
               >
-                Allergies:
+                {residentText(
+                  language,
+                  "shell.allergies"
+                )}
               </span>
 
               <span
@@ -880,20 +1051,29 @@ export default async function ResidentPage({
               >
                 {hasRecordedAllergy
                   ? allergies
-                  : "No known allergies"}
+                  : residentText(
+                      language,
+                      "shell.noKnownAllergies"
+                    )}
               </span>
             </div>
 
             <div className="flex min-w-0 items-start gap-2 bg-[#FFFDF8] px-3 py-2">
               <span className="shrink-0 font-bold uppercase text-[#796429]">
-                Special Instructions:
+                {residentText(
+                  language,
+                  "shell.specialInstructions"
+                )}
               </span>
 
               <span className="min-w-0 break-words text-[#4C5E56]">
                 {cleanText(
                   resident.notes
                 ) ||
-                  "No special instructions recorded"}
+                  residentText(
+                    language,
+                    "shell.noSpecialInstructions"
+                  )}
               </span>
             </div>
           </div>
@@ -919,21 +1099,30 @@ export default async function ResidentPage({
             <div>
               <h2 className="text-[13px] font-bold text-[#1E352C]">
                 {tabTitle(
-                  activeTab
+                  activeTab,
+                  language
                 )}
               </h2>
 
               <p className="mt-0.5 text-[10px] text-[#6B7B74]">
-                {residentName} • Resident #
+                {residentName} •{" "}
+                {residentText(
+                  language,
+                  "shell.residentNumber"
+                )}{" "}
                 {resident.id}
               </p>
             </div>
 
             <div className="text-[10px] text-[#728179]">
-              Admission:{" "}
+              {residentText(
+                language,
+                "shell.admission"
+              )}{" "}
               <strong className="font-semibold text-[#42564D]">
                 {formatDate(
-                  resident.date_admitted
+                  resident.date_admitted,
+                  language
                 )}
               </strong>
             </div>
@@ -941,6 +1130,9 @@ export default async function ResidentPage({
 
           <ResidentTabContent
             tab={activeTab}
+            language={
+              language
+            }
             resident={
               resident
             }
@@ -976,6 +1168,7 @@ export default async function ResidentPage({
 
 function ResidentTabContent({
   tab,
+  language,
   resident,
   latestVital,
   recentVitals,
@@ -987,6 +1180,7 @@ function ResidentTabContent({
   incidentCount,
 }: {
   tab: ResidentTabKey;
+  language: ResidentLanguage;
   resident: ResidentRecord;
   latestVital:
     | VitalRecord
@@ -1004,95 +1198,98 @@ function ResidentTabContent({
   if (tab === "profile") {
     return (
       <TwoColumnRecord>
-        <RecordPanel title="Demographics">
+        <RecordPanel title={residentText(language, "profile.demographics")}>
           <RecordRows
             rows={[
               [
-                "Resident Name",
+                residentText(language, "profile.residentName"),
                 getResidentName(
-                  resident
+                  resident,
+                  language
                 ),
               ],
               [
-                "Resident ID",
+                residentText(language, "profile.residentId"),
                 String(
                   resident.id
                 ),
               ],
               [
-                "Date of Birth",
+                residentText(language, "profile.dateOfBirth"),
                 formatDate(
-                  resident.date_of_birth
+                  resident.date_of_birth,
+                  language
                 ),
               ],
               [
-                "Age",
+                residentText(language, "profile.age"),
                 formatAge(
-                  resident.age
+                  resident.age,
+                  language
                 ),
               ],
               [
-                "Sex",
+                residentText(language, "profile.sex"),
                 cleanText(
                   resident.gender
                 ) ||
-                  "Not recorded",
+                  residentText(language, "common.notRecorded"),
               ],
               [
-                "Blood Group",
+                residentText(language, "profile.bloodGroup"),
                 cleanText(
                   resident.blood_group
                 ) ||
-                  "Not recorded",
+                  residentText(language, "common.notRecorded"),
               ],
             ]}
           />
         </RecordPanel>
 
-        <RecordPanel title="Contact / Care Team">
+        <RecordPanel title={residentText(language, "profile.contactCareTeam")}>
           <RecordRows
             rows={[
               [
-                "Primary Physician",
+                residentText(language, "profile.primaryPhysician"),
                 cleanText(
                   resident.primary_doctor
                 ) ||
-                  "Not assigned",
+                  residentText(language, "common.notAssigned"),
               ],
               [
-                "Next of Kin",
+                residentText(language, "profile.nextOfKin"),
                 cleanText(
                   resident.next_of_kin
                 ) ||
-                  "Not recorded",
+                  residentText(language, "common.notRecorded"),
               ],
               [
-                "Next of Kin Phone",
+                residentText(language, "profile.nextOfKinPhone"),
                 cleanText(
                   resident.next_of_kin_phone
                 ) ||
-                  "Not recorded",
+                  residentText(language, "common.notRecorded"),
               ],
               [
-                "Emergency Contact",
+                residentText(language, "profile.emergencyContact"),
                 cleanText(
                   resident.emergency_contact
                 ) ||
-                  "Not recorded",
+                  residentText(language, "common.notRecorded"),
               ],
               [
-                "Room",
+                residentText(language, "profile.room"),
                 cleanText(
                   resident.room
                 ) ||
-                  "Unassigned",
+                  residentText(language, "common.unassigned"),
               ],
               [
-                "Status",
+                residentText(language, "profile.status"),
                 cleanText(
                   resident.status
                 ) ||
-                  "Not recorded",
+                  residentText(language, "common.notRecorded"),
               ],
             ]}
           />
@@ -1104,35 +1301,36 @@ function ResidentTabContent({
 
   if (tab === "census") {
     return (
-      <RecordPanel title="Census / Admission">
+      <RecordPanel title={residentText(language, "census.title")}>
         <RecordRows
           rows={[
             [
-              "Current Status",
+              residentText(language, "census.currentStatus"),
               cleanText(
                 resident.status
               ) ||
-                "Not recorded",
+                residentText(language, "common.notRecorded"),
             ],
             [
-              "Room / Bed",
+              residentText(language, "census.roomBed"),
               cleanText(
                 resident.room
               ) ||
-                "Unassigned",
+                residentText(language, "common.unassigned"),
             ],
             [
-              "Admission Date",
+              residentText(language, "census.admissionDate"),
               formatDate(
-                resident.date_admitted
+                resident.date_admitted,
+                language
               ),
             ],
             [
-              "Primary Physician",
+              residentText(language, "profile.primaryPhysician"),
               cleanText(
                 resident.primary_doctor
               ) ||
-                "Not assigned",
+                residentText(language, "common.notAssigned"),
             ],
           ]}
         />
@@ -1145,18 +1343,21 @@ function ResidentTabContent({
     tab === "med-diag"
   ) {
     return (
-      <RecordPanel title="Medical Diagnoses">
+      <RecordPanel title={residentText(language, "diagnosis.title")}>
         <div className="p-3">
           <div className="border border-[#D4DDD8] bg-[#FBFAF7] p-3">
             <p className="text-[10px] font-bold uppercase text-[#64756D]">
-              Current Diagnosis
+              {residentText(
+                language,
+                "diagnosis.current"
+              )}
             </p>
 
             <p className="mt-2 whitespace-pre-wrap text-[12px] leading-5 text-[#293E35]">
               {cleanText(
                 resident.diagnosis
               ) ||
-                "No diagnosis recorded."}
+                residentText(language, "diagnosis.none")}
             </p>
           </div>
         </div>
@@ -1175,8 +1376,9 @@ function ResidentTabContent({
         }
         residentName={
           getResidentName(
-            resident
-          )
+                  resident,
+                  language
+                )
         }
       />
     );
@@ -1191,8 +1393,9 @@ function ResidentTabContent({
         }
         residentName={
           getResidentName(
-            resident
-          )
+                  resident,
+                  language
+                )
         }
       />
     );
@@ -1217,18 +1420,27 @@ function ResidentTabContent({
       <div className="p-4">
         <div className="border border-[#D2DBD6] bg-[#FBFAF7] p-4">
           <p className="text-sm font-semibold text-[#263A32]">
-            Resident Care Plan
+            {residentText(
+              language,
+              "carePlan.title"
+            )}
           </p>
 
           <p className="mt-1 text-xs leading-5 text-[#617169]">
-            Review problems, goals, interventions, and care-plan follow-up for this resident.
+            {residentText(
+              language,
+              "carePlan.description"
+            )}
           </p>
 
           <Link
             href="/care-plans"
             className="mt-3 inline-flex h-8 items-center rounded-[4px] border border-[#073B2F] bg-[#073B2F] px-3 text-xs font-bold text-white hover:bg-[#0D4A3A]"
           >
-            Open Care Plans
+            {residentText(
+              language,
+              "carePlan.open"
+            )}
           </Link>
         </div>
       </div>
@@ -1240,13 +1452,13 @@ function ResidentTabContent({
     tab === "misc"
   ) {
     return (
-      <RecordPanel title="Resident Notes / Miscellaneous">
+      <RecordPanel title={residentText(language, "misc.title")}>
         <div className="p-3">
           <p className="whitespace-pre-wrap text-xs leading-5 text-[#40544B]">
             {cleanText(
               resident.notes
             ) ||
-              "No miscellaneous resident notes recorded."}
+              residentText(language, "misc.none")}
           </p>
         </div>
       </RecordPanel>
@@ -1264,8 +1476,9 @@ function ResidentTabContent({
         }
         residentName={
           getResidentName(
-            resident
-          )
+                  resident,
+                  language
+                )
         }
         primaryDoctor={
           cleanText(
@@ -1287,8 +1500,9 @@ function ResidentTabContent({
         }
         residentName={
           getResidentName(
-            resident
-          )
+                  resident,
+                  language
+                )
         }
       />
     );
@@ -1303,8 +1517,9 @@ function ResidentTabContent({
         }
         residentName={
           getResidentName(
-            resident
-          )
+                  resident,
+                  language
+                )
         }
       />
     );

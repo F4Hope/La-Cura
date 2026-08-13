@@ -1,4 +1,16 @@
+"use client";
+
 import Link from "next/link";
+
+import {
+  useLanguage,
+} from "@/components/i18n/LanguageProvider";
+
+import {
+  residentText,
+  type ResidentTextKey,
+} from "@/lib/i18n/resident";
+
 
 export type ResidentTabKey =
   | "dash"
@@ -18,182 +30,250 @@ export type ResidentTabKey =
   | "tasks"
   | "misc";
 
+
 type ResidentTab = {
-  key: ResidentTabKey;
-  label: string;
+  key:
+    ResidentTabKey;
+
+  labelKey:
+    ResidentTextKey;
 };
 
-const tabs: ResidentTab[] = [
+
+const tabs:
+  ResidentTab[] = [
   {
     key: "dash",
-    label: "DASH",
+    labelKey:
+      "tab.dash",
   },
+
   {
     key: "profile",
-    label: "PROFILE",
+    labelKey:
+      "tab.profile",
   },
+
   {
     key: "census",
-    label: "CENSUS",
+    labelKey:
+      "tab.census",
   },
+
   {
     key: "med-diag",
-    label: "MED DIAG",
+    labelKey:
+      "tab.medDiag",
   },
+
   {
     key: "allergies",
-    label: "ALLERGIES",
+    labelKey:
+      "tab.allergies",
   },
+
   {
     key: "immun",
-    label: "IMMUN",
+    labelKey:
+      "tab.immun",
   },
+
   {
     key: "orders",
-    label: "ORDERS",
+    labelKey:
+      "tab.orders",
   },
+
   {
     key: "vitals",
-    label: "WTS/VITALS",
+    labelKey:
+      "tab.vitals",
   },
+
   {
     key: "results",
-    label: "RESULTS",
+    labelKey:
+      "tab.results",
   },
+
   {
     key: "mds",
-    label: "MDS",
+    labelKey:
+      "tab.mds",
   },
+
   {
     key: "assmnts",
-    label: "ASSMNTS",
+    labelKey:
+      "tab.assmnts",
   },
+
   {
     key: "therapy",
-    label: "THERAPY",
+    labelKey:
+      "tab.therapy",
   },
+
   {
     key: "prog-notes",
-    label: "PROG NOTES",
+    labelKey:
+      "tab.progNotes",
   },
+
   {
     key: "care-plan",
-    label: "CARE PLAN",
+    labelKey:
+      "tab.carePlan",
   },
+
   {
     key: "tasks",
-    label: "TASKS",
+    labelKey:
+      "tab.tasks",
   },
+
   {
     key: "misc",
-    label: "MISC",
+    labelKey:
+      "tab.misc",
   },
 ];
 
+
 const validTabs =
   new Set<ResidentTabKey>(
-    tabs.map((tab) => tab.key)
+    tabs.map(
+      (
+        tab
+      ) =>
+        tab.key
+    )
   );
+
 
 export function normalizeResidentTab(
   value: unknown
 ): ResidentTabKey {
   const raw =
-    Array.isArray(value)
+    Array.isArray(
+      value
+    )
       ? value[0]
       : value;
 
+
   if (
-    typeof raw === "string" &&
+    typeof raw ===
+      "string" &&
     validTabs.has(
-      raw as ResidentTabKey
+      raw as
+        ResidentTabKey
     )
   ) {
-    return raw as ResidentTabKey;
+    return raw as
+      ResidentTabKey;
   }
+
 
   return "dash";
 }
 
+
 type Props = {
-  residentId: number;
-  activeTab: ResidentTabKey;
+  residentId:
+    number;
+
+  activeTab:
+    ResidentTabKey;
 };
+
 
 export default function ResidentClinicalTabs({
   residentId,
   activeTab,
 }: Props) {
+  const {
+    language,
+  } =
+    useLanguage();
+
+
   return (
     <nav
-      aria-label="Resident clinical record"
-      className="
-        border-b border-[#C9D3CE]
-        bg-[#F8F7F2]
-      "
+      aria-label={
+        residentText(
+          language,
+          "tabs.aria"
+        )
+      }
+      className="border-b border-[#C9D3CE] bg-[#F8F7F2]"
     >
       <div className="overflow-x-auto">
-        <div
-          className="
-            flex min-w-max
-            items-stretch
-            px-2
-            lg:px-3
-          "
-        >
-          {tabs.map((tab) => {
-            const active =
-              activeTab === tab.key;
+        <div className="flex min-w-max items-stretch px-2 lg:px-3">
+          {tabs.map(
+            (
+              tab
+            ) => {
+              const active =
+                activeTab ===
+                tab.key;
 
-            const href =
-              tab.key === "dash"
-                ? `/residents/${residentId}`
-                : `/residents/${residentId}?tab=${tab.key}`;
 
-            return (
-              <Link
-                key={tab.key}
-                href={href}
-                aria-current={
-                  active
-                    ? "page"
-                    : undefined
-                }
-                className={`
-                  relative flex h-[38px]
-                  items-center
-                  whitespace-nowrap
-                  border-r
-                  border-[#D8DFDB]
-                  px-3.5
-                  text-[11px]
-                  font-bold
-                  tracking-[0.025em]
-                  transition-colors
+              const href =
+                tab.key ===
+                "dash"
+                  ? `/residents/${residentId}`
+                  : `/residents/${residentId}?tab=${tab.key}`;
 
-                  ${
-                    active
-                      ? "bg-white text-[#073B2F]"
-                      : "text-[#40534C] hover:bg-white hover:text-[#073B2F]"
+
+              return (
+                <Link
+                  key={
+                    tab.key
                   }
-                `}
-              >
-                {tab.label}
+                  href={
+                    href
+                  }
+                  aria-current={
+                    active
+                      ? "page"
+                      : undefined
+                  }
+                  className={`
+                    relative flex
+                    h-[38px]
+                    items-center
+                    whitespace-nowrap
+                    border-r
+                    border-[#D8DFDB]
+                    px-3.5
+                    text-[11px]
+                    font-bold
+                    tracking-[0.025em]
+                    transition-colors
 
-                {active && (
-                  <span
-                    aria-hidden="true"
-                    className="
-                      absolute
-                      bottom-0 left-0
-                      h-[3px] w-full
-                      bg-[#D5A437]
-                    "
-                  />
-                )}
-              </Link>
-            );
-          })}
+                    ${
+                      active
+                        ? "bg-white text-[#073B2F]"
+                        : "text-[#40534C] hover:bg-white hover:text-[#073B2F]"
+                    }
+                  `}
+                >
+                  {residentText(
+                    language,
+                    tab.labelKey
+                  )}
+
+                  {active && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute bottom-0 left-0 h-[3px] w-full bg-[#D5A437]"
+                    />
+                  )}
+                </Link>
+              );
+            }
+          )}
         </div>
       </div>
     </nav>
