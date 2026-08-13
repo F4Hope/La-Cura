@@ -26,6 +26,15 @@ import type {
   ResidentOrder,
 } from "@/lib/orderTypes";
 
+import {
+  useLanguage,
+} from "@/components/i18n/LanguageProvider";
+
+import {
+  clinicalText,
+  type ClinicalLanguage,
+} from "@/lib/i18n/clinicalModules";
+
 
 type ActiveAllergy = {
   id: number;
@@ -184,7 +193,8 @@ function cleanText(
 
 
 function getSupabaseErrorMessage(
-  value: unknown
+  value: unknown,
+  language: ClinicalLanguage
 ): string {
   if (
     value instanceof Error
@@ -251,7 +261,10 @@ function getSupabaseErrorMessage(
   }
 
 
-  return "The order could not be saved.";
+  return clinicalText(
+    language,
+    "The order could not be saved."
+  );
 }
 
 
@@ -539,6 +552,8 @@ export default function OrderEntryModal({
   onClose,
   onSaved,
 }: Props) {
+  const { language } = useLanguage();
+
   const [
     mounted,
     setMounted,
@@ -921,22 +936,34 @@ export default function OrderEntryModal({
       !form ||
       !category
     ) {
-      return "The order form is not ready.";
+      return clinicalText(
+        language,
+        clinicalText(
+          language,
+          "The order form is not ready."
+        )
+      );
     }
 
     if (
       !form.orderName.trim()
     ) {
-      return `${labelForOrder(
-        category
-      )} is required.`;
+      return clinicalText(
+        language,
+        `${labelForOrder(
+          category
+        )} is required.`
+      );
     }
 
 
     if (
       !form.orderedBy.trim()
     ) {
-      return "Ordered By is required.";
+      return clinicalText(
+        language,
+        "Ordered By is required."
+      );
     }
 
 
@@ -945,7 +972,10 @@ export default function OrderEntryModal({
         "Pharmacy" &&
       !form.dosage.trim()
     ) {
-      return "Medication dosage is required.";
+      return clinicalText(
+        language,
+        "Medication dosage is required."
+      );
     }
 
 
@@ -954,7 +984,10 @@ export default function OrderEntryModal({
         "Pharmacy" &&
       !form.route.trim()
     ) {
-      return "Route of administration is required.";
+      return clinicalText(
+        language,
+        "Route of administration is required."
+      );
     }
 
 
@@ -963,7 +996,10 @@ export default function OrderEntryModal({
         "Enteral Feed" &&
       !form.rate.trim()
     ) {
-      return "Enteral feeding rate is required.";
+      return clinicalText(
+        language,
+        "Enteral feeding rate is required."
+      );
     }
 
 
@@ -984,7 +1020,10 @@ export default function OrderEntryModal({
       !category
     ) {
       setError(
-        "The order form is not ready."
+        clinicalText(
+          language,
+          "The order form is not ready."
+        )
       );
 
       return;
@@ -1197,7 +1236,8 @@ export default function OrderEntryModal({
 
       setError(
         getSupabaseErrorMessage(
-          caughtError
+          caughtError,
+          language
         )
       );
     } finally {
@@ -1239,14 +1279,32 @@ export default function OrderEntryModal({
         <header className="flex items-center justify-between gap-3 border-b border-[#85957E] bg-[#073B2F] px-3 py-2 text-white">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.04em] text-[#CAD8D1]">
-              Resident:{" "}
+              {clinicalText(
+                language,
+                "Resident"
+              )}:{" "}
               {residentName}
             </p>
 
             <h2 className="text-[15px] font-bold">
               {editing
-                ? `Revise ${category} Order`
-                : `${category} Order Entry`}
+                ? `${clinicalText(
+                    language,
+                    "Revise"
+                  )} ${clinicalText(
+                    language,
+                    category
+                  )} ${clinicalText(
+                    language,
+                    "Order"
+                  )}`
+                : `${clinicalText(
+                    language,
+                    category
+                  )} ${clinicalText(
+                    language,
+                    "Order Entry"
+                  )}`}
             </h2>
           </div>
 
@@ -1302,13 +1360,13 @@ export default function OrderEntryModal({
                   }
                 `}
               >
-                Active Allergies
+                {clinicalText(language, "Active Allergies")}
               </p>
 
 
               {allergyLoading ? (
                 <p className="mt-0.5 text-[10px] text-[#687970]">
-                  Checking resident allergy record...
+                  {clinicalText(language, "Checking resident allergy record...")}
                 </p>
               ) : activeAllergies.length >
                 0 ? (
@@ -1329,7 +1387,10 @@ export default function OrderEntryModal({
                           <>
                             {" "}
                             —{" "}
-                            {allergy.severity}
+                            {clinicalText(
+                              language,
+                              allergy.severity
+                            )}
                           </>
                         )}
 
@@ -1346,7 +1407,7 @@ export default function OrderEntryModal({
                 </div>
               ) : (
                 <p className="mt-0.5 text-[10px] text-[#687970]">
-                  No active structured allergy records were found for this resident.
+                  {clinicalText(language, "No active structured allergy records were found for this resident.")}
                 </p>
               )}
             </div>
@@ -1359,11 +1420,11 @@ export default function OrderEntryModal({
             {/* MAIN FORM */}
 
             <div className="min-w-0 border-r border-[#C6D0C1]">
-              <FormSection title="Order Details">
+              <FormSection title={clinicalText(language, "Order Details")}>
                 <div className="grid gap-x-4 gap-y-2 p-3 md:grid-cols-2">
                   <div className="grid grid-cols-[minmax(0,1fr)_95px] gap-1">
                     <TextField
-                      label="Order Date"
+                      label={clinicalText(language, "Order Date")}
                       required
                       type="date"
                       value={
@@ -1380,7 +1441,7 @@ export default function OrderEntryModal({
                     />
 
                     <TextField
-                      label="Time"
+                      label={clinicalText(language, "Time")}
                       required
                       type="time"
                       value={
@@ -1399,10 +1460,13 @@ export default function OrderEntryModal({
 
 
                   <SelectField
-                    label="Order Category"
+                    label={clinicalText(language, "Order Category")}
                     required
                     value={
-                      category
+                      clinicalText(
+                        language,
+                        category
+                      )
                     }
                     disabled
                     options={[
@@ -1451,7 +1515,10 @@ export default function OrderEntryModal({
                               }
                             />
 
-                            {method}
+                            {clinicalText(
+                              language,
+                              method
+                            )}
                           </label>
                         )
                       )}
@@ -1460,7 +1527,7 @@ export default function OrderEntryModal({
 
 
                   <TextField
-                    label="Ordered By"
+                    label={clinicalText(language, "Ordered By")}
                     required
                     value={
                       form.orderedBy
@@ -1473,7 +1540,7 @@ export default function OrderEntryModal({
                         value
                       )
                     }
-                    placeholder="Ordering provider"
+                    placeholder={clinicalText(language, "Ordering provider")}
                   />
 
 
@@ -1497,11 +1564,11 @@ export default function OrderEntryModal({
 
               {/* SCHEDULING */}
 
-              <FormSection title="Scheduling Details">
+              <FormSection title={clinicalText(language, "Scheduling Details")}>
                 <div className="p-3">
                   <div className="flex flex-wrap items-center gap-1">
                     <span className="mr-1 text-[10px] font-bold text-[#33483F]">
-                      Add Schedule:
+                      {clinicalText(language, "Add Schedule:")}
                     </span>
 
                     {[
@@ -1538,7 +1605,10 @@ export default function OrderEntryModal({
                             }
                           `}
                         >
-                          {schedule}
+                          {clinicalText(
+                            language,
+                            schedule
+                          )}
                         </button>
                       )
                     )}
@@ -1547,7 +1617,7 @@ export default function OrderEntryModal({
 
                   <div className="mt-3 grid gap-3 md:grid-cols-3">
                     <TextField
-                      label="Frequency"
+                      label={clinicalText(language, "Frequency")}
                       value={
                         form.frequency
                       }
@@ -1559,11 +1629,11 @@ export default function OrderEntryModal({
                           value
                         )
                       }
-                      placeholder="BID, Daily, q6h, q4h PRN..."
+                      placeholder={clinicalText(language, "BID, Daily, q6h, q4h PRN...")}
                     />
 
                     <TextField
-                      label="Administration Time"
+                      label={clinicalText(language, "Administration Time")}
                       type="time"
                       value={
                         form.administrationTime
@@ -1579,7 +1649,7 @@ export default function OrderEntryModal({
                     />
 
                     <TextField
-                      label="Indication"
+                      label={clinicalText(language, "Indication")}
                       value={
                         form.indication
                       }
@@ -1594,8 +1664,14 @@ export default function OrderEntryModal({
                       placeholder={
                         form.scheduleType ===
                         "PRN"
-                          ? "Required for PRN orders"
-                          : "Clinical indication"
+                          ? clinicalText(
+                              language,
+                              "Required for PRN orders"
+                            )
+                          : clinicalText(
+                              language,
+                              "Clinical indication"
+                            )
                       }
                     />
                   </div>
@@ -1603,7 +1679,7 @@ export default function OrderEntryModal({
 
                   <div className="mt-3 grid gap-3 md:grid-cols-3">
                     <TextField
-                      label="Start Date"
+                      label={clinicalText(language, "Start Date")}
                       type="date"
                       value={
                         form.startDate
@@ -1619,7 +1695,7 @@ export default function OrderEntryModal({
                     />
 
                     <TextField
-                      label="End Date"
+                      label={clinicalText(language, "End Date")}
                       type="date"
                       value={
                         form.endDate
@@ -1635,7 +1711,7 @@ export default function OrderEntryModal({
                     />
 
                     <TextField
-                      label="Next Review Date"
+                      label={clinicalText(language, "Next Review Date")}
                       type="date"
                       value={
                         form.reviewDate
@@ -1654,7 +1730,7 @@ export default function OrderEntryModal({
 
                   <label className="mt-3 block">
                     <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
-                      Directions
+                      {clinicalText(language, "Directions")}
                     </span>
 
                     <textarea
@@ -1671,7 +1747,7 @@ export default function OrderEntryModal({
                             .value
                         )
                       }
-                      placeholder="Complete order directions..."
+                      placeholder={clinicalText(language, "Complete order directions...")}
                       className="w-full resize-y border border-[#B8C5BE] px-2.5 py-2 text-[11px] outline-none focus:border-[#667F73]"
                     />
                   </label>
@@ -1681,10 +1757,10 @@ export default function OrderEntryModal({
 
               {/* SOURCE */}
 
-              <FormSection title="Source Details">
+              <FormSection title={clinicalText(language, "Source Details")}>
                 <div className="grid gap-3 p-3 md:grid-cols-2">
                   <TextField
-                    label="Order Source"
+                    label={clinicalText(language, "Order Source")}
                     value={
                       form.source
                     }
@@ -1702,7 +1778,7 @@ export default function OrderEntryModal({
                   {category ===
                     "Pharmacy" && (
                     <TextField
-                      label="Pharmacy"
+                      label={clinicalText(language, "Pharmacy")}
                       value={
                         form.pharmacy
                       }
@@ -1714,7 +1790,7 @@ export default function OrderEntryModal({
                           value
                         )
                       }
-                      placeholder="Pharmacy name"
+                      placeholder={clinicalText(language, "Pharmacy name")}
                     />
                   )}
 
@@ -1723,8 +1799,14 @@ export default function OrderEntryModal({
                     <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
                       {category ===
                       "Pharmacy"
-                        ? "Pharmacy Notes"
-                        : "Order Notes"}
+                        ? clinicalText(
+                            language,
+                            "Pharmacy Notes"
+                          )
+                        : clinicalText(
+                            language,
+                            "Order Notes"
+                          )}
                     </span>
 
                     <textarea
@@ -1762,20 +1844,20 @@ export default function OrderEntryModal({
               <div className="border border-[#AAA982] bg-[#FFFEEB]">
                 <div className="border-b border-[#C8C6A1] px-2.5 py-1.5">
                   <p className="text-[11px] font-bold italic text-[#273C33]">
-                    Order Summary:
+                    {clinicalText(language, "Order Summary:")}
                   </p>
                 </div>
 
                 <div className="min-h-[250px] p-3 text-[10px] leading-5 text-[#3F5049]">
                   <SummaryLine
-                    label="Resident"
+                    label={clinicalText(language, "Resident")}
                     value={
                       residentName
                     }
                   />
 
                   <SummaryLine
-                    label="Category"
+                    label={clinicalText(language, "Category")}
                     value={
                       category
                     }
@@ -1783,8 +1865,11 @@ export default function OrderEntryModal({
 
                   <SummaryLine
                     label={
-                      labelForOrder(
-                        category
+                      clinicalText(
+                        language,
+                        labelForOrder(
+                          category
+                        )
                       )
                     }
                     value={
@@ -1794,7 +1879,7 @@ export default function OrderEntryModal({
 
                   {form.dosage && (
                     <SummaryLine
-                      label="Dose"
+                      label={clinicalText(language, "Dose")}
                       value={
                         form.dosage
                       }
@@ -1803,7 +1888,7 @@ export default function OrderEntryModal({
 
                   {form.route && (
                     <SummaryLine
-                      label="Route"
+                      label={clinicalText(language, "Route")}
                       value={
                         form.route
                       }
@@ -1811,10 +1896,13 @@ export default function OrderEntryModal({
                   )}
 
                   <SummaryLine
-                    label="Schedule"
+                    label={clinicalText(language, "Schedule")}
                     value={
                       [
-                        form.scheduleType,
+                        clinicalText(
+                          language,
+                          form.scheduleType
+                        ),
                         form.frequency,
                         form.administrationTime,
                       ]
@@ -1828,14 +1916,14 @@ export default function OrderEntryModal({
                   />
 
                   <SummaryLine
-                    label="Directions"
+                    label={clinicalText(language, "Directions")}
                     value={
                       summaryDirections
                     }
                   />
 
                   <SummaryLine
-                    label="Ordered By"
+                    label={clinicalText(language, "Ordered By")}
                     value={
                       form.orderedBy
                     }
@@ -1846,14 +1934,20 @@ export default function OrderEntryModal({
 
               <div className="mt-2 border border-[#AAA982] bg-[#FFFEEB] px-2.5 py-2">
                 <p className="text-[10px] font-bold text-[#33483F]">
-                  Additional Information
+                  {clinicalText(language, "Additional Information")}
                 </p>
 
                 <p className="mt-1 text-[9px] leading-4 text-[#68766F]">
-                  This order will be added to the resident&apos;s permanent Orders record.
+                  {clinicalText(
+                    language,
+                    "This order will be added to the resident's permanent Orders record."
+                  )}
                   {category ===
                   "Pharmacy"
-                    ? " A synchronized medication order will also be created for Medications and MAR."
+                    ? ` ${clinicalText(
+                        language,
+                        "A synchronized medication order will also be created for Medications and MAR."
+                      )}`
                     : ""}
                 </p>
               </div>
@@ -1887,8 +1981,8 @@ export default function OrderEntryModal({
             )}
 
             {editing
-              ? "Save Revision"
-              : "Save"}
+              ? clinicalText(language, "Save Revision")
+              : clinicalText(language, "Save")}
           </button>
 
 
@@ -1905,7 +1999,10 @@ export default function OrderEntryModal({
               }
               className="h-8 border border-[#8E9D95] bg-white px-3 text-[10px] font-bold text-[#33483F] hover:bg-[#EDF1EE] disabled:opacity-50"
             >
-              Queue &amp; New
+              {clinicalText(
+                language,
+                "Queue & New"
+              )}
             </button>
           )}
 
@@ -1920,7 +2017,7 @@ export default function OrderEntryModal({
             }
             className="h-8 border border-[#8E9D95] bg-white px-3 text-[10px] font-bold text-[#33483F] hover:bg-[#EDF1EE] disabled:opacity-50"
           >
-            Cancel
+            {clinicalText(language, "Cancel")}
           </button>
         </footer>
       </div>
@@ -1947,12 +2044,17 @@ function CategoryFields({
       string | boolean
   ) => void;
 }) {
+  const { language } = useLanguage();
+
   return (
     <div className="grid gap-3 md:grid-cols-2">
       <TextField
         label={
-          labelForOrder(
-            category
+          clinicalText(
+            language,
+            labelForOrder(
+              category
+            )
           )
         }
         required
@@ -1974,7 +2076,7 @@ function CategoryFields({
         "Pharmacy" && (
         <>
           <TextField
-            label="Dosage"
+            label={clinicalText(language, "Dosage")}
             required
             value={
               form.dosage
@@ -1987,11 +2089,11 @@ function CategoryFields({
                 value
               )
             }
-            placeholder="10 mg, 1 tablet, 5 mL..."
+            placeholder={clinicalText(language, "10 mg, 1 tablet, 5 mL...")}
           />
 
           <SelectField
-            label="Order Type"
+            label={clinicalText(language, "Order Type")}
             value={
               form.orderType
             }
@@ -2012,7 +2114,7 @@ function CategoryFields({
           />
 
           <SelectField
-            label="Route of Administration"
+            label={clinicalText(language, "Route of Administration")}
             required
             value={
               form.route
@@ -2061,7 +2163,7 @@ function CategoryFields({
               }
             />
 
-            Dispense as Written (DAW)
+            {clinicalText(language, "Dispense as Written (DAW)")}
           </label>
         </>
       )}
@@ -2071,7 +2173,7 @@ function CategoryFields({
         "Diagnostic" && (
         <>
           <TextField
-            label="Body Site"
+            label={clinicalText(language, "Body Site")}
             value={
               form.bodySite
             }
@@ -2083,11 +2185,11 @@ function CategoryFields({
                 value
               )
             }
-            placeholder="Chest, left hip, abdomen..."
+            placeholder={clinicalText(language, "Chest, left hip, abdomen...")}
           />
 
           <SelectField
-            label="Priority"
+            label={clinicalText(language, "Priority")}
             value={
               form.priority
             }
@@ -2113,7 +2215,7 @@ function CategoryFields({
         "Laboratory" && (
         <>
           <TextField
-            label="Specimen"
+            label={clinicalText(language, "Specimen")}
             value={
               form.specimen
             }
@@ -2125,11 +2227,11 @@ function CategoryFields({
                 value
               )
             }
-            placeholder="Blood, urine, stool..."
+            placeholder={clinicalText(language, "Blood, urine, stool...")}
           />
 
           <SelectField
-            label="Priority"
+            label={clinicalText(language, "Priority")}
             value={
               form.priority
             }
@@ -2165,7 +2267,7 @@ function CategoryFields({
               }
             />
 
-            Fasting Required
+            {clinicalText(language, "Fasting Required")}
           </label>
         </>
       )}
@@ -2175,7 +2277,7 @@ function CategoryFields({
         "Diet" && (
         <>
           <TextField
-            label="Texture"
+            label={clinicalText(language, "Texture")}
             value={
               form.texture
             }
@@ -2187,11 +2289,11 @@ function CategoryFields({
                 value
               )
             }
-            placeholder="Regular, mechanical soft, pureed..."
+            placeholder={clinicalText(language, "Regular, mechanical soft, pureed...")}
           />
 
           <TextField
-            label="Liquid Consistency"
+            label={clinicalText(language, "Liquid Consistency")}
             value={
               form.liquidConsistency
             }
@@ -2203,11 +2305,11 @@ function CategoryFields({
                 value
               )
             }
-            placeholder="Thin, nectar thick, honey thick..."
+            placeholder={clinicalText(language, "Thin, nectar thick, honey thick...")}
           />
 
           <TextField
-            label="Restrictions"
+            label={clinicalText(language, "Restrictions")}
             value={
               form.restrictions
             }
@@ -2219,7 +2321,7 @@ function CategoryFields({
                 value
               )
             }
-            placeholder="Low sodium, diabetic, renal..."
+            placeholder={clinicalText(language, "Low sodium, diabetic, renal...")}
           />
         </>
       )}
@@ -2229,7 +2331,7 @@ function CategoryFields({
         "Supplement" && (
         <>
           <TextField
-            label="Amount / Dose"
+            label={clinicalText(language, "Amount / Dose")}
             value={
               form.amount
             }
@@ -2241,11 +2343,11 @@ function CategoryFields({
                 value
               )
             }
-            placeholder="30 mL, 1 packet..."
+            placeholder={clinicalText(language, "30 mL, 1 packet...")}
           />
 
           <SelectField
-            label="Route"
+            label={clinicalText(language, "Route")}
             value={
               form.route
             }
@@ -2272,7 +2374,7 @@ function CategoryFields({
         "Enteral Feed" && (
         <>
           <SelectField
-            label="Enteral Route"
+            label={clinicalText(language, "Enteral Route")}
             required
             value={
               form.route
@@ -2297,7 +2399,7 @@ function CategoryFields({
           />
 
           <TextField
-            label="Rate"
+            label={clinicalText(language, "Rate")}
             required
             value={
               form.rate
@@ -2314,7 +2416,7 @@ function CategoryFields({
           />
 
           <TextField
-            label="Free-Water Flush"
+            label={clinicalText(language, "Free-Water Flush")}
             value={
               form.flush
             }
@@ -2330,7 +2432,7 @@ function CategoryFields({
           />
 
           <TextField
-            label="Hold Parameters"
+            label={clinicalText(language, "Hold Parameters")}
             value={
               form.holdParameters
             }
@@ -2342,7 +2444,7 @@ function CategoryFields({
                 value
               )
             }
-            placeholder="Hold for residual >..."
+            placeholder={clinicalText(language, "Hold for residual >...")}
           />
         </>
       )}
@@ -2352,7 +2454,7 @@ function CategoryFields({
         "Other" && (
         <>
           <TextField
-            label="Order Type"
+            label={clinicalText(language, "Order Type")}
             value={
               form.orderType
             }
@@ -2364,11 +2466,11 @@ function CategoryFields({
                 value
               )
             }
-            placeholder="Wound care, oxygen, monitoring..."
+            placeholder={clinicalText(language, "Wound care, oxygen, monitoring...")}
           />
 
           <TextField
-            label="Route / Delivery Method"
+            label={clinicalText(language, "Route / Delivery Method")}
             value={
               form.route
             }
@@ -2482,6 +2584,8 @@ function SelectField({
   required?: boolean;
   disabled?: boolean;
 }) {
+  const { language } = useLanguage();
+
   return (
     <label className="block">
       <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
@@ -2518,8 +2622,10 @@ function SelectField({
               }
               value={option}
             >
-              {option ||
-                "Select..."}
+              {clinicalText(
+                language,
+                option || "Select..."
+              )}
             </option>
           )
         )}

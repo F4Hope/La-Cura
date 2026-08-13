@@ -21,6 +21,17 @@ import {
   supabase,
 } from "@/lib/supabase/client";
 
+import {
+  useLanguage,
+} from "@/components/i18n/LanguageProvider";
+
+import {
+  clinicalLocale,
+  clinicalText,
+  immunizationStatusLabel,
+  type ClinicalLanguage,
+} from "@/lib/i18n/clinicalModules";
+
 
 type ImmunizationStatus =
   | "Completed"
@@ -300,16 +311,16 @@ function formatDate(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+  language:
+    ClinicalLanguage
 ) {
   if (!value) {
     return "—";
   }
 
-
   const date =
     new Date(value);
-
 
   if (
     Number.isNaN(
@@ -319,9 +330,10 @@ function formatDate(
     return value;
   }
 
-
   return new Intl.DateTimeFormat(
-    "en-US",
+    clinicalLocale(
+      language
+    ),
     {
       month: "numeric",
       day: "numeric",
@@ -335,16 +347,16 @@ function formatDateTime(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+  language:
+    ClinicalLanguage
 ) {
   if (!value) {
     return "—";
   }
 
-
   const date =
     new Date(value);
-
 
   if (
     Number.isNaN(
@@ -354,9 +366,10 @@ function formatDateTime(
     return value;
   }
 
-
   return new Intl.DateTimeFormat(
-    "en-US",
+    clinicalLocale(
+      language
+    ),
     {
       month: "numeric",
       day: "numeric",
@@ -436,7 +449,8 @@ function statusClass(
 
 
 function errorMessage(
-  value: unknown
+  value: unknown,
+  fallback: string
 ) {
   if (
     value instanceof Error
@@ -463,12 +477,12 @@ function errorMessage(
       cleanText(
         record.details
       ) ||
-      "The immunization record could not be saved."
+      fallback
     );
   }
 
 
-  return "The immunization record could not be saved.";
+  return fallback;
 }
 
 
@@ -476,6 +490,8 @@ export default function ResidentImmunizationsTab({
   residentId,
   residentName,
 }: Props) {
+  const { language } = useLanguage();
+
   const [
     records,
     setRecords,
@@ -608,7 +624,11 @@ export default function ResidentImmunizationsTab({
         ) {
           setError(
             errorMessage(
-              caughtError
+              caughtError,
+              clinicalText(
+                language,
+                "The immunization record could not be saved."
+              )
             )
           );
         } finally {
@@ -887,7 +907,7 @@ export default function ResidentImmunizationsTab({
     <>
       <div className="bg-white">
         <div className="border-b border-[#71845E] bg-[#8FA47A] px-2 py-1 text-[11px] font-bold text-white">
-          Immunizations
+          {clinicalText(language, "Immunizations")}
         </div>
 
 
@@ -904,7 +924,7 @@ export default function ResidentImmunizationsTab({
                 size={11}
               />
 
-              New Immunization
+              {clinicalText(language, "New Immunization")}
             </button>
 
 
@@ -927,7 +947,7 @@ export default function ResidentImmunizationsTab({
                       .value
                   )
                 }
-                placeholder="Search immunizations..."
+                placeholder={clinicalText(language, "Search immunizations...")}
                 className="h-7 w-full border border-[#B7C2BC] bg-white pl-7 pr-2 text-[10px] outline-none"
               />
             </div>
@@ -947,25 +967,30 @@ export default function ResidentImmunizationsTab({
               }
               className="h-7 border border-[#B7C2BC] bg-white px-2 text-[10px]"
             >
-              <option>
-                All
-              </option>
-
-              <option>
-                Completed
-              </option>
-
-              <option>
-                Due
-              </option>
-
-              <option>
-                Declined
-              </option>
-
-              <option>
-                Contraindicated
-              </option>
+              {[
+                "All",
+                "Completed",
+                "Due",
+                "Declined",
+                "Contraindicated",
+              ].map(
+                (value) => (
+                  <option
+                    key={value}
+                    value={value}
+                  >
+                    {value === "All"
+                      ? clinicalText(
+                          language,
+                          "All"
+                        )
+                      : immunizationStatusLabel(
+                          language,
+                          value
+                        )}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
@@ -991,21 +1016,21 @@ export default function ResidentImmunizationsTab({
               }
             />
 
-            Refresh
+            {clinicalText(language, "Refresh")}
           </button>
         </div>
 
 
         <div className="grid border-b border-[#D4DDD8] bg-[#FAFAF7] sm:grid-cols-3">
           <Summary
-            label="Completed"
+            label={clinicalText(language, "Completed")}
             value={
               completedCount
             }
           />
 
           <Summary
-            label="Due"
+            label={clinicalText(language, "Due")}
             value={
               dueCount
             }
@@ -1015,7 +1040,7 @@ export default function ResidentImmunizationsTab({
           />
 
           <Summary
-            label="Declined / Contraindicated"
+            label={clinicalText(language, "Declined / Contraindicated")}
             value={
               declinedCount
             }
@@ -1037,43 +1062,43 @@ export default function ResidentImmunizationsTab({
               <thead>
                 <tr className="bg-[#E5EEF4] text-[9px] font-bold text-[#263A31]">
                   <Head>
-                    Actions
+                    {clinicalText(language, "Actions")}
                   </Head>
 
                   <Head>
-                    Vaccine
+                    {clinicalText(language, "Vaccine")}
                   </Head>
 
                   <Head>
-                    Dose
+                    {clinicalText(language, "Dose")}
                   </Head>
 
                   <Head>
-                    Status
+                    {clinicalText(language, "Status")}
                   </Head>
 
                   <Head>
-                    Administered
+                    {clinicalText(language, "Administered")}
                   </Head>
 
                   <Head>
-                    Due Date
+                    {clinicalText(language, "Due Date")}
                   </Head>
 
                   <Head>
-                    Route / Site
+                    {clinicalText(language, "Route / Site")}
                   </Head>
 
                   <Head>
-                    Manufacturer
+                    {clinicalText(language, "Manufacturer")}
                   </Head>
 
                   <Head>
-                    Lot #
+                    {clinicalText(language, "Lot #")}
                   </Head>
 
                   <Head>
-                    Recorded By
+                    {clinicalText(language, "Recorded By")}
                   </Head>
                 </tr>
               </thead>
@@ -1121,41 +1146,41 @@ export default function ResidentImmunizationsTab({
                           className="h-6 w-[94px] border border-[#AEB8B3] bg-white px-1 text-[9px] font-semibold text-[#175D86]"
                         >
                           <option value="">
-                            Actions
+                            {clinicalText(language, "Actions")}
                           </option>
 
                           <option value="view">
-                            View
+                            {clinicalText(language, "View")}
                           </option>
 
                           <option value="edit">
-                            Edit / Revise
+                            {clinicalText(language, "Edit / Revise")}
                           </option>
 
                           {record.status !==
                             "Completed" && (
                             <option value="administer">
-                              Record Administration
+                              {clinicalText(language, "Record Administration")}
                             </option>
                           )}
 
                           {record.status !==
                             "Due" && (
                             <option value="due">
-                              Mark Due
+                              {clinicalText(language, "Mark Due")}
                             </option>
                           )}
 
                           <option value="decline">
-                            Record Declined
+                            {clinicalText(language, "Record Declined")}
                           </option>
 
                           <option value="contraindicated">
-                            Record Contraindication
+                            {clinicalText(language, "Record Contraindication")}
                           </option>
 
                           <option value="history">
-                            History
+                            {clinicalText(language, "History")}
                           </option>
                         </select>
                       </td>
@@ -1202,21 +1227,23 @@ export default function ResidentImmunizationsTab({
                       <td className={`border-r border-[#D7DEDA] px-2 py-1 ${statusClass(
                         record.status
                       )}`}>
-                        {record.status}
+                        {immunizationStatusLabel(language, record.status)}
                       </td>
 
 
                       <td className="whitespace-nowrap border-r border-[#D7DEDA] px-2 py-1">
                         {formatDateTime(
                           record.administered_at
-                        )}
+                        ,
+            language)}
                       </td>
 
 
                       <td className="whitespace-nowrap border-r border-[#D7DEDA] px-2 py-1">
                         {formatDate(
                           record.due_date
-                        )}
+                        ,
+            language)}
                       </td>
 
 
@@ -1264,7 +1291,7 @@ export default function ResidentImmunizationsTab({
             />
 
             <p className="mt-2 text-[11px] font-semibold text-[#465A50]">
-              No immunization records match the selected filters.
+              {clinicalText(language, "No immunization records match the selected filters.")}
             </p>
           </div>
         )}
@@ -1310,7 +1337,7 @@ export default function ResidentImmunizationsTab({
 
       {viewing && (
         <InfoModal
-          title="Immunization Details"
+          title={clinicalText(language, "Immunization Details")}
           onClose={() =>
             setViewing(
               null
@@ -1319,21 +1346,24 @@ export default function ResidentImmunizationsTab({
         >
           <div className="grid gap-px bg-[#D8DFDB] sm:grid-cols-3">
             <Detail
-              label="Vaccine"
+              label={clinicalText(language, "Vaccine")}
               value={
                 viewing.vaccine_name
               }
             />
 
             <Detail
-              label="Status"
+              label={clinicalText(language, "Status")}
               value={
-                viewing.status
+                immunizationStatusLabel(
+                  language,
+                  viewing.status
+                )
               }
             />
 
             <Detail
-              label="Dose"
+              label={clinicalText(language, "Dose")}
               value={
                 [
                   viewing.dose_number,
@@ -1349,23 +1379,24 @@ export default function ResidentImmunizationsTab({
             />
 
             <Detail
-              label="Administered"
+              label={clinicalText(language, "Administered")}
               value={
                 formatDateTime(
                   viewing.administered_at
-                )
+                ,
+            language)
               }
             />
 
             <Detail
-              label="Administered By"
+              label={clinicalText(language, "Administered By")}
               value={
                 viewing.administered_by
               }
             />
 
             <Detail
-              label="Route / Site"
+              label={clinicalText(language, "Route / Site")}
               value={
                 [
                   viewing.route,
@@ -1381,50 +1412,56 @@ export default function ResidentImmunizationsTab({
             />
 
             <Detail
-              label="Manufacturer"
+              label={clinicalText(language, "Manufacturer")}
               value={
                 viewing.manufacturer
               }
             />
 
             <Detail
-              label="Lot Number"
+              label={clinicalText(language, "Lot Number")}
               value={
                 viewing.lot_number
               }
             />
 
             <Detail
-              label="Expiration"
+              label={clinicalText(language, "Expiration")}
               value={
                 formatDate(
                   viewing.expiration_date
-                )
+                ,
+            language)
               }
             />
 
             <Detail
-              label="Due Date"
+              label={clinicalText(language, "Due Date")}
               value={
                 formatDate(
                   viewing.due_date
-                )
+                ,
+            language)
               }
             />
 
             <Detail
-              label="VIS Date"
+              label={clinicalText(language, "VIS Date")}
               value={
                 formatDate(
                   viewing.vis_date
-                )
+                ,
+            language)
               }
             />
 
             <Detail
-              label="Consent"
+              label={clinicalText(language, "Consent")}
               value={
-                viewing.consent_status
+                clinicalText(
+                  language,
+                  viewing.consent_status ?? ""
+                )
               }
             />
           </div>
@@ -1437,7 +1474,7 @@ export default function ResidentImmunizationsTab({
               {viewing.refusal_reason && (
                 <p>
                   <strong>
-                    Refusal Reason:
+                    {clinicalText(language, "Refusal Reason:")}
                   </strong>{" "}
                   {viewing.refusal_reason}
                 </p>
@@ -1446,7 +1483,7 @@ export default function ResidentImmunizationsTab({
               {viewing.contraindication_reason && (
                 <p>
                   <strong>
-                    Contraindication:
+                    {clinicalText(language, "Contraindication:")}
                   </strong>{" "}
                   {viewing.contraindication_reason}
                 </p>
@@ -1455,7 +1492,7 @@ export default function ResidentImmunizationsTab({
               {viewing.notes && (
                 <p>
                   <strong>
-                    Notes:
+                    {clinicalText(language, "Notes:")}
                   </strong>{" "}
                   {viewing.notes}
                 </p>
@@ -1468,7 +1505,10 @@ export default function ResidentImmunizationsTab({
 
       {historyRecord && (
         <InfoModal
-          title={`Immunization History — ${historyRecord.vaccine_name}`}
+          title={`${clinicalText(
+            language,
+            "Immunization History"
+          )} — ${historyRecord.vaccine_name}`}
           onClose={() => {
             setHistoryRecord(
               null
@@ -1490,23 +1530,23 @@ export default function ResidentImmunizationsTab({
                 <thead>
                   <tr className="bg-[#E7EDE9] text-[9px] font-bold uppercase text-[#40544B]">
                     <Head>
-                      Date / Time
+                      {clinicalText(language, "Date / Time")}
                     </Head>
 
                     <Head>
-                      Action
+                      {clinicalText(language, "Action")}
                     </Head>
 
                     <Head>
-                      Previous
+                      {clinicalText(language, "Previous")}
                     </Head>
 
                     <Head>
-                      New
+                      {clinicalText(language, "New")}
                     </Head>
 
                     <Head>
-                      Staff
+                      {clinicalText(language, "Staff")}
                     </Head>
                   </tr>
                 </thead>
@@ -1525,21 +1565,30 @@ export default function ResidentImmunizationsTab({
                         <td className="px-2 py-1.5">
                           {formatDateTime(
                             item.changed_at
-                          )}
+                          ,
+            language)}
                         </td>
 
                         <td className="px-2 py-1.5 font-semibold">
-                          {item.action}
+                          {clinicalText(language, item.action)}
                         </td>
 
                         <td className="px-2 py-1.5">
-                          {item.previous_status ||
-                            "—"}
+                          {item.previous_status
+                            ? immunizationStatusLabel(
+                                language,
+                                item.previous_status
+                              )
+                            : "—"}
                         </td>
 
                         <td className="px-2 py-1.5">
-                          {item.new_status ||
-                            "—"}
+                          {item.new_status
+                            ? immunizationStatusLabel(
+                                language,
+                                item.new_status
+                              )
+                            : "—"}
                         </td>
 
                         <td className="px-2 py-1.5">
@@ -1587,6 +1636,8 @@ function ImmunizationModal({
   onSaved:
     () => void;
 }) {
+  const { language } = useLanguage();
+
   const [
     form,
     setForm,
@@ -1761,7 +1812,10 @@ function ImmunizationModal({
       !form.vaccineName.trim()
     ) {
       setError(
-        "Vaccine name is required."
+        clinicalText(
+          language,
+          "Vaccine name is required."
+        )
       );
 
       return;
@@ -1774,7 +1828,10 @@ function ImmunizationModal({
       !form.administeredDate
     ) {
       setError(
-        "Administration date is required."
+        clinicalText(
+          language,
+          "Administration date is required."
+        )
       );
 
       return;
@@ -1787,7 +1844,10 @@ function ImmunizationModal({
       !form.dueDate
     ) {
       setError(
-        "Due date is required."
+        clinicalText(
+          language,
+          "Due date is required."
+        )
       );
 
       return;
@@ -1800,7 +1860,10 @@ function ImmunizationModal({
       !form.refusalReason.trim()
     ) {
       setError(
-        "Refusal reason is required."
+        clinicalText(
+          language,
+          "Refusal reason is required."
+        )
       );
 
       return;
@@ -1813,7 +1876,10 @@ function ImmunizationModal({
       !form.contraindicationReason.trim()
     ) {
       setError(
-        "Contraindication reason is required."
+        clinicalText(
+          language,
+          "Contraindication reason is required."
+        )
       );
 
       return;
@@ -1943,7 +2009,11 @@ function ImmunizationModal({
     ) {
       setError(
         errorMessage(
-          caughtError
+          caughtError,
+          clinicalText(
+            language,
+            "The immunization record could not be saved."
+          )
         )
       );
     } finally {
@@ -1974,14 +2044,14 @@ function ImmunizationModal({
         <header className="flex items-center justify-between bg-[#073B2F] px-3 py-2 text-white">
           <div>
             <p className="text-[9px] font-semibold uppercase text-[#CAD8D1]">
-              Resident:{" "}
+              {clinicalText(language, "Resident")}:{" "}
               {residentName}
             </p>
 
             <h2 className="text-[14px] font-bold">
               {initialRecord
-                ? "Revise Immunization"
-                : "New Immunization"}
+                ? clinicalText(language, "Revise Immunization")
+                : clinicalText(language, "New Immunization")}
             </h2>
           </div>
 
@@ -2002,13 +2072,13 @@ function ImmunizationModal({
 
         <div className="min-h-0 flex-1 overflow-y-auto">
           <SectionBar>
-            Immunization Details
+            {clinicalText(language, "Immunization Details")}
           </SectionBar>
 
 
           <div className="grid gap-3 p-3 md:grid-cols-3">
             <Field
-              label="Vaccine"
+              label={clinicalText(language, "Vaccine")}
               required
               value={
                 form.vaccineName
@@ -2021,11 +2091,11 @@ function ImmunizationModal({
                   value
                 )
               }
-              placeholder="Influenza, COVID-19, Pneumococcal..."
+              placeholder={clinicalText(language, "Influenza, COVID-19, Pneumococcal...")}
             />
 
             <Field
-              label="Vaccine / CVX Code"
+              label={clinicalText(language, "Vaccine / CVX Code")}
               value={
                 form.vaccineCode
               }
@@ -2040,7 +2110,7 @@ function ImmunizationModal({
             />
 
             <SelectField
-              label="Status"
+              label={clinicalText(language, "Status")}
               value={
                 form.status
               }
@@ -2061,7 +2131,7 @@ function ImmunizationModal({
             />
 
             <Field
-              label="Dose Number"
+              label={clinicalText(language, "Dose Number")}
               value={
                 form.doseNumber
               }
@@ -2073,11 +2143,11 @@ function ImmunizationModal({
                   value
                 )
               }
-              placeholder="1, 2, Booster..."
+              placeholder={clinicalText(language, "1, 2, Booster...")}
             />
 
             <Field
-              label="Dose Amount"
+              label={clinicalText(language, "Dose Amount")}
               value={
                 form.doseAmount
               }
@@ -2089,11 +2159,11 @@ function ImmunizationModal({
                   value
                 )
               }
-              placeholder="0.5 mL"
+              placeholder={clinicalText(language, "0.5 mL")}
             />
 
             <Field
-              label="Source"
+              label={clinicalText(language, "Source")}
               value={
                 form.source
               }
@@ -2105,7 +2175,7 @@ function ImmunizationModal({
                   value
                 )
               }
-              placeholder="Facility, hospital record, resident..."
+              placeholder={clinicalText(language, "Facility, hospital record, resident...")}
             />
           </div>
 
@@ -2114,12 +2184,12 @@ function ImmunizationModal({
             "Completed" && (
             <>
               <SectionBar>
-                Administration Details
+                {clinicalText(language, "Administration Details")}
               </SectionBar>
 
               <div className="grid gap-3 p-3 md:grid-cols-3">
                 <DateTimeField
-                  label="Administration Date / Time"
+                  label={clinicalText(language, "Administration Date / Time")}
                   date={
                     form.administeredDate
                   }
@@ -2145,7 +2215,7 @@ function ImmunizationModal({
                 />
 
                 <Field
-                  label="Administered By"
+                  label={clinicalText(language, "Administered By")}
                   value={
                     form.administeredBy
                   }
@@ -2160,7 +2230,7 @@ function ImmunizationModal({
                 />
 
                 <SelectField
-                  label="Route"
+                  label={clinicalText(language, "Route")}
                   value={
                     form.route
                   }
@@ -2184,7 +2254,7 @@ function ImmunizationModal({
                 />
 
                 <SelectField
-                  label="Administration Site"
+                  label={clinicalText(language, "Administration Site")}
                   value={
                     form.site
                   }
@@ -2209,7 +2279,7 @@ function ImmunizationModal({
                 />
 
                 <Field
-                  label="Manufacturer"
+                  label={clinicalText(language, "Manufacturer")}
                   value={
                     form.manufacturer
                   }
@@ -2224,7 +2294,7 @@ function ImmunizationModal({
                 />
 
                 <Field
-                  label="Lot Number"
+                  label={clinicalText(language, "Lot Number")}
                   value={
                     form.lotNumber
                   }
@@ -2239,7 +2309,7 @@ function ImmunizationModal({
                 />
 
                 <Field
-                  label="Expiration Date"
+                  label={clinicalText(language, "Expiration Date")}
                   type="date"
                   value={
                     form.expirationDate
@@ -2255,7 +2325,7 @@ function ImmunizationModal({
                 />
 
                 <Field
-                  label="VIS Date"
+                  label={clinicalText(language, "VIS Date")}
                   type="date"
                   value={
                     form.visDate
@@ -2271,7 +2341,7 @@ function ImmunizationModal({
                 />
 
                 <SelectField
-                  label="Consent"
+                  label={clinicalText(language, "Consent")}
                   value={
                     form.consentStatus
                   }
@@ -2298,12 +2368,12 @@ function ImmunizationModal({
             "Due" && (
             <>
               <SectionBar>
-                Due Information
+                {clinicalText(language, "Due Information")}
               </SectionBar>
 
               <div className="p-3">
                 <Field
-                  label="Due Date"
+                  label={clinicalText(language, "Due Date")}
                   required
                   type="date"
                   value={
@@ -2327,7 +2397,7 @@ function ImmunizationModal({
             "Declined" && (
             <>
               <SectionBar>
-                Refusal
+                {clinicalText(language, "Refusal")}
               </SectionBar>
 
               <div className="p-3">
@@ -2365,7 +2435,7 @@ function ImmunizationModal({
             "Contraindicated" && (
             <>
               <SectionBar>
-                Contraindication
+                {clinicalText(language, "Contraindication")}
               </SectionBar>
 
               <div className="p-3">
@@ -2400,7 +2470,7 @@ function ImmunizationModal({
 
 
           <SectionBar>
-            Clinical Notes
+            {clinicalText(language, "Clinical Notes")}
           </SectionBar>
 
           <div className="p-3">
@@ -2443,10 +2513,10 @@ function ImmunizationModal({
             className="h-8 border border-[#073B2F] bg-[#073B2F] px-4 text-[10px] font-bold text-white disabled:opacity-50"
           >
             {saving
-              ? "Saving..."
+              ? clinicalText(language, "Saving...")
               : initialRecord
-                ? "Save Revision"
-                : "Save Immunization"}
+                ? clinicalText(language, "Save Revision")
+                : clinicalText(language, "Save Immunization")}
           </button>
 
 
@@ -2460,7 +2530,7 @@ function ImmunizationModal({
             }
             className="h-8 border border-[#8E9D95] bg-white px-4 text-[10px] font-bold text-[#33483F]"
           >
-            Cancel
+            {clinicalText(language, "Cancel")}
           </button>
         </footer>
       </div>
@@ -2482,6 +2552,8 @@ function InfoModal({
   onClose:
     () => void;
 }) {
+  const { language } = useLanguage();
+
   return (
     <div
       className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/40 p-4"
@@ -2509,7 +2581,7 @@ function InfoModal({
             }
             className="h-7 border border-white/25 px-2 text-[10px] font-bold"
           >
-            Close
+            {clinicalText(language, "Close")}
           </button>
         </header>
 
@@ -2682,6 +2754,8 @@ function SelectField({
       value: string
     ) => void;
 }) {
+  const { language } = useLanguage();
+
   return (
     <label>
       <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
@@ -2715,8 +2789,10 @@ function SelectField({
                 option
               }
             >
-              {option ||
-                "Select..."}
+              {clinicalText(
+                language,
+                option || "Select..."
+              )}
             </option>
           )
         )}

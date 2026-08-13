@@ -23,6 +23,16 @@ import {
   supabase,
 } from "@/lib/supabase/client";
 
+import {
+  useLanguage,
+} from "@/components/i18n/LanguageProvider";
+
+import {
+  clinicalLocale,
+  clinicalText,
+  type ClinicalLanguage,
+} from "@/lib/i18n/clinicalModules";
+
 
 type LabFlag =
   | "Normal"
@@ -360,7 +370,9 @@ function formatDateTime(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+  language:
+    ClinicalLanguage
 ) {
   if (!value) {
     return "—";
@@ -378,7 +390,9 @@ function formatDateTime(
   }
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    clinicalLocale(
+      language
+    ),
     {
       month: "numeric",
       day: "numeric",
@@ -618,7 +632,8 @@ function flagDisplayClass(
 
 
 function errorMessage(
-  value: unknown
+  value: unknown,
+  fallback: string
 ) {
   if (
     value instanceof
@@ -645,11 +660,11 @@ function errorMessage(
       cleanText(
         record.details
       ) ||
-      "The operation could not be completed."
+      fallback
     );
   }
 
-  return "The operation could not be completed.";
+  return fallback;
 }
 
 
@@ -657,6 +672,8 @@ export default function ResidentResultsTab({
   residentId,
   residentName,
 }: Props) {
+  const { language } = useLanguage();
+
   const [
     section,
     setSection,
@@ -968,7 +985,11 @@ export default function ResidentResultsTab({
 
           setError(
             errorMessage(
-              caughtError
+              caughtError,
+              clinicalText(
+                language,
+                "The operation could not be completed."
+              )
             )
           );
         } finally {
@@ -1160,7 +1181,7 @@ export default function ResidentResultsTab({
         {/* RESULTS TITLE */}
 
         <div className="border-b border-[#73865F] bg-[#8FA47A] px-2 py-1 text-[11px] font-bold text-white">
-          Results
+          {clinicalText(language, "Results")}
         </div>
 
 
@@ -1204,7 +1225,10 @@ export default function ResidentResultsTab({
                   }
                 `}
               >
-                {item}
+                {clinicalText(
+                  language,
+                  item
+                )}
               </button>
             )
           )}
@@ -1217,8 +1241,14 @@ export default function ResidentResultsTab({
               <strong className="mr-2 text-[11px] text-white">
                 {section ===
                 "Laboratory"
-                  ? "Lab Results"
-                  : "Radiology Results"}
+                  ? clinicalText(
+                      language,
+                      "Lab Results"
+                    )
+                  : clinicalText(
+                      language,
+                      "Radiology Results"
+                    )}
               </strong>
 
 
@@ -1252,7 +1282,7 @@ export default function ResidentResultsTab({
                   size={10}
                 />
 
-                New
+                {clinicalText(language, "New")}
               </button>
 
 
@@ -1271,7 +1301,7 @@ export default function ResidentResultsTab({
                     size={10}
                   />
 
-                  Trending
+                  {clinicalText(language, "Trending")}
                 </button>
               )}
             </div>
@@ -1298,7 +1328,7 @@ export default function ResidentResultsTab({
                 }
               />
 
-              Refresh
+              {clinicalText(language, "Refresh")}
             </button>
           </div>
         </div>
@@ -1326,7 +1356,7 @@ export default function ResidentResultsTab({
                     .value
                 )
               }
-              placeholder="Display filters / search results..."
+              placeholder={clinicalText(language, "Display filters / search results...")}
               className="h-7 w-full border border-[#B8C1BC] bg-white pl-7 pr-2 text-[10px] outline-none"
             />
           </div>
@@ -1556,12 +1586,14 @@ function LaboratoryTable({
   onViewOrder:
     () => void;
 }) {
+  const { language } = useLanguage();
+
   if (
     reports.length === 0
   ) {
     return (
       <div className="px-6 py-12 text-center text-[11px] text-[#697970]">
-        No laboratory reports are recorded for this resident.
+        {clinicalText(language, "No laboratory reports are recorded for this resident.")}
       </div>
     );
   }
@@ -1573,35 +1605,35 @@ function LaboratoryTable({
         <thead>
           <tr className="bg-gradient-to-b from-white to-[#D9D9D9] text-[9px] font-bold text-[#263A31]">
             <Head>
-              Actions
+              {clinicalText(language, "Actions")}
             </Head>
 
             <Head>
-              Flag
+              {clinicalText(language, "Flag")}
             </Head>
 
             <Head>
-              Report Name
+              {clinicalText(language, "Report Name")}
             </Head>
 
             <Head>
-              Report Status
+              {clinicalText(language, "Report Status")}
             </Head>
 
             <Head>
-              Category
+              {clinicalText(language, "Category")}
             </Head>
 
             <Head>
-              Collection Date
+              {clinicalText(language, "Collection Date")}
             </Head>
 
             <Head>
-              Reported Date
+              {clinicalText(language, "Reported Date")}
             </Head>
 
             <Head>
-              Review Status
+              {clinicalText(language, "Review Status")}
             </Head>
           </tr>
         </thead>
@@ -1685,28 +1717,28 @@ function LaboratoryTable({
                       className="h-6 w-[95px] border border-[#AEB8B3] bg-white px-1 text-[9px] font-semibold text-[#12639B]"
                     >
                       <option value="">
-                        Actions
+                        {clinicalText(language, "Actions")}
                       </option>
 
                       <option value="view">
-                        View Results
+                        {clinicalText(language, "View Results")}
                       </option>
 
                       {report.order_id && (
                         <option value="order">
-                          View Order
+                          {clinicalText(language, "View Order")}
                         </option>
                       )}
 
                       {report.review_status !==
                         "Reviewed" && (
                         <option value="review">
-                          Review / Sign
+                          {clinicalText(language, "Review / Sign")}
                         </option>
                       )}
 
                       <option value="edit">
-                        Edit / Correct
+                        {clinicalText(language, "Edit / Correct")}
                       </option>
                     </select>
                   </td>
@@ -1727,31 +1759,33 @@ function LaboratoryTable({
 
 
                   <td className="border-r border-[#D7D7D7] px-2 py-1">
-                    {report.report_status}
+                    {clinicalText(language, report.report_status)}
                   </td>
 
 
                   <td className="border-r border-[#D7D7D7] px-2 py-1">
-                    {report.category}
+                    {clinicalText(language, report.category)}
                   </td>
 
 
                   <td className="whitespace-nowrap border-r border-[#D7D7D7] px-2 py-1">
                     {formatDateTime(
                       report.collection_at
-                    )}
+                    ,
+            language)}
                   </td>
 
 
                   <td className="whitespace-nowrap border-r border-[#D7D7D7] px-2 py-1">
                     {formatDateTime(
                       report.reported_at
-                    )}
+                    ,
+            language)}
                   </td>
 
 
                   <td className="px-2 py-1 font-semibold">
-                    {report.review_status}
+                    {clinicalText(language, report.review_status)}
                   </td>
                 </tr>
               );
@@ -1792,12 +1826,14 @@ function RadiologyTable({
   onViewOrder:
     () => void;
 }) {
+  const { language } = useLanguage();
+
   if (
     reports.length === 0
   ) {
     return (
       <div className="px-6 py-12 text-center text-[11px] text-[#697970]">
-        No radiology reports are recorded for this resident.
+        {clinicalText(language, "No radiology reports are recorded for this resident.")}
       </div>
     );
   }
@@ -1809,35 +1845,35 @@ function RadiologyTable({
         <thead>
           <tr className="bg-gradient-to-b from-white to-[#D9D9D9] text-[9px] font-bold text-[#263A31]">
             <Head>
-              Actions
+              {clinicalText(language, "Actions")}
             </Head>
 
             <Head>
-              Study
+              {clinicalText(language, "Study")}
             </Head>
 
             <Head>
-              Body Site
+              {clinicalText(language, "Body Site")}
             </Head>
 
             <Head>
-              Status
+              {clinicalText(language, "Status")}
             </Head>
 
             <Head>
-              Study Date
+              {clinicalText(language, "Study Date")}
             </Head>
 
             <Head>
-              Reported Date
+              {clinicalText(language, "Reported Date")}
             </Head>
 
             <Head>
-              Radiologist
+              {clinicalText(language, "Radiologist")}
             </Head>
 
             <Head>
-              Review Status
+              {clinicalText(language, "Review Status")}
             </Head>
           </tr>
         </thead>
@@ -1915,28 +1951,28 @@ function RadiologyTable({
                     className="h-6 w-[95px] border border-[#AEB8B3] bg-white px-1 text-[9px] font-semibold text-[#12639B]"
                   >
                     <option value="">
-                      Actions
+                      {clinicalText(language, "Actions")}
                     </option>
 
                     <option value="view">
-                      View Report
+                      {clinicalText(language, "View Report")}
                     </option>
 
                     {report.order_id && (
                       <option value="order">
-                        View Order
+                        {clinicalText(language, "View Order")}
                       </option>
                     )}
 
                     {report.review_status !==
                       "Reviewed" && (
                       <option value="review">
-                        Review / Sign
+                        {clinicalText(language, "Review / Sign")}
                       </option>
                     )}
 
                     <option value="edit">
-                      Edit / Correct
+                      {clinicalText(language, "Edit / Correct")}
                     </option>
                   </select>
                 </td>
@@ -1952,19 +1988,21 @@ function RadiologyTable({
                 </td>
 
                 <td className="border-r border-[#D7D7D7] px-2 py-1">
-                  {report.report_status}
+                  {clinicalText(language, report.report_status)}
                 </td>
 
                 <td className="whitespace-nowrap border-r border-[#D7D7D7] px-2 py-1">
                   {formatDateTime(
                     report.study_at
-                  )}
+                  ,
+            language)}
                 </td>
 
                 <td className="whitespace-nowrap border-r border-[#D7D7D7] px-2 py-1">
                   {formatDateTime(
                     report.reported_at
-                  )}
+                  ,
+            language)}
                 </td>
 
                 <td className="border-r border-[#D7D7D7] px-2 py-1">
@@ -1973,7 +2011,7 @@ function RadiologyTable({
                 </td>
 
                 <td className="px-2 py-1 font-semibold">
-                  {report.review_status}
+                  {clinicalText(language, report.review_status)}
                 </td>
               </tr>
             )
@@ -2012,6 +2050,8 @@ function LabEntryModal({
   onSaved:
     () => void;
 }) {
+  const { language } = useLanguage();
+
   const [
     form,
     setForm,
@@ -2258,7 +2298,10 @@ function LabEntryModal({
       !form.reportName.trim()
     ) {
       setError(
-        "Report name is required."
+        clinicalText(
+          language,
+          "Report name is required."
+        )
       );
 
       return;
@@ -2280,7 +2323,10 @@ function LabEntryModal({
       0
     ) {
       setError(
-        "Enter at least one laboratory test and result."
+        clinicalText(
+          language,
+          "Enter at least one laboratory test and result."
+        )
       );
 
       return;
@@ -2426,7 +2472,11 @@ function LabEntryModal({
 
       setError(
         errorMessage(
-          caughtError
+          caughtError,
+          clinicalText(
+            language,
+            "The operation could not be completed."
+          )
         )
       );
     } finally {
@@ -2439,8 +2489,14 @@ function LabEntryModal({
     <ModalShell
       title={
         initialReport
-          ? "Correct Laboratory Result"
-          : "New Laboratory Result"
+          ? clinicalText(
+              language,
+              "Correct Laboratory Result"
+            )
+          : clinicalText(
+              language,
+              "New Laboratory Result"
+            )
       }
       residentName={
         residentName
@@ -2464,10 +2520,10 @@ function LabEntryModal({
             className="h-8 border border-[#073B2F] bg-[#073B2F] px-4 text-[10px] font-bold text-white disabled:opacity-50"
           >
             {saving
-              ? "Saving..."
+              ? clinicalText(language, "Saving...")
               : initialReport
-                ? "Save Correction"
-                : "Save"}
+                ? clinicalText(language, "Save Correction")
+                : clinicalText(language, "Save")}
           </button>
 
           <button
@@ -2480,19 +2536,19 @@ function LabEntryModal({
             }
             className="h-8 border border-[#8D9C94] bg-white px-4 text-[10px] font-bold text-[#34483F]"
           >
-            Cancel
+            {clinicalText(language, "Cancel")}
           </button>
         </>
       }
     >
       <SectionBar>
-        Report Details
+        {clinicalText(language, "Report Details")}
       </SectionBar>
 
 
       <div className="grid gap-3 p-3 md:grid-cols-2">
         <Select
-          label="Linked Laboratory Order"
+          label={clinicalText(language, "Linked Laboratory Order")}
           value={
             form.orderId
           }
@@ -2526,7 +2582,10 @@ function LabEntryModal({
                   ),
 
                 label:
-                  `${order.order_name} — ${order.status}`,
+                  `${order.order_name} — ${clinicalText(
+                    language,
+                    order.status
+                  )}`,
               })
             ),
           ]}
@@ -2534,7 +2593,7 @@ function LabEntryModal({
 
 
         <Input
-          label="Report Name"
+          label={clinicalText(language, "Report Name")}
           required
           value={
             form.reportName
@@ -2552,12 +2611,12 @@ function LabEntryModal({
               })
             )
           }
-          placeholder="CBC / Basic Metabolic Panel"
+          placeholder={clinicalText(language, "CBC / Basic Metabolic Panel")}
         />
 
 
         <Select
-          label="Category"
+          label={clinicalText(language, "Category")}
           value={
             form.category
           }
@@ -2622,7 +2681,7 @@ function LabEntryModal({
 
 
         <Input
-          label="Performing Laboratory"
+          label={clinicalText(language, "Performing Laboratory")}
           value={
             form.performingLab
           }
@@ -2643,7 +2702,7 @@ function LabEntryModal({
 
 
         <DateTimePair
-          label="Collection Date / Time"
+          label={clinicalText(language, "Collection Date / Time")}
           date={
             form.collectionDate
           }
@@ -2680,7 +2739,7 @@ function LabEntryModal({
 
 
         <DateTimePair
-          label="Reported Date / Time"
+          label={clinicalText(language, "Reported Date / Time")}
           date={
             form.reportedDate
           }
@@ -2717,7 +2776,7 @@ function LabEntryModal({
 
 
         <Select
-          label="Report Status"
+          label={clinicalText(language, "Report Status")}
           value={
             form.reportStatus
           }
@@ -2765,7 +2824,7 @@ function LabEntryModal({
 
 
       <SectionBar>
-        Laboratory Results
+        {clinicalText(language, "Laboratory Results")}
       </SectionBar>
 
 
@@ -2774,35 +2833,35 @@ function LabEntryModal({
           <thead>
             <tr className="bg-[#E7ECE8] text-[9px] font-bold text-[#34483F]">
               <Head>
-                Test
+                {clinicalText(language, "Test")}
               </Head>
 
               <Head>
-                Result
+                {clinicalText(language, "Result")}
               </Head>
 
               <Head>
-                Units
+                {clinicalText(language, "Units")}
               </Head>
 
               <Head>
-                Ref Low
+                {clinicalText(language, "Ref Low")}
               </Head>
 
               <Head>
-                Ref High
+                {clinicalText(language, "Ref High")}
               </Head>
 
               <Head>
-                Reference Range
+                {clinicalText(language, "Reference Range")}
               </Head>
 
               <Head>
-                Flag
+                {clinicalText(language, "Flag")}
               </Head>
 
               <Head>
-                Remove
+                {clinicalText(language, "Remove")}
               </Head>
             </tr>
           </thead>
@@ -2945,8 +3004,14 @@ function LabEntryModal({
                             key={
                               flag
                             }
+                            value={
+                              flag
+                            }
                           >
-                            {flag}
+                            {clinicalText(
+                              language,
+                              flag
+                            )}
                           </option>
                         )
                       )}
@@ -2981,7 +3046,7 @@ function LabEntryModal({
                       }
                       className="h-7 border border-[#C8D0CB] bg-white px-2 text-[9px] font-bold text-red-700 disabled:opacity-30"
                     >
-                      Remove
+                      {clinicalText(language, "Remove")}
                     </button>
                   </td>
                 </tr>
@@ -3011,20 +3076,20 @@ function LabEntryModal({
           }
           className="h-7 border border-[#8FA095] bg-white px-3 text-[9px] font-bold text-[#294338]"
         >
-          + Add Result
+          {clinicalText(language, "+ Add Result")}
         </button>
       </div>
 
 
       <SectionBar>
-        Clinical Information
+        {clinicalText(language, "Clinical Information")}
       </SectionBar>
 
 
       <div className="p-3">
         <label>
           <span className="mb-1 block text-[10px] font-bold text-[#34483F]">
-            Clinical Notes
+            {clinicalText(language, "Clinical Notes")}
           </span>
 
           <textarea
@@ -3089,6 +3154,8 @@ function RadiologyEntryModal({
   onSaved:
     () => void;
 }) {
+  const { language } = useLanguage();
+
   const [
     form,
     setForm,
@@ -3202,7 +3269,10 @@ function RadiologyEntryModal({
       !form.studyName.trim()
     ) {
       setError(
-        "Study name is required."
+        clinicalText(
+          language,
+          "Study name is required."
+        )
       );
 
       return;
@@ -3308,7 +3378,11 @@ function RadiologyEntryModal({
     ) {
       setError(
         errorMessage(
-          caughtError
+          caughtError,
+          clinicalText(
+            language,
+            "The operation could not be completed."
+          )
         )
       );
     } finally {
@@ -3321,8 +3395,14 @@ function RadiologyEntryModal({
     <ModalShell
       title={
         initialReport
-          ? "Correct Radiology Result"
-          : "New Radiology Result"
+          ? clinicalText(
+              language,
+              "Correct Radiology Result"
+            )
+          : clinicalText(
+              language,
+              "New Radiology Result"
+            )
       }
       residentName={
         residentName
@@ -3346,8 +3426,8 @@ function RadiologyEntryModal({
             className="h-8 border border-[#073B2F] bg-[#073B2F] px-4 text-[10px] font-bold text-white disabled:opacity-50"
           >
             {saving
-              ? "Saving..."
-              : "Save"}
+              ? clinicalText(language, "Saving...")
+              : clinicalText(language, "Save")}
           </button>
 
           <button
@@ -3360,19 +3440,19 @@ function RadiologyEntryModal({
             }
             className="h-8 border border-[#8D9C94] bg-white px-4 text-[10px] font-bold text-[#34483F]"
           >
-            Cancel
+            {clinicalText(language, "Cancel")}
           </button>
         </>
       }
     >
       <SectionBar>
-        Radiology Report
+        {clinicalText(language, "Radiology Report")}
       </SectionBar>
 
 
       <div className="grid gap-3 p-3 md:grid-cols-2">
         <Select
-          label="Linked Diagnostic Order"
+          label={clinicalText(language, "Linked Diagnostic Order")}
           value={
             form.orderId
           }
@@ -3406,7 +3486,10 @@ function RadiologyEntryModal({
                   ),
 
                 label:
-                  `${order.order_name} — ${order.status}`,
+                  `${order.order_name} — ${clinicalText(
+                    language,
+                    order.status
+                  )}`,
               })
             ),
           ]}
@@ -3414,7 +3497,7 @@ function RadiologyEntryModal({
 
 
         <Input
-          label="Study"
+          label={clinicalText(language, "Study")}
           required
           value={
             form.studyName
@@ -3432,12 +3515,12 @@ function RadiologyEntryModal({
               })
             )
           }
-          placeholder="Chest X-Ray, CT Abdomen/Pelvis..."
+          placeholder={clinicalText(language, "Chest X-Ray, CT Abdomen/Pelvis...")}
         />
 
 
         <Input
-          label="Body Site"
+          label={clinicalText(language, "Body Site")}
           value={
             form.bodySite
           }
@@ -3458,7 +3541,7 @@ function RadiologyEntryModal({
 
 
         <Select
-          label="Report Status"
+          label={clinicalText(language, "Report Status")}
           value={
             form.reportStatus
           }
@@ -3499,7 +3582,7 @@ function RadiologyEntryModal({
 
 
         <DateTimePair
-          label="Study Date / Time"
+          label={clinicalText(language, "Study Date / Time")}
           date={
             form.studyDate
           }
@@ -3536,7 +3619,7 @@ function RadiologyEntryModal({
 
 
         <DateTimePair
-          label="Reported Date / Time"
+          label={clinicalText(language, "Reported Date / Time")}
           date={
             form.reportedDate
           }
@@ -3573,7 +3656,7 @@ function RadiologyEntryModal({
 
 
         <Input
-          label="Radiologist"
+          label={clinicalText(language, "Radiologist")}
           value={
             form.radiologist
           }
@@ -3594,7 +3677,7 @@ function RadiologyEntryModal({
 
 
         <Input
-          label="Performing Facility"
+          label={clinicalText(language, "Performing Facility")}
           value={
             form.facility
           }
@@ -3616,7 +3699,7 @@ function RadiologyEntryModal({
 
 
       <SectionBar>
-        Findings
+        {clinicalText(language, "Findings")}
       </SectionBar>
 
       <div className="p-3">
@@ -3645,7 +3728,7 @@ function RadiologyEntryModal({
 
 
       <SectionBar>
-        Impression
+        {clinicalText(language, "Impression")}
       </SectionBar>
 
       <div className="p-3">
@@ -3674,7 +3757,7 @@ function RadiologyEntryModal({
 
         <label className="mt-3 block">
           <span className="mb-1 block text-[10px] font-bold text-[#34483F]">
-            Notes
+            {clinicalText(language, "Notes")}
           </span>
 
           <textarea
@@ -3721,6 +3804,8 @@ function LabViewModal({
   onClose:
     () => void;
 }) {
+  const { language } = useLanguage();
+
   return (
     <ModalShell
       title={
@@ -3740,45 +3825,53 @@ function LabViewModal({
           }
           className="h-8 border border-[#8D9C94] bg-white px-4 text-[10px] font-bold"
         >
-          Close
+          {clinicalText(language, "Close")}
         </button>
       }
     >
       <SectionBar>
-        Laboratory Report
+        {clinicalText(language, "Laboratory Report")}
       </SectionBar>
 
 
       <div className="grid gap-px bg-[#D9DFDB] sm:grid-cols-4">
         <Detail
-          label="Status"
+          label={clinicalText(language, "Status")}
           value={
-            report.report_status
+            clinicalText(
+              language,
+              report.report_status
+            )
           }
         />
 
         <Detail
-          label="Category"
+          label={clinicalText(language, "Category")}
           value={
-            report.category
+            clinicalText(
+              language,
+              report.category
+            )
           }
         />
 
         <Detail
-          label="Collection"
+          label={clinicalText(language, "Collection")}
           value={
             formatDateTime(
               report.collection_at
-            )
+            ,
+            language)
           }
         />
 
         <Detail
-          label="Reported"
+          label={clinicalText(language, "Reported")}
           value={
             formatDateTime(
               report.reported_at
-            )
+            ,
+            language)
           }
         />
       </div>
@@ -3789,23 +3882,23 @@ function LabViewModal({
           <thead>
             <tr className="bg-[#E6ECE8] text-[9px] font-bold">
               <Head>
-                Test
+                {clinicalText(language, "Test")}
               </Head>
 
               <Head>
-                Result
+                {clinicalText(language, "Result")}
               </Head>
 
               <Head>
-                Units
+                {clinicalText(language, "Units")}
               </Head>
 
               <Head>
-                Reference Range
+                {clinicalText(language, "Reference Range")}
               </Head>
 
               <Head>
-                Flag
+                {clinicalText(language, "Flag")}
               </Head>
             </tr>
           </thead>
@@ -3859,7 +3952,10 @@ function LabViewModal({
                   <td className={`px-2 py-1.5 ${flagDisplayClass(
                     result.flag
                   )}`}>
-                    {result.flag}
+                    {clinicalText(
+                      language,
+                      result.flag
+                    )}
                   </td>
                 </tr>
               )
@@ -3872,7 +3968,7 @@ function LabViewModal({
       {report.notes && (
         <div className="border-t border-[#D9DFDB] p-3">
           <p className="text-[9px] font-bold uppercase text-[#718078]">
-            Notes
+            {clinicalText(language, "Notes")}
           </p>
 
           <p className="mt-1 whitespace-pre-wrap text-[10px] leading-5">
@@ -3895,6 +3991,8 @@ function RadiologyViewModal({
   onClose:
     () => void;
 }) {
+  const { language } = useLanguage();
+
   return (
     <ModalShell
       title={
@@ -3914,40 +4012,44 @@ function RadiologyViewModal({
           }
           className="h-8 border border-[#8D9C94] bg-white px-4 text-[10px] font-bold"
         >
-          Close
+          {clinicalText(language, "Close")}
         </button>
       }
     >
       <SectionBar>
-        Radiology Report
+        {clinicalText(language, "Radiology Report")}
       </SectionBar>
 
       <div className="grid gap-px bg-[#D9DFDB] sm:grid-cols-4">
         <Detail
-          label="Status"
+          label={clinicalText(language, "Status")}
           value={
-            report.report_status
+            clinicalText(
+              language,
+              report.report_status
+            )
           }
         />
 
         <Detail
-          label="Body Site"
+          label={clinicalText(language, "Body Site")}
           value={
             report.body_site
           }
         />
 
         <Detail
-          label="Study Date"
+          label={clinicalText(language, "Study Date")}
           value={
             formatDateTime(
               report.study_at
-            )
+            ,
+            language)
           }
         />
 
         <Detail
-          label="Radiologist"
+          label={clinicalText(language, "Radiologist")}
           value={
             report.radiologist
           }
@@ -3956,22 +4058,28 @@ function RadiologyViewModal({
 
 
       <SectionBar>
-        Findings
+        {clinicalText(language, "Findings")}
       </SectionBar>
 
       <div className="p-3 whitespace-pre-wrap text-[10px] leading-5">
         {report.findings ||
-          "No findings recorded."}
+          clinicalText(
+            language,
+            "No findings recorded."
+          )}
       </div>
 
 
       <SectionBar>
-        Impression
+        {clinicalText(language, "Impression")}
       </SectionBar>
 
       <div className="p-3 whitespace-pre-wrap text-[10px] leading-5">
         {report.impression ||
-          "No impression recorded."}
+          clinicalText(
+            language,
+            "No impression recorded."
+          )}
       </div>
     </ModalShell>
   );
@@ -3988,6 +4096,8 @@ function TrendingModal({
   onClose:
     () => void;
 }) {
+  const { language } = useLanguage();
+
   const testNames =
     useMemo(
       () =>
@@ -4102,7 +4212,7 @@ function TrendingModal({
 
   return (
     <ModalShell
-      title="Laboratory Trending"
+      title={clinicalText(language, "Laboratory Trending")}
       residentName=""
       onClose={
         onClose
@@ -4115,13 +4225,13 @@ function TrendingModal({
           }
           className="h-8 border border-[#8D9C94] bg-white px-4 text-[10px] font-bold"
         >
-          Close
+          {clinicalText(language, "Close")}
         </button>
       }
     >
       <div className="p-3">
         <Select
-          label="Analyte"
+          label={clinicalText(language, "Analyte")}
           value={
             selected
           }
@@ -4149,23 +4259,23 @@ function TrendingModal({
             <thead>
               <tr className="bg-[#E6ECE8] text-[9px] font-bold">
                 <Head>
-                  Collection Date
+                  {clinicalText(language, "Collection Date")}
                 </Head>
 
                 <Head>
-                  Result
+                  {clinicalText(language, "Result")}
                 </Head>
 
                 <Head>
-                  Units
+                  {clinicalText(language, "Units")}
                 </Head>
 
                 <Head>
-                  Reference
+                  {clinicalText(language, "Reference")}
                 </Head>
 
                 <Head>
-                  Flag
+                  {clinicalText(language, "Flag")}
                 </Head>
               </tr>
             </thead>
@@ -4183,7 +4293,8 @@ function TrendingModal({
                     <td className="px-2 py-1.5">
                       {formatDateTime(
                         point.date
-                      )}
+                      ,
+            language)}
                     </td>
 
                     <td className={`px-2 py-1.5 ${flagDisplayClass(
@@ -4210,7 +4321,10 @@ function TrendingModal({
                       point.result
                         .flag
                     )}`}>
-                      {point.result.flag}
+                      {clinicalText(
+                        language,
+                        point.result.flag
+                      )}
                     </td>
                   </tr>
                 )
@@ -4284,6 +4398,8 @@ function ModalShell({
 
   saving?: boolean;
 }) {
+  const { language } = useLanguage();
+
   return (
     <div
       className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/45 p-2 sm:p-4"
@@ -4305,7 +4421,10 @@ function ModalShell({
           <div>
             {residentName && (
               <p className="text-[9px] font-semibold uppercase text-[#C8D8D0]">
-                Resident:{" "}
+                {clinicalText(
+                  language,
+                  "Resident"
+                )}:{" "}
                 {residentName}
               </p>
             )}
@@ -4443,6 +4562,8 @@ function Select({
       value: string
     ) => void;
 }) {
+  const { language } = useLanguage();
+
   return (
     <label>
       <span className="mb-1 block text-[10px] font-bold text-[#34483F]">
@@ -4476,7 +4597,10 @@ function Select({
                 option.value
               }
             >
-              {option.label}
+              {clinicalText(
+                language,
+                option.label
+              )}
             </option>
           )
         )}

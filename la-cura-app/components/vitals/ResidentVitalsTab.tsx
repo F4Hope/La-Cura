@@ -24,6 +24,16 @@ import {
   supabase,
 } from "@/lib/supabase/client";
 
+import {
+  useLanguage,
+} from "@/components/i18n/LanguageProvider";
+
+import {
+  clinicalLocale,
+  clinicalText,
+  type ClinicalLanguage,
+} from "@/lib/i18n/clinicalModules";
+
 
 type RawVital = Record<
   string,
@@ -404,7 +414,9 @@ function normalizeVital(
 
 
 function formatDateTime(
-  value: string
+  value: string,
+  language:
+    ClinicalLanguage
 ) {
   if (!value) {
     return "—";
@@ -422,7 +434,9 @@ function formatDateTime(
   }
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    clinicalLocale(
+      language
+    ),
     {
       month: "numeric",
       day: "numeric",
@@ -543,6 +557,8 @@ export default function ResidentVitalsTab({
   residentId,
   residentName,
 }: Props) {
+  const { language } = useLanguage();
+
   const [
     vitals,
     setVitals,
@@ -658,8 +674,11 @@ export default function ResidentVitalsTab({
           );
 
           setError(
-            errorMessage(
-              caughtError
+            clinicalText(
+              language,
+              errorMessage(
+                caughtError
+              )
             )
           );
         } finally {
@@ -767,7 +786,7 @@ export default function ResidentVitalsTab({
     <>
       <div className="bg-white">
         <div className="border-b border-[#70825D] bg-[#8FA47A] px-2 py-1 text-[11px] font-bold text-white">
-          Weights / Vitals
+          {clinicalText(language, "Weights / Vitals")}
         </div>
 
 
@@ -781,7 +800,7 @@ export default function ResidentVitalsTab({
                 size={11}
               />
 
-              New Vital Entry
+              {clinicalText(language, "New Vital Entry")}
             </Link>
 
 
@@ -798,7 +817,7 @@ export default function ResidentVitalsTab({
                 size={11}
               />
 
-              Trending
+              {clinicalText(language, "Trending")}
             </button>
 
 
@@ -820,7 +839,7 @@ export default function ResidentVitalsTab({
                 }
               `}
             >
-              Vitals
+              {clinicalText(language, "Vitals")}
             </button>
 
 
@@ -842,7 +861,7 @@ export default function ResidentVitalsTab({
                 }
               `}
             >
-              Weights
+              {clinicalText(language, "Weights")}
             </button>
 
 
@@ -861,23 +880,23 @@ export default function ResidentVitalsTab({
               className="h-7 border border-[#AAB7AF] bg-white px-2 text-[10px]"
             >
               <option value="7">
-                Last 7 Days
+                {clinicalText(language, "Last 7 Days")}
               </option>
 
               <option value="30">
-                Last 30 Days
+                {clinicalText(language, "Last 30 Days")}
               </option>
 
               <option value="90">
-                Last 90 Days
+                {clinicalText(language, "Last 90 Days")}
               </option>
 
               <option value="365">
-                Last 12 Months
+                {clinicalText(language, "Last 12 Months")}
               </option>
 
               <option value="All">
-                All Records
+                {clinicalText(language, "All Records")}
               </option>
             </select>
           </div>
@@ -904,14 +923,14 @@ export default function ResidentVitalsTab({
               }
             />
 
-            Refresh
+            {clinicalText(language, "Refresh")}
           </button>
         </div>
 
 
         <div className="grid border-b border-[#D4DDD8] bg-[#FAFAF7] sm:grid-cols-4">
           <Summary
-            label="Latest BP"
+            label={clinicalText(language, "Latest BP")}
             value={
               latest
                 ?.bloodPressure ||
@@ -920,7 +939,7 @@ export default function ResidentVitalsTab({
           />
 
           <Summary
-            label="Latest Pulse"
+            label={clinicalText(language, "Latest Pulse")}
             value={
               latest
                 ?.pulse ||
@@ -929,7 +948,7 @@ export default function ResidentVitalsTab({
           />
 
           <Summary
-            label="Latest O₂ Sat"
+            label={clinicalText(language, "Latest O₂ Sat")}
             value={
               latest
                 ?.oxygen ||
@@ -938,7 +957,7 @@ export default function ResidentVitalsTab({
           />
 
           <Summary
-            label="Latest Weight"
+            label={clinicalText(language, "Latest Weight")}
             value={
               latestWeight
                 ?.weight ||
@@ -1027,6 +1046,8 @@ function VitalsTable({
       NormalizedVital
   ) => void;
 }) {
+  const { language } = useLanguage();
+
   if (
     vitals.length === 0
   ) {
@@ -1038,7 +1059,7 @@ function VitalsTable({
         />
 
         <p className="mt-2 text-[11px] font-semibold text-[#465A50]">
-          No vital-sign records match this date range.
+          {clinicalText(language, "No vital-sign records match this date range.")}
         </p>
       </div>
     );
@@ -1051,51 +1072,51 @@ function VitalsTable({
         <thead>
           <tr className="bg-[#E5EEF4] text-[9px] font-bold text-[#263A31]">
             <Head>
-              Actions
+              {clinicalText(language, "Actions")}
             </Head>
 
             <Head>
-              Recorded Date / Time
+              {clinicalText(language, "Recorded Date / Time")}
             </Head>
 
             <Head>
-              Blood Pressure
+              {clinicalText(language, "Blood Pressure")}
             </Head>
 
             <Head>
-              Temperature
+              {clinicalText(language, "Temperature")}
             </Head>
 
             <Head>
-              Pulse
+              {clinicalText(language, "Pulse")}
             </Head>
 
             <Head>
-              Respirations
+              {clinicalText(language, "Respirations")}
             </Head>
 
             <Head>
-              O₂ Saturation
+              {clinicalText(language, "O₂ Saturation")}
             </Head>
 
             <Head>
-              Weight
+              {clinicalText(language, "Weight")}
             </Head>
 
             <Head>
-              Glucose
+              {clinicalText(language, "Glucose")}
             </Head>
 
             <Head>
-              Pain
+              {clinicalText(language, "Pain")}
             </Head>
 
             <Head>
-              Position / Method
+              {clinicalText(language, "Position / Method")}
             </Head>
 
             <Head>
-              Recorded By
+              {clinicalText(language, "Recorded By")}
             </Head>
           </tr>
         </thead>
@@ -1138,7 +1159,7 @@ function VitalsTable({
                       size={9}
                     />
 
-                    View
+                    {clinicalText(language, "View")}
                   </button>
                 </td>
 
@@ -1146,7 +1167,8 @@ function VitalsTable({
                 <Cell>
                   {formatDateTime(
                     vital.recordedAt
-                  )}
+                  ,
+            language)}
                 </Cell>
 
                 <Cell strong>
@@ -1229,6 +1251,8 @@ function WeightsTable({
       NormalizedVital
   ) => void;
 }) {
+  const { language } = useLanguage();
+
   if (
     vitals.length === 0
   ) {
@@ -1240,7 +1264,7 @@ function WeightsTable({
         />
 
         <p className="mt-2 text-[11px] font-semibold text-[#465A50]">
-          No weight records match this date range.
+          {clinicalText(language, "No weight records match this date range.")}
         </p>
       </div>
     );
@@ -1253,27 +1277,27 @@ function WeightsTable({
         <thead>
           <tr className="bg-[#E5EEF4] text-[9px] font-bold text-[#263A31]">
             <Head>
-              Actions
+              {clinicalText(language, "Actions")}
             </Head>
 
             <Head>
-              Date / Time
+              {clinicalText(language, "Date / Time")}
             </Head>
 
             <Head>
-              Weight
+              {clinicalText(language, "Weight")}
             </Head>
 
             <Head>
-              Position
+              {clinicalText(language, "Position")}
             </Head>
 
             <Head>
-              Method
+              {clinicalText(language, "Method")}
             </Head>
 
             <Head>
-              Recorded By
+              {clinicalText(language, "Recorded By")}
             </Head>
           </tr>
         </thead>
@@ -1316,14 +1340,15 @@ function WeightsTable({
                       size={9}
                     />
 
-                    View
+                    {clinicalText(language, "View")}
                   </button>
                 </td>
 
                 <Cell>
                   {formatDateTime(
                     vital.recordedAt
-                  )}
+                  ,
+            language)}
                 </Cell>
 
                 <Cell strong>
@@ -1368,6 +1393,8 @@ function VitalDetailModal({
   onClose:
     () => void;
 }) {
+  const { language } = useLanguage();
+
   const standardKeys =
     new Set([
       "id",
@@ -1431,7 +1458,7 @@ function VitalDetailModal({
 
   return (
     <ModalShell
-      title="Vital Sign Details"
+      title={clinicalText(language, "Vital Sign Details")}
       residentName={
         residentName
       }
@@ -1441,86 +1468,87 @@ function VitalDetailModal({
     >
       <div className="grid gap-px bg-[#D8DFDB] sm:grid-cols-3">
         <Detail
-          label="Recorded"
+          label={clinicalText(language, "Recorded")}
           value={
             formatDateTime(
               vital.recordedAt
-            )
+            ,
+            language)
           }
         />
 
         <Detail
-          label="Blood Pressure"
+          label={clinicalText(language, "Blood Pressure")}
           value={
             vital.bloodPressure
           }
         />
 
         <Detail
-          label="Temperature"
+          label={clinicalText(language, "Temperature")}
           value={
             vital.temperature
           }
         />
 
         <Detail
-          label="Pulse"
+          label={clinicalText(language, "Pulse")}
           value={
             vital.pulse
           }
         />
 
         <Detail
-          label="Respirations"
+          label={clinicalText(language, "Respirations")}
           value={
             vital.respirations
           }
         />
 
         <Detail
-          label="O₂ Saturation"
+          label={clinicalText(language, "O₂ Saturation")}
           value={
             vital.oxygen
           }
         />
 
         <Detail
-          label="Weight"
+          label={clinicalText(language, "Weight")}
           value={
             vital.weight
           }
         />
 
         <Detail
-          label="Glucose"
+          label={clinicalText(language, "Glucose")}
           value={
             vital.glucose
           }
         />
 
         <Detail
-          label="Pain"
+          label={clinicalText(language, "Pain")}
           value={
             vital.pain
           }
         />
 
         <Detail
-          label="Position"
+          label={clinicalText(language, "Position")}
           value={
             vital.position
           }
         />
 
         <Detail
-          label="Method"
+          label={clinicalText(language, "Method")}
           value={
             vital.method
           }
         />
 
         <Detail
-          label="Recorded By"
+          label={clinicalText(language, "Recorded By")}
           value={
             vital.recordedBy
           }
@@ -1532,7 +1560,7 @@ function VitalDetailModal({
         0 && (
         <>
           <div className="border-y border-[#819371] bg-[#91A47E] px-2 py-1 text-[10px] font-bold text-white">
-            Additional Recorded Data
+            {clinicalText(language, "Additional Recorded Data")}
           </div>
 
           <div className="grid gap-px bg-[#D8DFDB] sm:grid-cols-3">
@@ -1545,18 +1573,21 @@ function VitalDetailModal({
                   key={
                     key
                   }
-                  label={key
-                    .replace(
-                      /_/g,
-                      " "
-                    )
-                    .replace(
-                      /\b\w/g,
-                      (
-                        letter
-                      ) =>
-                        letter.toUpperCase()
-                    )}
+                  label={clinicalText(
+                    language,
+                    key
+                      .replace(
+                        /_/g,
+                        " "
+                      )
+                      .replace(
+                        /\b\w/g,
+                        (
+                          letter
+                        ) =>
+                          letter.toUpperCase()
+                      )
+                  )}
                   value={
                     cleanText(
                       value
@@ -1587,6 +1618,8 @@ function VitalsTrendingModal({
   onClose:
     () => void;
 }) {
+  const { language } = useLanguage();
+
   const metrics:
     TrendMetric[] = [
       "Weight",
@@ -1691,7 +1724,7 @@ function VitalsTrendingModal({
 
   return (
     <ModalShell
-      title="Vitals Trending"
+      title={clinicalText(language, "Vitals Trending")}
       residentName={
         residentName
       }
@@ -1703,7 +1736,7 @@ function VitalsTrendingModal({
       <div className="p-3">
         <label className="block max-w-xs">
           <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
-            Trend
+            {clinicalText(language, "Trend")}
           </span>
 
           <select
@@ -1729,8 +1762,14 @@ function VitalsTrendingModal({
                   key={
                     item
                   }
+                  value={
+                    item
+                  }
                 >
-                  {item}
+                  {clinicalText(
+                    language,
+                    item
+                  )}
                 </option>
               )
             )}
@@ -1740,7 +1779,7 @@ function VitalsTrendingModal({
 
         <div className="mt-3 grid border border-[#D7DFDA] bg-[#FAFAF7] sm:grid-cols-3">
           <Summary
-            label="Latest"
+            label={clinicalText(language, "Latest")}
             value={
               latest !== null
                 ? String(
@@ -1751,7 +1790,7 @@ function VitalsTrendingModal({
           />
 
           <Summary
-            label="Lowest Recorded"
+            label={clinicalText(language, "Lowest Recorded")}
             value={
               minimum !== null
                 ? String(
@@ -1762,7 +1801,7 @@ function VitalsTrendingModal({
           />
 
           <Summary
-            label="Highest Recorded"
+            label={clinicalText(language, "Highest Recorded")}
             value={
               maximum !== null
                 ? String(
@@ -1788,11 +1827,14 @@ function VitalsTrendingModal({
             <thead>
               <tr className="bg-[#E5EEF4] text-[9px] font-bold">
                 <Head>
-                  Date / Time
+                  {clinicalText(language, "Date / Time")}
                 </Head>
 
                 <Head>
-                  {metric}
+                  {clinicalText(
+                    language,
+                    metric
+                  )}
                 </Head>
               </tr>
             </thead>
@@ -1812,7 +1854,8 @@ function VitalsTrendingModal({
                       <Cell>
                         {formatDateTime(
                           point.date
-                        )}
+                        ,
+            language)}
                       </Cell>
 
                       <Cell strong>
@@ -1840,13 +1883,15 @@ function TrendChart({
     value: number;
   }[];
 }) {
+  const { language } = useLanguage();
+
   if (
     points.length <
     2
   ) {
     return (
       <div className="flex h-40 items-center justify-center border border-[#D8DFDB] bg-[#FAFAF7] text-[10px] text-[#74827B]">
-        At least two recorded values are needed to display a trend line.
+        {clinicalText(language, "At least two recorded values are needed to display a trend line.")}
       </div>
     );
   }
@@ -1954,7 +1999,7 @@ function TrendChart({
         viewBox={`0 0 ${width} ${height}`}
         className="h-[220px] min-w-[700px] w-full"
         role="img"
-        aria-label="Vital sign trend"
+        aria-label={clinicalText(language, "Vital sign trend")}
       >
         <line
           x1={
@@ -2033,6 +2078,8 @@ function ModalShell({
 
   wide?: boolean;
 }) {
+  const { language } = useLanguage();
+
   return (
     <div
       className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/45 p-3"
@@ -2065,7 +2112,10 @@ function ModalShell({
         <header className="flex items-center justify-between bg-[#073B2F] px-3 py-2 text-white">
           <div>
             <p className="text-[9px] font-semibold uppercase text-[#CAD8D1]">
-              Resident:{" "}
+              {clinicalText(
+                language,
+                "Resident"
+              )}:{" "}
               {residentName}
             </p>
 

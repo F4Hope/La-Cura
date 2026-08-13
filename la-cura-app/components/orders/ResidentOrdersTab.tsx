@@ -28,6 +28,17 @@ import {
   supabase,
 } from "@/lib/supabase/client";
 
+import {
+  useLanguage,
+} from "@/components/i18n/LanguageProvider";
+
+import {
+  clinicalLocale,
+  clinicalText,
+  orderStatusConfirmation,
+  type ClinicalLanguage,
+} from "@/lib/i18n/clinicalModules";
+
 
 type Props = {
   residentId: number;
@@ -53,7 +64,9 @@ function formatDate(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+  language:
+    ClinicalLanguage
 ) {
   if (!value) {
     return "—";
@@ -71,7 +84,9 @@ function formatDate(
   }
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    clinicalLocale(
+      language
+    ),
     {
       month: "numeric",
       day: "numeric",
@@ -85,7 +100,9 @@ function formatDateTime(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+  language:
+    ClinicalLanguage
 ) {
   if (!value) {
     return "—";
@@ -103,7 +120,9 @@ function formatDateTime(
   }
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    clinicalLocale(
+      language
+    ),
     {
       month: "short",
       day: "numeric",
@@ -140,6 +159,8 @@ export default function ResidentOrdersTab({
   residentName,
   primaryDoctor = "",
 }: Props) {
+  const { language } = useLanguage();
+
   const [
     orders,
     setOrders,
@@ -293,7 +314,10 @@ export default function ResidentOrdersTab({
             caughtError instanceof
             Error
               ? caughtError.message
-              : "Resident orders could not be loaded."
+              : clinicalText(
+                  language,
+                  "Resident orders could not be loaded."
+                )
           );
         } finally {
           setLoading(false);
@@ -446,16 +470,11 @@ export default function ResidentOrdersTab({
       OrderStatus
   ) {
     const message =
-      status ===
-      "Discontinued"
-        ? `Discontinue "${order.order_name}"?`
-        : status ===
-            "Held"
-          ? `Place "${order.order_name}" on hold?`
-          : status ===
-              "Completed"
-            ? `Mark "${order.order_name}" completed?`
-            : `Resume "${order.order_name}"?`;
+      orderStatusConfirmation(
+        language,
+        status,
+        order.order_name
+      );
 
 
     if (
@@ -678,7 +697,7 @@ export default function ResidentOrdersTab({
                   }
                   className="inline-flex h-7 items-center gap-1 border border-[#58694A] bg-white px-2.5 text-[10px] font-bold text-[#243A30]"
                 >
-                  New
+                  {clinicalText(language, "New")}
 
                   <ChevronDown
                     size={11}
@@ -712,7 +731,10 @@ export default function ResidentOrdersTab({
                           }}
                           className="block w-full border-b border-[#E2E6E3] px-2.5 py-1.5 text-left text-[10px] font-semibold text-[#273C33] last:border-b-0 hover:bg-[#EEF2EF]"
                         >
-                          {category}
+                          {clinicalText(
+                            language,
+                            category
+                          )}
                         </button>
                       )
                     )}
@@ -722,7 +744,10 @@ export default function ResidentOrdersTab({
 
 
               <span className="text-[10px] font-semibold text-white/90">
-                -or-
+                {clinicalText(
+                  language,
+                  "-or-"
+                )}
               </span>
 
 
@@ -743,7 +768,7 @@ export default function ResidentOrdersTab({
                         .value
                     )
                   }
-                  placeholder="Type to search orders..."
+                  placeholder={clinicalText(language, "Type to search orders...")}
                   className="h-7 w-full border border-[#788A6D] bg-white pl-7 pr-2 text-[10px] outline-none"
                 />
               </div>
@@ -771,7 +796,7 @@ export default function ResidentOrdersTab({
                 }
               />
 
-              Refresh Order List
+              {clinicalText(language, "Refresh Order List")}
             </button>
           </div>
         </div>
@@ -795,8 +820,11 @@ export default function ResidentOrdersTab({
               }
               className="h-6 border border-[#748368] bg-white px-1.5 text-[10px]"
             >
-              <option>
-                All
+              <option value="All">
+                {clinicalText(
+                  language,
+                  "All"
+                )}
               </option>
 
               {ORDER_CATEGORIES.map(
@@ -807,8 +835,14 @@ export default function ResidentOrdersTab({
                     key={
                       category
                     }
+                    value={
+                      category
+                    }
                   >
-                    {category}
+                    {clinicalText(
+                      language,
+                      category
+                    )}
                   </option>
                 )
               )}
@@ -829,37 +863,44 @@ export default function ResidentOrdersTab({
               }
               className="h-6 border border-[#748368] bg-white px-1.5 text-[10px]"
             >
-              <option>
-                All
-              </option>
-
-              <option>
-                Active
-              </option>
-
-              <option>
-                Held
-              </option>
-
-              <option>
-                Discontinued
-              </option>
-
-              <option>
-                Completed
-              </option>
+              {[
+                "All",
+                "Active",
+                "Held",
+                "Discontinued",
+                "Completed",
+              ].map(
+                (value) => (
+                  <option
+                    key={value}
+                    value={value}
+                  >
+                    {clinicalText(
+                      language,
+                      value
+                    )}
+                  </option>
+                )
+              )}
             </select>
           </div>
 
 
           <p className="font-semibold text-[#26382F]">
-            Next Order Review:{" "}
+            {clinicalText(
+              language,
+              "Next Order Review"
+            )}:{" "}
             <strong>
               {nextOrderReview
                 ? formatDate(
                     nextOrderReview.toISOString()
-                  )
-                : "Not scheduled"}
+                  ,
+            language)
+                : clinicalText(
+                    language,
+                    "Not scheduled"
+                  )}
             </strong>
           </p>
         </div>
@@ -890,11 +931,19 @@ export default function ResidentOrdersTab({
             }
             className="h-6 border border-[#ADB8B2] bg-white px-2 text-[9px] font-bold disabled:opacity-40"
           >
-            Prev
+            {clinicalText(language, "Prev")}
           </button>
 
           <span className="px-2 text-[9px] font-semibold text-[#4A5B53]">
-            Page {page} of{" "}
+            {clinicalText(
+              language,
+              "Page"
+            )}{" "}
+            {page}{" "}
+            {clinicalText(
+              language,
+              "of"
+            )}{" "}
             {totalPages}
           </span>
 
@@ -914,7 +963,7 @@ export default function ResidentOrdersTab({
             }
             className="h-6 border border-[#ADB8B2] bg-white px-2 text-[9px] font-bold disabled:opacity-40"
           >
-            Next
+            {clinicalText(language, "Next")}
           </button>
         </div>
 
@@ -928,35 +977,35 @@ export default function ResidentOrdersTab({
               <thead>
                 <tr className="bg-[#E5EEF4] text-[9px] font-bold text-[#233A31]">
                   <OrderHead>
-                    Actions
+                    {clinicalText(language, "Actions")}
                   </OrderHead>
 
                   <OrderHead>
-                    Order
+                    {clinicalText(language, "Order")}
                   </OrderHead>
 
                   <OrderHead>
-                    Directions
+                    {clinicalText(language, "Directions")}
                   </OrderHead>
 
                   <OrderHead>
-                    Category
+                    {clinicalText(language, "Category")}
                   </OrderHead>
 
                   <OrderHead>
-                    Status
+                    {clinicalText(language, "Status")}
                   </OrderHead>
 
                   <OrderHead>
-                    Start Date
+                    {clinicalText(language, "Start Date")}
                   </OrderHead>
 
                   <OrderHead>
-                    End Date
+                    {clinicalText(language, "End Date")}
                   </OrderHead>
 
                   <OrderHead>
-                    Revision Date
+                    {clinicalText(language, "Revision Date")}
                   </OrderHead>
                 </tr>
               </thead>
@@ -1005,45 +1054,45 @@ export default function ResidentOrdersTab({
                           className="h-6 w-[84px] border border-[#AEB8B3] bg-white px-1 text-[9px] font-semibold text-[#174F75]"
                         >
                           <option value="">
-                            Actions
+                            {clinicalText(language, "Actions")}
                           </option>
 
                           <option value="view">
-                            View Order
+                            {clinicalText(language, "View Order")}
                           </option>
 
                           <option value="edit">
-                            Edit / Revise
+                            {clinicalText(language, "Edit / Revise")}
                           </option>
 
                           {order.status ===
                           "Held" ? (
                             <option value="resume">
-                              Resume
+                              {clinicalText(language, "Resume")}
                             </option>
                           ) : order.status ===
                             "Active" ? (
                             <option value="hold">
-                              Hold
+                              {clinicalText(language, "Hold")}
                             </option>
                           ) : null}
 
                           {order.status !==
                             "Discontinued" && (
                             <option value="discontinue">
-                              Discontinue
+                              {clinicalText(language, "Discontinue")}
                             </option>
                           )}
 
                           {order.status !==
                             "Completed" && (
                             <option value="complete">
-                              Mark Completed
+                              {clinicalText(language, "Mark Completed")}
                             </option>
                           )}
 
                           <option value="history">
-                            Revision History
+                            {clinicalText(language, "Revision History")}
                           </option>
                         </select>
                       </td>
@@ -1079,12 +1128,15 @@ export default function ResidentOrdersTab({
                             .join(
                               " • "
                             ) ||
-                          "No directions specified"}
+                          clinicalText(
+                            language,
+                            "No directions specified"
+                          )}
                       </td>
 
 
                       <td className="border-r border-[#D7DEDA] px-2 py-1">
-                        {order.category}
+                        {clinicalText(language, order.category)}
                       </td>
 
 
@@ -1093,28 +1145,31 @@ export default function ResidentOrdersTab({
                           order.status
                         )}`}
                       >
-                        {order.status}
+                        {clinicalText(language, order.status)}
                       </td>
 
 
                       <td className="whitespace-nowrap border-r border-[#D7DEDA] px-2 py-1">
                         {formatDate(
                           order.start_date
-                        )}
+                        ,
+            language)}
                       </td>
 
 
                       <td className="whitespace-nowrap border-r border-[#D7DEDA] px-2 py-1">
                         {formatDate(
                           order.end_date
-                        )}
+                        ,
+            language)}
                       </td>
 
 
                       <td className="whitespace-nowrap px-2 py-1">
                         {formatDate(
                           order.revision_date
-                        )}
+                        ,
+            language)}
                       </td>
                     </tr>
                   )
@@ -1124,7 +1179,7 @@ export default function ResidentOrdersTab({
           </div>
         ) : (
           <div className="px-6 py-12 text-center text-[11px] text-[#687970]">
-            No orders match the selected filters.
+            {clinicalText(language, "No orders match the selected filters.")}
           </div>
         )}
       </div>
@@ -1174,7 +1229,7 @@ export default function ResidentOrdersTab({
 
       {viewingOrder && (
         <SimpleModal
-          title="Order Details"
+          title={clinicalText(language, "Order Details")}
           onClose={() =>
             setViewingOrder(
               null
@@ -1183,106 +1238,121 @@ export default function ResidentOrdersTab({
         >
           <div className="grid gap-px bg-[#D8DFDB] sm:grid-cols-2">
             <Detail
-              label="Order"
+              label={clinicalText(language, "Order")}
               value={
                 viewingOrder.order_name
               }
             />
 
             <Detail
-              label="Category"
+              label={clinicalText(language, "Category")}
               value={
-                viewingOrder.category
+                clinicalText(
+                  language,
+                  viewingOrder.category
+                )
               }
             />
 
             <Detail
-              label="Status"
+              label={clinicalText(language, "Status")}
               value={
-                viewingOrder.status
+                clinicalText(
+                  language,
+                  viewingOrder.status
+                )
               }
             />
 
             <Detail
-              label="Ordered By"
+              label={clinicalText(language, "Ordered By")}
               value={
                 viewingOrder.ordered_by
               }
             />
 
             <Detail
-              label="Dosage"
+              label={clinicalText(language, "Dosage")}
               value={
                 viewingOrder.dosage
               }
             />
 
             <Detail
-              label="Route"
+              label={clinicalText(language, "Route")}
               value={
                 viewingOrder.route
               }
             />
 
             <Detail
-              label="Frequency"
+              label={clinicalText(language, "Frequency")}
               value={
                 viewingOrder.frequency
               }
             />
 
             <Detail
-              label="Administration Time"
+              label={clinicalText(language, "Administration Time")}
               value={
                 viewingOrder.administration_time
               }
             />
 
             <Detail
-              label="Schedule Type"
+              label={clinicalText(language, "Schedule Type")}
               value={
-                viewingOrder.schedule_type
+                clinicalText(
+                  language,
+                  viewingOrder.schedule_type ?? ""
+                )
               }
             />
 
             <Detail
-              label="Start Date"
+              label={clinicalText(language, "Start Date")}
               value={
                 formatDate(
                   viewingOrder.start_date
-                )
+                ,
+            language)
               }
             />
 
             <Detail
-              label="End Date"
+              label={clinicalText(language, "End Date")}
               value={
                 formatDate(
                   viewingOrder.end_date
-                )
+                ,
+            language)
               }
             />
 
             <Detail
-              label="Review Date"
+              label={clinicalText(language, "Review Date")}
               value={
                 formatDate(
                   viewingOrder.review_date
-                )
+                ,
+            language)
               }
             />
           </div>
 
           <div className="border-t border-[#D7DEDA] p-3">
             <p className="text-[9px] font-bold uppercase text-[#718078]">
-              Directions
+              {clinicalText(language, "Directions")}
             </p>
 
             <p className="mt-1 whitespace-pre-wrap text-[11px] leading-5 text-[#34483F]">
               {cleanText(
                 viewingOrder.directions
               ) ||
-                "No directions recorded."}
+                clinicalText(
+                  language,
+                  "No directions recorded."
+                )}
             </p>
           </div>
         </SimpleModal>
@@ -1293,7 +1363,10 @@ export default function ResidentOrdersTab({
 
       {historyOrder && (
         <SimpleModal
-          title={`Revision History — ${historyOrder.order_name}`}
+          title={`${clinicalText(
+            language,
+            "Revision History"
+          )} — ${historyOrder.order_name}`}
           onClose={() => {
             setHistoryOrder(
               null
@@ -1316,23 +1389,23 @@ export default function ResidentOrdersTab({
                 <thead>
                   <tr className="bg-[#E7EDE9] text-[9px] font-bold uppercase text-[#40544B]">
                     <OrderHead>
-                      Date / Time
+                      {clinicalText(language, "Date / Time")}
                     </OrderHead>
 
                     <OrderHead>
-                      Action
+                      {clinicalText(language, "Action")}
                     </OrderHead>
 
                     <OrderHead>
-                      Previous
+                      {clinicalText(language, "Previous")}
                     </OrderHead>
 
                     <OrderHead>
-                      New
+                      {clinicalText(language, "New")}
                     </OrderHead>
 
                     <OrderHead>
-                      Staff
+                      {clinicalText(language, "Staff")}
                     </OrderHead>
                   </tr>
                 </thead>
@@ -1351,21 +1424,30 @@ export default function ResidentOrdersTab({
                         <td className="px-2 py-1.5">
                           {formatDateTime(
                             item.changed_at
-                          )}
+                          ,
+            language)}
                         </td>
 
                         <td className="px-2 py-1.5 font-semibold">
-                          {item.action}
+                          {clinicalText(language, item.action)}
                         </td>
 
                         <td className="px-2 py-1.5">
-                          {item.previous_status ||
-                            "—"}
+                          {item.previous_status
+                            ? clinicalText(
+                                language,
+                                item.previous_status
+                              )
+                            : "—"}
                         </td>
 
                         <td className="px-2 py-1.5">
-                          {item.new_status ||
-                            "—"}
+                          {item.new_status
+                            ? clinicalText(
+                                language,
+                                item.new_status
+                              )
+                            : "—"}
                         </td>
 
                         <td className="px-2 py-1.5">
@@ -1379,7 +1461,7 @@ export default function ResidentOrdersTab({
             </div>
           ) : (
             <div className="p-8 text-center text-[11px] text-[#687970]">
-              No revision history is available.
+              {clinicalText(language, "No revision history is available.")}
             </div>
           )}
         </SimpleModal>
@@ -1415,6 +1497,8 @@ function SimpleModal({
 
   onClose: () => void;
 }) {
+  const { language } = useLanguage();
+
   return (
     <div
       className="fixed inset-0 z-[999999] flex items-center justify-center bg-black/40 p-4"
@@ -1442,7 +1526,7 @@ function SimpleModal({
             }
             className="h-7 border border-white/25 px-2 text-[10px] font-bold"
           >
-            Close
+            {clinicalText(language, "Close")}
           </button>
         </header>
 
