@@ -8,10 +8,12 @@ import {
   notFound,
 } from "next/navigation";
 
-import ResidentClinicalTabs, {
+import ResidentClinicalTabs from "@/components/ResidentClinicalTabs";
+
+import {
   normalizeResidentTab,
   type ResidentTabKey,
-} from "@/components/ResidentClinicalTabs";
+} from "@/lib/residentTabs";
 
 import ResidentOrdersTab from "@/components/orders/ResidentOrdersTab";
 
