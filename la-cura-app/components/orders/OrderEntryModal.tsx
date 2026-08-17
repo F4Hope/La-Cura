@@ -948,12 +948,15 @@ export default function OrderEntryModal({
     if (
       !form.orderName.trim()
     ) {
-      return clinicalText(
+      return `${clinicalText(
         language,
-        `${labelForOrder(
+        labelForOrder(
           category
-        )} is required.`
-      );
+        )
+      )} ${clinicalText(
+        language,
+        "is required."
+      )}`;
     }
 
 
@@ -1463,10 +1466,7 @@ export default function OrderEntryModal({
                     label={clinicalText(language, "Order Category")}
                     required
                     value={
-                      clinicalText(
-                        language,
-                        category
-                      )
+                      category
                     }
                     disabled
                     options={[
@@ -1478,7 +1478,7 @@ export default function OrderEntryModal({
 
                   <div className="md:col-span-2">
                     <p className="mb-1 text-[10px] font-bold text-[#33483F]">
-                      Communication Method{" "}
+                      {clinicalText(language, "Communication Method")}{" "}
                       <span className="text-red-600">
                         *
                       </span>
@@ -2428,7 +2428,7 @@ function CategoryFields({
                 value
               )
             }
-            placeholder="60 mL every 4 hours"
+            placeholder={clinicalText(language, "60 mL every 4 hours")}
           />
 
           <TextField

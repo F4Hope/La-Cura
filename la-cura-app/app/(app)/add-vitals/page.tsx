@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import type {
   FormEvent,
 } from "react";
@@ -107,6 +109,9 @@ function numberOrNull(
 
 
 export default function AddVitalsPage() {
+  const { ui } =
+    useAppUi();
+
   const [
     resident,
     setResident,
@@ -267,7 +272,7 @@ export default function AddVitalsPage() {
         setNotification({
           type: "error",
           message:
-            "La-Cura could not load the resident from the profile. Select the resident manually.",
+            ui("La-Cura could not load the resident from the profile. Select the resident manually."),
         });
 
         setLoadingResident(
@@ -445,7 +450,7 @@ export default function AddVitalsPage() {
         setNotification({
           type: "success",
           message:
-            `Vital signs for ${resident.full_name} were saved offline and will sync when the connection returns.`,
+            `${ui("Vital signs for")} ${resident.full_name} ${ui("were saved offline and will sync when the connection returns.")}`,
         });
 
         setForm({
@@ -473,7 +478,7 @@ export default function AddVitalsPage() {
       setNotification({
         type: "success",
         message:
-          `Vital signs saved successfully for ${resident.full_name}.`,
+          `${ui("Vital signs saved successfully for")} ${resident.full_name}.`,
       });
 
       setForm({
@@ -491,7 +496,7 @@ export default function AddVitalsPage() {
         message:
           error instanceof Error
             ? error.message
-            : "Vital signs could not be saved.",
+            : ui("Vital signs could not be saved."),
       });
     } finally {
       setSaving(false);
@@ -511,8 +516,7 @@ export default function AddVitalsPage() {
                 href="/dashboard"
                 className="hover:text-[#073B2F]"
               >
-                Home
-              </Link>
+                {ui("Home")}</Link>
 
               <span>/</span>
 
@@ -531,18 +535,15 @@ export default function AddVitalsPage() {
               ) : null}
 
               <span className="font-semibold text-[#40524B]">
-                WTS/Vitals
-              </span>
+                {ui("WTS/Vitals")}</span>
             </div>
 
             <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
-                Record Vital Signs
-              </h1>
+                {ui("Record Vital Signs")}</h1>
 
               <p className="text-xs text-[#718078]">
-                Enter current resident observations
-              </p>
+                {ui("Enter current resident observations")}</p>
             </div>
           </div>
 
@@ -568,8 +569,7 @@ export default function AddVitalsPage() {
                     size={12}
                   />
 
-                  Resident Vitals
-                </Link>
+                  {ui("Resident Vitals")}</Link>
               )}
 
             <span
@@ -644,14 +644,12 @@ export default function AddVitalsPage() {
             <div className="flex items-center justify-between border-b border-[#D3DCD7] bg-[#E7EDE9] px-3 py-1.5">
               <div>
                 <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
-                  Resident Context
-                </h2>
+                  {ui("Resident Context")}</h2>
               </div>
 
               {cameFromResidentProfile && (
                 <span className="text-[9px] font-bold uppercase tracking-[0.05em] text-[#8B6E27]">
-                  Profile Context
-                </span>
+                  {ui("Profile Context")}</span>
               )}
             </div>
 
@@ -665,15 +663,14 @@ export default function AddVitalsPage() {
                   />
 
                   <span className="text-[11px] text-[#5A6D64]">
-                    Loading resident...
-                  </span>
+                    {ui("Loading resident...")}</span>
                 </div>
               ) : resident &&
                 !changingResident ? (
                 <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                   <div className="grid gap-2 sm:grid-cols-[minmax(220px,1fr)_160px_120px]">
                     <ResidentField
-                      label="Resident"
+                      label={ui("Resident")}
                       value={
                         resident.full_name
                       }
@@ -681,7 +678,7 @@ export default function AddVitalsPage() {
                     />
 
                     <ResidentField
-                      label="Room / Bed"
+                      label={ui("Room / Bed")}
                       value={
                         resident.room ||
                         "Unassigned"
@@ -689,13 +686,13 @@ export default function AddVitalsPage() {
                     />
 
                     <ResidentField
-                      label="Age"
+                      label={ui("Age")}
                       value={
                         resident.age !==
                           null &&
                         resident.age !==
                           undefined
-                          ? `${resident.age} years`
+                          ? `${resident.age} ${ui("years")}`
                           : "Not recorded"
                       }
                     />
@@ -724,8 +721,7 @@ export default function AddVitalsPage() {
                       size={12}
                     />
 
-                    Change Resident
-                  </button>
+                    {ui("Change Resident")}</button>
                 </div>
               ) : (
                 <div>
@@ -744,7 +740,7 @@ export default function AddVitalsPage() {
                         }
                         className="mt-2 text-[10px] font-bold text-[#073B2F] hover:underline"
                       >
-                        Keep{" "}
+                        {ui("Keep")}{" "}
                         {
                           resident.full_name
                         }
@@ -762,19 +758,17 @@ export default function AddVitalsPage() {
             <div className="border-b border-[#D3DCD7] bg-[#E7EDE9] px-3 py-1.5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
-                  Current Measurements
-                </h2>
+                  {ui("Current Measurements")}</h2>
 
                 <span className="text-[9px] text-[#728078]">
-                  Enter only measurements obtained during this observation
-                </span>
+                  {ui("Enter only measurements obtained during this observation")}</span>
               </div>
             </div>
 
 
             <div className="grid gap-px bg-[#D7DFDB] sm:grid-cols-2 lg:grid-cols-4">
               <VitalField
-                label="Temperature"
+                label={ui("Temperature")}
                 unit="°C"
                 value={
                   form.temperature
@@ -792,7 +786,7 @@ export default function AddVitalsPage() {
               />
 
               <VitalField
-                label="Pulse"
+                label={ui("Pulse")}
                 unit="bpm"
                 value={
                   form.pulse
@@ -809,7 +803,7 @@ export default function AddVitalsPage() {
               />
 
               <VitalField
-                label="Systolic BP"
+                label={ui("Systolic BP")}
                 unit="mmHg"
                 value={
                   form.systolic
@@ -826,7 +820,7 @@ export default function AddVitalsPage() {
               />
 
               <VitalField
-                label="Diastolic BP"
+                label={ui("Diastolic BP")}
                 unit="mmHg"
                 value={
                   form.diastolic
@@ -843,7 +837,7 @@ export default function AddVitalsPage() {
               />
 
               <VitalField
-                label="Respiratory Rate"
+                label={ui("Respiratory Rate")}
                 unit="/min"
                 value={
                   form.respiratory_rate
@@ -860,7 +854,7 @@ export default function AddVitalsPage() {
               />
 
               <VitalField
-                label="Oxygen Saturation"
+                label={ui("Oxygen Saturation")}
                 unit="%"
                 value={
                   form.oxygen_saturation
@@ -879,7 +873,7 @@ export default function AddVitalsPage() {
               />
 
               <VitalField
-                label="Weight"
+                label={ui("Weight")}
                 unit="kg"
                 value={
                   form.weight
@@ -897,7 +891,7 @@ export default function AddVitalsPage() {
               />
 
               <VitalField
-                label="Pain Score"
+                label={ui("Pain Score")}
                 unit="/10"
                 value={
                   form.pain_score
@@ -921,12 +915,10 @@ export default function AddVitalsPage() {
               <label className="block">
                 <div className="mb-1.5 flex items-center justify-between gap-3">
                   <span className="text-[10px] font-bold uppercase tracking-[0.03em] text-[#4D6158]">
-                    Clinical Notes
-                  </span>
+                    {ui("Clinical Notes")}</span>
 
                   <span className="text-[9px] text-[#819088]">
-                    Optional
-                  </span>
+                    {ui("Optional")}</span>
                 </div>
 
                 <textarea
@@ -944,7 +936,7 @@ export default function AddVitalsPage() {
                         .value
                     )
                   }
-                  placeholder="Clinical observations, symptoms, interventions, or follow-up..."
+                  placeholder={ui("Clinical observations, symptoms, interventions, or follow-up...")}
                   className="
                     w-full resize-y
                     border border-[#BFCAC4]
@@ -971,13 +963,13 @@ export default function AddVitalsPage() {
             <div>
               <p className="text-[11px] font-semibold text-[#344940]">
                 {resident
-                  ? `Ready to record vital signs for ${resident.full_name}.`
+                  ? `${ui("Ready to record vital signs for")} ${resident.full_name}.`
                   : "Select a resident before saving."}
               </p>
 
               <p className="mt-0.5 text-[9px] text-[#73817A]">
                 {online
-                  ? "The record will be saved immediately."
+                  ? ui("The record will be saved immediately.")
                   : "The record will be stored locally and synchronized when connectivity returns."}
               </p>
             </div>
@@ -1011,16 +1003,14 @@ export default function AddVitalsPage() {
                     className="animate-spin"
                   />
 
-                  Saving...
-                </>
+                  {ui("Saving...")}</>
               ) : (
                 <>
                   <Save
                     size={14}
                   />
 
-                  Save Vital Signs
-                </>
+                  {ui("Save Vital Signs")}</>
               )}
             </button>
           </section>

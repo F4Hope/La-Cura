@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import Link from "next/link";
 
 import {
@@ -77,7 +79,8 @@ function formatDate(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+  locale = "en-CM"
 ) {
   if (!value) {
     return "—";
@@ -95,7 +98,7 @@ function formatDate(
   }
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    locale,
     {
       month: "short",
       day: "numeric",
@@ -195,6 +198,9 @@ function reviewState(
 export default function CarePlanClinicalTable({
   plans,
 }: Props) {
+  const { ui, locale } =
+    useAppUi();
+
   const [
     search,
     setSearch,
@@ -341,24 +347,20 @@ export default function CarePlanClinicalTable({
                 href="/dashboard"
                 className="hover:text-[#073B2F]"
               >
-                Home
-              </Link>
+                {ui("Home")}</Link>
 
               <span>/</span>
 
               <span className="font-semibold text-[#40524B]">
-                Care Plans
-              </span>
+                {ui("Care Plans")}</span>
             </div>
 
             <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
-                Resident Care Plans
-              </h1>
+                {ui("Resident Care Plans")}</h1>
 
               <p className="text-xs text-[#718078]">
-                Problems, interventions, assignments, and clinical review
-              </p>
+                {ui("Problems, interventions, assignments, and clinical review")}</p>
             </div>
           </div>
 
@@ -376,8 +378,7 @@ export default function CarePlanClinicalTable({
               hover:bg-[#F2F5F3]
             "
           >
-            Resident List
-          </Link>
+            {ui("Resident List")}</Link>
         </div>
       </section>
 
@@ -387,14 +388,14 @@ export default function CarePlanClinicalTable({
 
         <section className="mb-3 grid border border-[#CBD4D0] bg-white sm:grid-cols-4">
           <SummaryCell
-            label="Care Plans"
+            label={ui("Care Plans")}
             value={
               plans.length
             }
           />
 
           <SummaryCell
-            label="Overdue"
+            label={ui("Overdue")}
             value={overdue}
             danger={
               overdue > 0
@@ -402,7 +403,7 @@ export default function CarePlanClinicalTable({
           />
 
           <SummaryCell
-            label="Due Soon"
+            label={ui("Due Soon")}
             value={dueSoon}
             warning={
               dueSoon > 0
@@ -410,7 +411,7 @@ export default function CarePlanClinicalTable({
           />
 
           <SummaryCell
-            label="Scheduled"
+            label={ui("Scheduled")}
             value={scheduled}
           />
         </section>
@@ -438,7 +439,7 @@ export default function CarePlanClinicalTable({
                         .value
                     )
                   }
-                  placeholder="Search resident, diagnosis, care plan, nurse..."
+                  placeholder={ui("Search resident, diagnosis, care plan, nurse...")}
                   className="
                     h-8 w-full
                     border border-[#BCC9C3]
@@ -457,7 +458,7 @@ export default function CarePlanClinicalTable({
 
               <div className="flex flex-wrap gap-1">
                 <FilterButton
-                  label="All"
+                  label={ui("All")}
                   active={
                     reviewFilter ===
                     "all"
@@ -470,7 +471,7 @@ export default function CarePlanClinicalTable({
                 />
 
                 <FilterButton
-                  label="Overdue"
+                  label={ui("Overdue")}
                   active={
                     reviewFilter ===
                     "overdue"
@@ -483,7 +484,7 @@ export default function CarePlanClinicalTable({
                 />
 
                 <FilterButton
-                  label="Due Soon"
+                  label={ui("Due Soon")}
                   active={
                     reviewFilter ===
                     "due"
@@ -496,7 +497,7 @@ export default function CarePlanClinicalTable({
                 />
 
                 <FilterButton
-                  label="Scheduled"
+                  label={ui("Scheduled")}
                   active={
                     reviewFilter ===
                     "scheduled"
@@ -535,8 +536,7 @@ export default function CarePlanClinicalTable({
                       size={11}
                     />
 
-                    Reset
-                  </button>
+                    {ui("Reset")}</button>
                 )}
               </div>
             </div>
@@ -547,20 +547,18 @@ export default function CarePlanClinicalTable({
 
           <div className="flex items-center justify-between border-b border-[#D8DFDB] bg-[#FBFAF7] px-3 py-1.5 text-[10px]">
             <span className="text-[#607169]">
-              Showing{" "}
+              {ui("Showing")}{" "}
               <strong className="text-[#263A32]">
                 {filtered.length}
               </strong>{" "}
-              care plan
-              {filtered.length ===
+              {ui("care plan")}{filtered.length ===
               1
                 ? ""
                 : "s"}
             </span>
 
             <span className="font-semibold text-[#7D6A35]">
-              Review-date order
-            </span>
+              {ui("Review-date order")}</span>
           </div>
 
 
@@ -573,32 +571,25 @@ export default function CarePlanClinicalTable({
                 <thead>
                   <tr className="bg-[#E8EEEA] text-[10px] font-bold uppercase tracking-[0.035em] text-[#354A41]">
                     <ClinicalHead>
-                      Resident
-                    </ClinicalHead>
+                      {ui("Resident")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Diagnosis / Problem
-                    </ClinicalHead>
+                      {ui("Diagnosis / Problem")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Care Plan / Intervention
-                    </ClinicalHead>
+                      {ui("Care Plan / Intervention")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Assigned Nurse
-                    </ClinicalHead>
+                      {ui("Assigned Nurse")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Review Date
-                    </ClinicalHead>
+                      {ui("Review Date")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Review Status
-                    </ClinicalHead>
+                      {ui("Review Status")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Action
-                    </ClinicalHead>
+                      {ui("Action")}</ClinicalHead>
                   </tr>
                 </thead>
 
@@ -678,12 +669,13 @@ export default function CarePlanClinicalTable({
                             {cleanText(
                               plan.assigned_nurse
                             ) ||
-                              "Unassigned"}
+                              ui("Unassigned")}
                           </td>
 
                           <td className="whitespace-nowrap px-3 py-2 font-semibold text-[#40544B]">
                             {formatDate(
-                              plan.review_date
+                              plan.review_date,
+                              locale
                             )}
                           </td>
 
@@ -700,7 +692,7 @@ export default function CarePlanClinicalTable({
                               `}
                             >
                               {
-                                review.label
+                                ui(review.label)
                               }
                             </span>
                           </td>
@@ -722,8 +714,7 @@ export default function CarePlanClinicalTable({
                                   hover:bg-[#F0F4F1]
                                 "
                               >
-                                Open Resident
-                              </Link>
+                                {ui("Open Resident")}</Link>
                             ) : (
                               <span className="text-[10px] text-[#87948E]">
                                 —
@@ -740,8 +731,7 @@ export default function CarePlanClinicalTable({
           ) : (
             <div className="px-6 py-12 text-center">
               <p className="text-[12px] font-semibold text-[#30443B]">
-                No care plans match the selected filters.
-              </p>
+                {ui("No care plans match the selected filters.")}</p>
 
               <button
                 type="button"
@@ -750,15 +740,13 @@ export default function CarePlanClinicalTable({
                 }
                 className="mt-2 text-[10px] font-bold text-[#073B2F] underline"
               >
-                Reset filters
-              </button>
+                {ui("Reset filters")}</button>
             </div>
           )}
 
 
           <div className="border-t border-[#D1D9D5] bg-[#F8F7F2] px-3 py-2 text-[10px] text-[#607169]">
-            Care plans are prioritized by their next clinical review date.
-          </div>
+            {ui("Care plans are prioritized by their next clinical review date.")}</div>
         </section>
       </main>
     </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import type {
   FormEvent,
 } from "react";
@@ -59,6 +61,9 @@ const INCIDENT_TYPES = [
 ];
 
 export default function AddIncidentReportPage() {
+  const { ui } =
+    useAppUi();
+
   const {
     staff,
   } = useStaffSession();
@@ -186,7 +191,7 @@ export default function AddIncidentReportPage() {
         setNotification({
           type: "error",
           message:
-            "La-Cura could not load the resident from the profile. Select the resident manually.",
+            ui("La-Cura could not load the resident from the profile. Select the resident manually."),
         });
 
         setLoadingResident(
@@ -309,7 +314,7 @@ export default function AddIncidentReportPage() {
       setNotification({
         type: "error",
         message:
-          "La-Cura could not identify the logged-in staff member.",
+          ui("La-Cura could not identify the logged-in staff member."),
       });
 
       return;
@@ -350,7 +355,7 @@ export default function AddIncidentReportPage() {
       setNotification({
         type: "success",
         message:
-          `Incident report saved successfully for ${resident.full_name}.`,
+          `${ui("Incident report saved successfully for")} ${resident.full_name}.`,
       });
 
       resetIncidentFields();
@@ -378,7 +383,7 @@ export default function AddIncidentReportPage() {
         message:
           error instanceof Error
             ? error.message
-            : "The incident report could not be saved.",
+            : ui("The incident report could not be saved."),
       });
     } finally {
       setSaving(false);
@@ -403,7 +408,7 @@ export default function AddIncidentReportPage() {
                   size={16}
                 />
 
-                Back to{" "}
+                {ui("Back to")}{" "}
                 {
                   resident.full_name
                 }
@@ -417,26 +422,19 @@ export default function AddIncidentReportPage() {
                   size={15}
                 />
 
-                Safety Documentation
-              </div>
+                {ui("Safety Documentation")}</div>
 
               <h1 className="mt-2 text-[22px] font-bold tracking-[-0.02em]">
-                Incident Report
-              </h1>
+                {ui("Incident Report")}</h1>
 
               <p className="mt-2 max-w-2xl text-sm leading-6 text-green-100">
-                Document resident
-                incidents, immediate
-                actions, and safety
-                concerns.
-              </p>
+                {ui("Document resident incidents, immediate actions, and safety concerns.")}</p>
             </div>
 
             {resident && (
               <div className="rounded-[3px] border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm">
                 <p className="text-xs text-green-100">
-                  Current resident
-                </p>
+                  {ui("Current resident")}</p>
 
                 <p className="mt-1 font-semibold text-white">
                   {
@@ -495,14 +493,10 @@ export default function AddIncidentReportPage() {
 
                 <div>
                   <h2 className="font-semibold text-slate-900">
-                    Resident
-                  </h2>
+                    {ui("Resident")}</h2>
 
                   <p className="mt-0.5 text-sm text-slate-500">
-                    Confirm the resident
-                    associated with this
-                    incident.
-                  </p>
+                    {ui("Confirm the resident associated with this incident.")}</p>
                 </div>
               </div>
             </header>
@@ -516,8 +510,7 @@ export default function AddIncidentReportPage() {
                   />
 
                   <p className="text-sm font-medium text-slate-600">
-                    Loading resident...
-                  </p>
+                    {ui("Loading resident...")}</p>
                 </div>
               ) : resident &&
                 !changingResident ? (
@@ -539,9 +532,7 @@ export default function AddIncidentReportPage() {
 
                         {cameFromResidentProfile && (
                           <span className="rounded-full bg-[#073B2F] px-2.5 py-1 text-[11px] font-semibold text-white">
-                            From resident
-                            profile
-                          </span>
+                            {ui("From resident profile")}</span>
                         )}
                       </div>
 
@@ -551,7 +542,7 @@ export default function AddIncidentReportPage() {
                             size={15}
                           />
 
-                          Room{" "}
+                          {ui("Room")}{" "}
                           {resident.room ||
                             "Unassigned"}
                         </span>
@@ -564,8 +555,7 @@ export default function AddIncidentReportPage() {
                               {
                                 resident.age
                               }{" "}
-                              years
-                            </span>
+                              {ui("years")}</span>
                           )}
                       </div>
                     </div>
@@ -584,8 +574,7 @@ export default function AddIncidentReportPage() {
                       size={16}
                     />
 
-                    Change Resident
-                  </button>
+                    {ui("Change Resident")}</button>
                 </div>
               ) : (
                 <div>
@@ -606,7 +595,7 @@ export default function AddIncidentReportPage() {
                         }
                         className="mt-3 text-sm font-semibold text-[#073B2F] hover:text-[#0D4A3A]"
                       >
-                        Keep{" "}
+                        {ui("Keep")}{" "}
                         {
                           resident.full_name
                         }
@@ -628,14 +617,10 @@ export default function AddIncidentReportPage() {
 
                 <div>
                   <h2 className="font-semibold text-slate-900">
-                    Incident Details
-                  </h2>
+                    {ui("Incident Details")}</h2>
 
                   <p className="mt-0.5 text-sm text-slate-500">
-                    Record what occurred
-                    and the immediate
-                    response.
-                  </p>
+                    {ui("Record what occurred and the immediate response.")}</p>
                 </div>
               </div>
             </header>
@@ -643,9 +628,7 @@ export default function AddIncidentReportPage() {
             <div className="space-y-5 p-5">
               <label className="block">
                 <span className="mb-2 block text-sm font-semibold text-slate-700">
-                  Incident Type
-
-                  <span className="ml-1 text-red-500">
+                  {ui("Incident Type")}<span className="ml-1 text-red-500">
                     *
                   </span>
                 </span>
@@ -662,8 +645,7 @@ export default function AddIncidentReportPage() {
                   className="h-12 w-full rounded-[3px] border border-slate-300 bg-white px-3.5 text-sm text-slate-900 outline-none transition focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10"
                 >
                   <option value="">
-                    Select incident type
-                  </option>
+                    {ui("Select incident type")}</option>
 
                   {INCIDENT_TYPES.map(
                     (type) => (
@@ -671,7 +653,7 @@ export default function AddIncidentReportPage() {
                         key={type}
                         value={type}
                       >
-                        {type}
+                        {ui(type)}
                       </option>
                     )
                   )}
@@ -680,20 +662,13 @@ export default function AddIncidentReportPage() {
 
               <label className="block">
                 <span className="mb-2 block text-sm font-semibold text-slate-700">
-                  Incident Description
-
-                  <span className="ml-1 text-red-500">
+                  {ui("Incident Description")}<span className="ml-1 text-red-500">
                     *
                   </span>
                 </span>
 
                 <span className="mb-2 block text-xs leading-5 text-slate-500">
-                  Document factual
-                  observations including
-                  what happened, where it
-                  occurred, and relevant
-                  circumstances.
-                </span>
+                  {ui("Document factual observations including what happened, where it occurred, and relevant circumstances.")}</span>
 
                 <textarea
                   rows={7}
@@ -705,7 +680,7 @@ export default function AddIncidentReportPage() {
                       event.target.value
                     )
                   }
-                  placeholder="Describe what happened..."
+                  placeholder={ui("Describe what happened...")}
                   className="w-full resize-y rounded-[3px] border border-slate-300 bg-white px-3.5 py-3 text-sm leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10"
                 />
               </label>
@@ -723,14 +698,10 @@ export default function AddIncidentReportPage() {
 
                 <div>
                   <h2 className="font-semibold text-slate-900">
-                    Action Taken
-                  </h2>
+                    {ui("Action Taken")}</h2>
 
                   <p className="mt-0.5 text-sm text-slate-500">
-                    Record interventions,
-                    notifications, and
-                    immediate follow-up.
-                  </p>
+                    {ui("Record interventions, notifications, and immediate follow-up.")}</p>
                 </div>
               </div>
             </header>
@@ -746,7 +717,7 @@ export default function AddIncidentReportPage() {
                     event.target.value
                   )
                 }
-                placeholder="Document actions taken, staff or provider notifications, monitoring initiated, treatment provided, or other follow-up..."
+                placeholder={ui("Document actions taken, staff or provider notifications, monitoring initiated, treatment provided, or other follow-up...")}
                 className="w-full resize-y rounded-[3px] border border-slate-300 bg-white px-3.5 py-3 text-sm leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10"
               />
             </div>
@@ -756,12 +727,12 @@ export default function AddIncidentReportPage() {
             <div>
               <p className="text-sm font-medium text-slate-700">
                 {resident
-                  ? `Ready to submit an incident report for ${resident.full_name}.`
+                  ? `${ui("Ready to submit an incident report for")} ${resident.full_name}.`
                   : "Select a resident before saving."}
               </p>
 
               <p className="mt-1 text-xs text-slate-400">
-                Reported by{" "}
+                {ui("Reported by")}{" "}
                 <span className="font-medium text-slate-600">
                   {staff?.full_name?.trim() ||
                     staff?.name?.trim() ||
@@ -786,14 +757,12 @@ export default function AddIncidentReportPage() {
                     className="animate-spin"
                   />
 
-                  Saving...
-                </>
+                  {ui("Saving...")}</>
               ) : (
                 <>
                   <Save size={18} />
 
-                  Save Incident Report
-                </>
+                  {ui("Save Incident Report")}</>
               )}
             </button>
           </section>

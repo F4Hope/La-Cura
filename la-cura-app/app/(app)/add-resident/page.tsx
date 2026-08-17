@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import type {
   ChangeEvent,
   FormEvent,
@@ -376,6 +378,9 @@ function getResidentInitials(
 }
 
 export default function AddResidentPage() {
+  const { ui } =
+    useAppUi();
+
   const fileInputRef =
     useRef<HTMLInputElement | null>(
       null
@@ -542,7 +547,7 @@ export default function AddResidentPage() {
       );
 
       setPhotoError(
-        "The selected photo is larger than 20 MB."
+        ui("The selected photo is larger than 20 MB.")
       );
 
       event.target.value =
@@ -574,7 +579,7 @@ export default function AddResidentPage() {
       setPhotoError(
         error instanceof Error
           ? error.message
-          : "The selected photo could not be processed."
+          : ui("The selected photo could not be processed.")
       );
 
       event.target.value =
@@ -663,7 +668,7 @@ export default function AddResidentPage() {
 
     if (uploadError) {
       throw new Error(
-        `Photo upload failed: ${uploadError.message}`
+        `${ui("Photo upload failed:")} ${uploadError.message}`
       );
     }
 
@@ -693,7 +698,7 @@ export default function AddResidentPage() {
       setNotification({
         type: "error",
         message:
-          "Complete all required fields before saving.",
+          ui("Complete all required fields before saving."),
       });
 
       return;
@@ -825,8 +830,8 @@ export default function AddResidentPage() {
         type: "success",
         message:
           createdResident?.id
-            ? `Resident #${createdResident.id} was added successfully.`
-            : "Resident was added successfully.",
+            ? `${ui("Resident #")}${createdResident.id} ${ui("was added successfully.")}`
+            : ui("Resident was added successfully."),
       });
 
       setForm(
@@ -842,7 +847,7 @@ export default function AddResidentPage() {
       const message =
         error instanceof Error
           ? error.message
-          : "The resident could not be saved.";
+          : ui("The resident could not be saved.");
 
       setNotification({
         type: "error",
@@ -876,8 +881,7 @@ export default function AddResidentPage() {
           >
             <ArrowLeft size={17} />
 
-            Back to Residents
-          </Link>
+            {ui("Back to Residents")}</Link>
 
           <div className="mt-5 flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
@@ -886,18 +890,13 @@ export default function AddResidentPage() {
                   size={15}
                 />
 
-                Resident Registration
-              </div>
+                {ui("Resident Registration")}</div>
 
               <h1 className="mt-2 text-[22px] font-bold tracking-[-0.02em]">
-                Add Resident
-              </h1>
+                {ui("Add Resident")}</h1>
 
               <p className="mt-2 max-w-2xl text-sm leading-6 text-green-100">
-                Create a complete resident
-                profile and add an optional
-                profile photograph.
-              </p>
+                {ui("Create a complete resident profile and add an optional profile photograph.")}</p>
             </div>
 
             <div className="inline-flex items-center gap-2 rounded-[3px] border border-white/15 bg-white/10 px-4 py-3 text-sm text-green-50 backdrop-blur-sm">
@@ -905,9 +904,7 @@ export default function AddResidentPage() {
                 size={18}
               />
 
-              Required fields are marked
-              with *
-            </div>
+              {ui("Required fields are marked with *")}</div>
           </div>
         </div>
       </header>
@@ -920,14 +917,10 @@ export default function AddResidentPage() {
           <aside className="overflow-hidden rounded-[4px] border border-slate-200 bg-white xl:sticky xl:top-6">
             <div className="border-b border-slate-200 bg-green-50 px-5 py-4">
               <h2 className="font-semibold text-green-900">
-                Resident Photo
-              </h2>
+                {ui("Resident Photo")}</h2>
 
               <p className="mt-1 text-xs leading-5 text-[#073B2F]">
-                Photos are automatically
-                cropped, resized to 640 × 640,
-                and compressed to WebP.
-              </p>
+                {ui("Photos are automatically cropped, resized to 640 × 640, and compressed to WebP.")}</p>
             </div>
 
             <div className="p-6">
@@ -936,7 +929,7 @@ export default function AddResidentPage() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={photoPreview}
-                    alt="Selected resident"
+                    alt={ui("Selected resident")}
                     className="h-full w-full object-cover"
                   />
                 ) : (
@@ -953,8 +946,7 @@ export default function AddResidentPage() {
                     />
 
                     <p className="mt-2 text-sm font-medium">
-                      No photo selected
-                    </p>
+                      {ui("No photo selected")}</p>
                   </div>
                 )}
               </div>
@@ -1009,8 +1001,7 @@ export default function AddResidentPage() {
                 >
                   <Trash2 size={17} />
 
-                  Remove Photo
-                </button>
+                  {ui("Remove Photo")}</button>
               )}
 
               {photoError && (
@@ -1031,8 +1022,7 @@ export default function AddResidentPage() {
                       1024 /
                       1024
                     ).toFixed(2)}{" "}
-                    MB
-                  </p>
+                    {ui("MB")}</p>
                 </div>
               )}
             </div>
@@ -1041,11 +1031,11 @@ export default function AddResidentPage() {
           <div className="space-y-6">
             <FormSection
               icon={<UserRound size={19} />}
-              title="Resident Identity"
-              description="Basic demographic and accommodation information."
+              title={ui("Resident Identity")}
+              description={ui("Basic demographic and accommodation information.")}
             >
               <FormField
-                label="Full Name"
+                label={ui("Full Name")}
                 required
                 error={errors.full_name}
               >
@@ -1059,7 +1049,7 @@ export default function AddResidentPage() {
                       event.target.value
                     )
                   }
-                  placeholder="Enter resident's full name"
+                  placeholder={ui("Enter resident's full name")}
                   className={getInputClass(
                     errors.full_name
                   )}
@@ -1067,7 +1057,7 @@ export default function AddResidentPage() {
               </FormField>
 
               <FormField
-                label="Gender"
+                label={ui("Gender")}
                 required
                 error={errors.gender}
               >
@@ -1084,28 +1074,23 @@ export default function AddResidentPage() {
                   )}
                 >
                   <option value="">
-                    Select gender
-                  </option>
+                    {ui("Select gender")}</option>
 
                   <option value="Female">
-                    Female
-                  </option>
+                    {ui("Female")}</option>
 
                   <option value="Male">
-                    Male
-                  </option>
+                    {ui("Male")}</option>
 
                   <option value="Other">
-                    Other
-                  </option>
+                    {ui("Other")}</option>
 
                   <option value="Prefer not to say">
-                    Prefer not to say
-                  </option>
+                    {ui("Prefer not to say")}</option>
                 </select>
               </FormField>
 
-              <FormField label="Date of Birth">
+              <FormField label={ui("Date of Birth")}>
                 <input
                   type="date"
                   value={
@@ -1121,10 +1106,10 @@ export default function AddResidentPage() {
               </FormField>
 
               <FormField
-                label="Age"
+                label={ui("Age")}
                 required
                 error={errors.age}
-                hint="Automatically calculated when a date of birth is entered."
+                hint={ui("Automatically calculated when a date of birth is entered.")}
               >
                 <input
                   type="number"
@@ -1137,7 +1122,7 @@ export default function AddResidentPage() {
                       event.target.value
                     )
                   }
-                  placeholder="Age"
+                  placeholder={ui("Age")}
                   className={getInputClass(
                     errors.age
                   )}
@@ -1145,7 +1130,7 @@ export default function AddResidentPage() {
               </FormField>
 
               <FormField
-                label="Room Number"
+                label={ui("Room Number")}
                 required
                 error={errors.room}
               >
@@ -1164,7 +1149,7 @@ export default function AddResidentPage() {
                         event.target.value
                       )
                     }
-                    placeholder="Example: 204-B"
+                    placeholder={ui("Example: 204-B")}
                     className={`${getInputClass(
                       errors.room
                     )} pl-10`}
@@ -1173,7 +1158,7 @@ export default function AddResidentPage() {
               </FormField>
 
               <FormField
-                label="Admission Date"
+                label={ui("Admission Date")}
                 required
                 error={
                   errors.date_admitted
@@ -1196,7 +1181,7 @@ export default function AddResidentPage() {
                 />
               </FormField>
 
-              <FormField label="Resident Status">
+              <FormField label={ui("Resident Status")}>
                 <select
                   value={form.status}
                   onChange={(event) =>
@@ -1208,20 +1193,17 @@ export default function AddResidentPage() {
                   className={getInputClass()}
                 >
                   <option value="Stable">
-                    Stable
-                  </option>
+                    {ui("Stable")}</option>
 
                   <option value="Observation">
-                    Observation
-                  </option>
+                    {ui("Observation")}</option>
 
                   <option value="Critical">
-                    Critical
-                  </option>
+                    {ui("Critical")}</option>
                 </select>
               </FormField>
 
-              <FormField label="Blood Group">
+              <FormField label={ui("Blood Group")}>
                 <div className="relative">
                   <Droplets
                     size={17}
@@ -1239,7 +1221,7 @@ export default function AddResidentPage() {
                         event.target.value
                       )
                     }
-                    placeholder="Example: O+"
+                    placeholder={ui("Example: O+")}
                     className={`${getInputClass()} pl-10`}
                   />
                 </div>
@@ -1250,10 +1232,10 @@ export default function AddResidentPage() {
               icon={
                 <HeartPulse size={19} />
               }
-              title="Clinical Information"
-              description="Primary diagnosis, allergies, and medical oversight."
+              title={ui("Clinical Information")}
+              description={ui("Primary diagnosis, allergies, and medical oversight.")}
             >
-              <FormField label="Primary Diagnosis">
+              <FormField label={ui("Primary Diagnosis")}>
                 <input
                   type="text"
                   value={form.diagnosis}
@@ -1263,12 +1245,12 @@ export default function AddResidentPage() {
                       event.target.value
                     )
                   }
-                  placeholder="Enter primary diagnosis"
+                  placeholder={ui("Enter primary diagnosis")}
                   className={getInputClass()}
                 />
               </FormField>
 
-              <FormField label="Allergies">
+              <FormField label={ui("Allergies")}>
                 <input
                   type="text"
                   value={form.allergies}
@@ -1278,13 +1260,13 @@ export default function AddResidentPage() {
                       event.target.value
                     )
                   }
-                  placeholder="Enter allergies or NKA"
+                  placeholder={ui("Enter allergies or NKA")}
                   className={getInputClass()}
                 />
               </FormField>
 
               <FormField
-                label="Primary Doctor"
+                label={ui("Primary Doctor")}
                 wide
               >
                 <div className="relative">
@@ -1304,7 +1286,7 @@ export default function AddResidentPage() {
                         event.target.value
                       )
                     }
-                    placeholder="Enter physician or provider name"
+                    placeholder={ui("Enter physician or provider name")}
                     className={`${getInputClass()} pl-10`}
                   />
                 </div>
@@ -1313,10 +1295,10 @@ export default function AddResidentPage() {
 
             <FormSection
               icon={<Users size={19} />}
-              title="Contacts"
-              description="Emergency and next-of-kin information."
+              title={ui("Contacts")}
+              description={ui("Emergency and next-of-kin information.")}
             >
-              <FormField label="Emergency Contact">
+              <FormField label={ui("Emergency Contact")}>
                 <div className="relative">
                   <Phone
                     size={17}
@@ -1334,13 +1316,13 @@ export default function AddResidentPage() {
                         event.target.value
                       )
                     }
-                    placeholder="Emergency contact details"
+                    placeholder={ui("Emergency contact details")}
                     className={`${getInputClass()} pl-10`}
                   />
                 </div>
               </FormField>
 
-              <FormField label="Next of Kin">
+              <FormField label={ui("Next of Kin")}>
                 <div className="relative">
                   <Contact
                     size={17}
@@ -1358,14 +1340,14 @@ export default function AddResidentPage() {
                         event.target.value
                       )
                     }
-                    placeholder="Next-of-kin name"
+                    placeholder={ui("Next-of-kin name")}
                     className={`${getInputClass()} pl-10`}
                   />
                 </div>
               </FormField>
 
               <FormField
-                label="Next-of-Kin Phone"
+                label={ui("Next-of-Kin Phone")}
                 wide
               >
                 <div className="relative">
@@ -1385,7 +1367,7 @@ export default function AddResidentPage() {
                         event.target.value
                       )
                     }
-                    placeholder="Phone number"
+                    placeholder={ui("Phone number")}
                     className={`${getInputClass()} pl-10`}
                   />
                 </div>
@@ -1394,11 +1376,11 @@ export default function AddResidentPage() {
 
             <FormSection
               icon={<FileText size={19} />}
-              title="Additional Notes"
-              description="Optional information relevant to the resident's care."
+              title={ui("Additional Notes")}
+              description={ui("Optional information relevant to the resident's care.")}
             >
               <FormField
-                label="Resident Notes"
+                label={ui("Resident Notes")}
                 wide
               >
                 <textarea
@@ -1410,7 +1392,7 @@ export default function AddResidentPage() {
                       event.target.value
                     )
                   }
-                  placeholder="Enter additional resident information"
+                  placeholder={ui("Enter additional resident information")}
                   className={`${getInputClass()} min-h-36 resize-y py-3`}
                 />
               </FormField>
@@ -1418,9 +1400,7 @@ export default function AddResidentPage() {
 
             <div className="flex flex-col-reverse gap-3 rounded-[4px] border border-slate-200 bg-white p-5 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-slate-500">
-                Review the resident information
-                before saving.
-              </p>
+                {ui("Review the resident information before saving.")}</p>
 
               <button
                 type="submit"
@@ -1434,14 +1414,12 @@ export default function AddResidentPage() {
                       className="animate-spin"
                     />
 
-                    Saving Resident...
-                  </>
+                    {ui("Saving Resident...")}</>
                 ) : (
                   <>
                     <Save size={18} />
 
-                    Save Resident
-                  </>
+                    {ui("Save Resident")}</>
                 )}
               </button>
             </div>
@@ -1507,6 +1485,9 @@ function FormField({
   hint,
   wide = false,
 }: FormFieldProps) {
+  const { ui } =
+    useAppUi();
+
   return (
     <label
       className={
@@ -1529,8 +1510,7 @@ function FormField({
 
       {error && (
         <span className="mt-1.5 block text-xs font-medium text-red-600">
-          This field is required or invalid.
-        </span>
+          {ui("This field is required or invalid.")}</span>
       )}
 
       {!error && hint && (

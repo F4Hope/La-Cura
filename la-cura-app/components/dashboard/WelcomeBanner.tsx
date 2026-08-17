@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import {
   faCalendarDays,
   faHandSparkles,
@@ -22,7 +24,10 @@ function getGreeting(): string {
 }
 
 export default function WelcomeBanner() {
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
+  const { ui, locale } =
+    useAppUi();
+
+  const formattedDate = new Intl.DateTimeFormat(locale, {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -39,12 +44,11 @@ export default function WelcomeBanner() {
         <div className="relative z-10 flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="font-semibold uppercase tracking-[5px] text-green-100">
-              Welcome Back
-            </p>
+              {ui("Welcome Back")}</p>
 
             <div className="mt-4 flex items-center gap-4">
               <h2 className="text-4xl font-black md:text-5xl">
-                {getGreeting()}
+                {ui(getGreeting())}
               </h2>
 
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15">
@@ -56,11 +60,7 @@ export default function WelcomeBanner() {
             </div>
 
             <p className="mt-5 max-w-2xl text-lg leading-8 text-green-100">
-              Thank you for caring for your residents today. Every
-              medication administered, every vital sign recorded,
-              and every interaction improves someone&apos;s quality
-              of life.
-            </p>
+              {ui("Thank you for caring for your residents today. Every medication administered, every vital sign recorded, and every interaction improves someone&apos;s quality of life.")}</p>
           </div>
 
           <div className="min-w-0 rounded-3xl bg-white/15 px-7 py-6 backdrop-blur-xl lg:min-w-[320px]">
@@ -71,8 +71,7 @@ export default function WelcomeBanner() {
               />
 
               <span className="font-semibold">
-                Today&apos;s Date
-              </span>
+                {ui("Today&apos;s Date")}</span>
             </div>
 
             <p className="mt-4 text-2xl font-black">
@@ -81,10 +80,7 @@ export default function WelcomeBanner() {
 
             <div className="mt-6 border-t border-white/20 pt-5">
               <p className="leading-6 text-green-100">
-                Remember to review today&apos;s scheduled
-                medications and clinical alerts before beginning
-                rounds.
-              </p>
+                {ui("Remember to review today&apos;s scheduled medications and clinical alerts before beginning rounds.")}</p>
             </div>
           </div>
         </div>

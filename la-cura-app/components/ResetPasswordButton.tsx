@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import {
   useEffect,
   useState,
@@ -57,6 +59,9 @@ export default function ResetPasswordButton({
   fullName,
   staffCode,
 }: Props) {
+  const { ui } =
+    useAppUi();
+
   const [mounted, setMounted] =
     useState(false);
 
@@ -157,7 +162,7 @@ export default function ResetPasswordButton({
       );
 
       setError(
-        "The credentials could not be copied automatically. Select and copy them manually."
+        ui("The credentials could not be copied automatically. Select and copy them manually.")
       );
     }
   }
@@ -169,7 +174,7 @@ export default function ResetPasswordButton({
 
     const confirmed =
       window.confirm(
-        `Reset the password for ${fullName}?\n\nTheir current password will stop working immediately.`
+        `${ui("Reset the password for")} ${fullName}?\n\n${ui("Their current password will stop working immediately.")}`
       );
 
     if (!confirmed) {
@@ -195,7 +200,7 @@ export default function ResetPasswordButton({
         !accessToken
       ) {
         throw new Error(
-          "Your administrator session has expired. Sign in again."
+          ui("Your administrator session has expired. Sign in again.")
         );
       }
 
@@ -240,7 +245,7 @@ export default function ResetPasswordButton({
         !temporaryPassword
       ) {
         throw new Error(
-          "The password was reset, but the temporary credentials were not returned."
+          ui("The password was reset, but the temporary credentials were not returned.")
         );
       }
 
@@ -262,7 +267,7 @@ export default function ResetPasswordButton({
       const message =
         caughtError instanceof Error
           ? caughtError.message
-          : "Unable to reset the staff password.";
+          : ui("Unable to reset the staff password.");
 
       setError(message);
       window.alert(message);
@@ -274,13 +279,13 @@ export default function ResetPasswordButton({
   const credentialsText =
     credentials
       ? [
-          "La-Cura Staff Login",
+          ui("La-Cura Staff Login"),
           "",
-          `Staff Member: ${fullName}`,
-          `Staff Code: ${credentials.staffCode}`,
-          `Temporary Password: ${credentials.temporaryPassword}`,
+          `${ui("Staff Member")}: ${fullName}`,
+          `${ui("Staff Code")}: ${credentials.staffCode}`,
+          `${ui("Temporary Password")}: ${credentials.temporaryPassword}`,
           "",
-          "The staff member must change this temporary password after signing in.",
+          ui("The staff member must change this temporary password after signing in."),
         ].join("\n")
       : "";
 
@@ -290,7 +295,7 @@ export default function ResetPasswordButton({
         type="button"
         onClick={resetPassword}
         disabled={loading}
-        title={`Reset password for ${staffCode}`}
+        title={`${ui("Reset password for")} ${staffCode}`}
         className="flex items-center justify-center gap-2 rounded-[3px] bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-200 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <AppIcon
@@ -303,8 +308,8 @@ export default function ResetPasswordButton({
         />
 
         {loading
-          ? "Resetting..."
-          : "Reset Password"}
+          ? ui("Resetting...")
+          : ui("Reset Password")}
       </button>
 
       {mounted &&
@@ -341,8 +346,7 @@ export default function ResetPasswordButton({
                         id="reset-password-title"
                         className="text-[16px] font-bold"
                       >
-                        Password Reset Complete
-                      </h2>
+                        {ui("Password Reset Complete")}</h2>
 
                       <p className="mt-1 text-indigo-100">
                         {fullName}
@@ -355,7 +359,7 @@ export default function ResetPasswordButton({
                     onClick={
                       closeCredentials
                     }
-                    aria-label="Close password credentials"
+                    aria-label={ui("Close password credentials")}
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25"
                   >
                     <AppIcon
@@ -375,13 +379,7 @@ export default function ResetPasswordButton({
                   />
 
                   <p>
-                    The previous password no
-                    longer works. Copy these
-                    credentials before closing
-                    this window. The temporary
-                    password will not be shown
-                    again.
-                  </p>
+                    {ui("The previous password no longer works. Copy these credentials before closing this window. The temporary password will not be shown again.")}</p>
                 </div>
 
                 <div className="mt-6 space-y-5">
@@ -392,8 +390,7 @@ export default function ResetPasswordButton({
                         className="text-indigo-700"
                       />
 
-                      Staff Code
-                    </label>
+                      {ui("Staff Code")}</label>
 
                     <div className="flex items-stretch overflow-hidden rounded-[3px] border border-slate-300 bg-slate-50">
                       <div className="min-w-0 flex-1 break-all px-4 py-3.5 font-mono text-sm font-bold tracking-wider text-slate-900 sm:text-base">
@@ -425,7 +422,7 @@ export default function ResetPasswordButton({
                           {copiedField ===
                           "staff-code"
                             ? "Copied"
-                            : "Copy"}
+                            : ui("Copy")}
                         </span>
                       </button>
                     </div>
@@ -438,8 +435,7 @@ export default function ResetPasswordButton({
                         className="text-indigo-700"
                       />
 
-                      Temporary Password
-                    </label>
+                      {ui("Temporary Password")}</label>
 
                     <div className="flex items-stretch overflow-hidden rounded-[3px] border border-slate-300 bg-slate-50">
                       <div className="min-w-0 flex-1 break-all px-4 py-3.5 font-mono text-sm font-bold tracking-wider text-slate-900 sm:text-base">
@@ -458,8 +454,8 @@ export default function ResetPasswordButton({
                         }
                         aria-label={
                           showPassword
-                            ? "Hide temporary password"
-                            : "Show temporary password"
+                            ? ui("Hide temporary password")
+                            : ui("Show temporary password")
                         }
                         className="border-l border-slate-300 px-4 text-slate-600 transition hover:bg-slate-100 hover:text-indigo-700"
                       >
@@ -495,7 +491,7 @@ export default function ResetPasswordButton({
                           {copiedField ===
                           "password"
                             ? "Copied"
-                            : "Copy"}
+                            : ui("Copy")}
                         </span>
                       </button>
                     </div>
@@ -535,7 +531,7 @@ export default function ResetPasswordButton({
                   {copiedField ===
                   "both"
                     ? "Credentials Copied"
-                    : "Copy Both Credentials"}
+                    : ui("Copy Both Credentials")}
                 </button>
 
                 <button
@@ -549,8 +545,7 @@ export default function ResetPasswordButton({
                     icon={faCheck}
                   />
 
-                  Done
-                </button>
+                  {ui("Done")}</button>
               </footer>
             </section>
           </div>,

@@ -355,6 +355,10 @@ const french: Record<string, string> = {
   "Weights / Vitals": "Poids / Signes vitaux",
   "Wound care, oxygen, monitoring...": "Soins de plaie, oxygène, surveillance...",
   "of": "sur",
+  "60 mL every 4 hours": "60 mL toutes les 4 heures",
+
+  "is required.": "est obligatoire.",
+
 };
 
 export function clinicalText(

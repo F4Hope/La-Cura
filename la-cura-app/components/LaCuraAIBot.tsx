@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import {
   FormEvent,
   KeyboardEvent,
@@ -60,6 +62,9 @@ function createMessageId(): string {
 }
 
 export default function LaCuraAIBot() {
+  const { ui } =
+    useAppUi();
+
   const pathname = usePathname();
 
   const [open, setOpen] = useState(false);
@@ -258,7 +263,7 @@ export default function LaCuraAIBot() {
     <>
       {open && (
         <section
-          aria-label="La-Cura AI assistant"
+          aria-label={ui("La-Cura AI assistant")}
           className="fixed bottom-24 right-3 z-[99999] flex h-[min(680px,calc(100vh-7rem))] w-[calc(100vw-1.5rem)] max-w-[430px] flex-col overflow-hidden rounded-[4px] border border-[#AEBAB4] bg-white shadow-lg sm:bottom-28 sm:right-6"
         >
           <header className="relative overflow-hidden bg-[#073B2F] px-5 py-5 text-white">
@@ -275,14 +280,12 @@ export default function LaCuraAIBot() {
 
                 <div className="min-w-0">
                   <h2 className="truncate text-xl font-black">
-                    La-Cura AI
-                  </h2>
+                    {ui("La-Cura AI")}</h2>
 
                   <div className="mt-1 flex items-center gap-2 text-sm text-green-100">
                     <span className="h-2 w-2 rounded-full bg-green-300" />
 
-                    Health education assistant
-                  </div>
+                    {ui("Health education assistant")}</div>
                 </div>
               </div>
 
@@ -291,8 +294,8 @@ export default function LaCuraAIBot() {
                   type="button"
                   onClick={resetConversation}
                   disabled={loading}
-                  aria-label="Clear conversation"
-                  title="Clear conversation"
+                  aria-label={ui("Clear conversation")}
+                  title={ui("Clear conversation")}
                   className="flex h-10 w-10 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <AppIcon
@@ -304,7 +307,7 @@ export default function LaCuraAIBot() {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  aria-label="Close La-Cura AI"
+                  aria-label={ui("Close La-Cura AI")}
                   className="flex h-10 w-10 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25"
                 >
                   <AppIcon
@@ -324,11 +327,7 @@ export default function LaCuraAIBot() {
               />
 
               <p className="text-xs leading-5 text-amber-800">
-                General information only. Do
-                not enter names, dates of
-                birth, record numbers, or
-                other private health details.
-              </p>
+                {ui("General information only. Do not enter names, dates of birth, record numbers, or other private health details.")}</p>
             </div>
           </div>
 
@@ -384,8 +383,7 @@ export default function LaCuraAIBot() {
               !loading && (
                 <div className="space-y-2 pt-1">
                   <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
-                    Suggested questions
-                  </p>
+                    {ui("Suggested questions")}</p>
 
                   {STARTER_QUESTIONS.map(
                     (question) => (
@@ -421,8 +419,7 @@ export default function LaCuraAIBot() {
                     spin
                   />
 
-                  La-Cura AI is thinking…
-                </div>
+                  {ui("La-Cura AI is thinking…")}</div>
               </div>
             )}
 
@@ -453,8 +450,7 @@ export default function LaCuraAIBot() {
                   htmlFor="la-cura-ai-input"
                   className="sr-only"
                 >
-                  Ask La-Cura AI
-                </label>
+                  {ui("Ask La-Cura AI")}</label>
 
                 <textarea
                   ref={textareaRef}
@@ -474,7 +470,7 @@ export default function LaCuraAIBot() {
                   rows={2}
                   maxLength={1_200}
                   disabled={loading}
-                  placeholder="Ask a health or La-Cura question…"
+                  placeholder={ui("Ask a health or La-Cura question…")}
                   className="max-h-32 min-h-[54px] w-full resize-none rounded-[4px] border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10 disabled:cursor-not-allowed disabled:bg-slate-100"
                 />
 
@@ -488,7 +484,7 @@ export default function LaCuraAIBot() {
                 disabled={
                   loading || !input.trim()
                 }
-                aria-label="Send question"
+                aria-label={ui("Send question")}
                 className="mb-3 flex h-9 w-9 shrink-0 items-center justify-center rounded-[3px] bg-[#073B2F] text-white transition hover:bg-[#0D4A3A] focus:outline-none focus:ring-4 focus:ring-[#073B2F]/15 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <AppIcon
@@ -503,10 +499,7 @@ export default function LaCuraAIBot() {
             </div>
 
             <p className="mt-2 text-center text-[11px] leading-4 text-slate-400">
-              La-Cura AI may make mistakes.
-              For emergencies, contact local
-              emergency services immediately.
-            </p>
+              {ui("La-Cura AI may make mistakes. For emergencies, contact local emergency services immediately.")}</p>
           </form>
         </section>
       )}

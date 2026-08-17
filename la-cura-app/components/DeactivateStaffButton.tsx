@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import { useState } from "react";
 
 import {
@@ -35,6 +37,9 @@ export default function DeactivateStaffButton({
   id,
   active,
 }: Props) {
+  const { ui } =
+    useAppUi();
+
   const [loading, setLoading] =
     useState(false);
 
@@ -48,8 +53,8 @@ export default function DeactivateStaffButton({
     const confirmed =
       window.confirm(
         nextActiveStatus
-          ? "Activate this staff account?\n\nThe staff member will be able to sign in again."
-          : "Deactivate this staff account?\n\nThe staff member will no longer be permitted to access La-Cura."
+          ? `${ui("Activate this staff account?")}\n\n${ui("The staff member will be able to sign in again.")}`
+          : `${ui("Deactivate this staff account?")}\n\n${ui("The staff member will no longer be permitted to access La-Cura.")}`
       );
 
     if (!confirmed) {
@@ -74,7 +79,7 @@ export default function DeactivateStaffButton({
         !accessToken
       ) {
         throw new Error(
-          "Your administrator session has expired. Sign in again."
+          ui("Your administrator session has expired. Sign in again.")
         );
       }
 
@@ -111,8 +116,8 @@ export default function DeactivateStaffButton({
         throw new Error(
           result.error ||
             (nextActiveStatus
-              ? "Unable to activate the staff account."
-              : "Unable to deactivate the staff account.")
+              ? ui("Unable to activate the staff account.")
+              : ui("Unable to deactivate the staff account."))
         );
       }
 
@@ -126,7 +131,7 @@ export default function DeactivateStaffButton({
       window.alert(
         caughtError instanceof Error
           ? caughtError.message
-          : "Unable to update the staff account."
+          : ui("Unable to update the staff account.")
       );
     } finally {
       setLoading(false);
@@ -157,11 +162,11 @@ export default function DeactivateStaffButton({
 
       {loading
         ? active
-          ? "Deactivating..."
-          : "Activating..."
+          ? ui("Deactivating...")
+          : ui("Activating...")
         : active
-          ? "Deactivate Account"
-          : "Activate Account"}
+          ? ui("Deactivate Account")
+          : ui("Activate Account")}
 
       {!loading && (
         <AppIcon

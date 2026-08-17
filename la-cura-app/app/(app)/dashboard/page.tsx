@@ -31,6 +31,15 @@ import {
   getTodayTasks,
 } from "@/lib/tasks";
 
+import {
+  getServerLanguage,
+} from "@/lib/i18n/serverLanguage";
+
+import {
+  uiLocale,
+  uiText,
+} from "@/lib/i18n/appUi";
+
 export const dynamic =
   "force-dynamic";
 
@@ -123,7 +132,8 @@ function formatDateTime(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+  locale = "en-CM"
 ) {
   if (!value) {
     return "—";
@@ -141,7 +151,7 @@ function formatDateTime(
   }
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    locale,
     {
       month: "short",
       day: "numeric",
@@ -180,6 +190,19 @@ function alertStyle(
 
 
 export default async function DashboardPage() {
+  const language =
+    await getServerLanguage();
+
+  const locale =
+    uiLocale(language);
+
+  const ui =
+    (value: string) =>
+      uiText(
+        language,
+        value
+      );
+
   const [
     stats,
     medicationActivityRaw,
@@ -216,33 +239,31 @@ export default async function DashboardPage() {
         <div className="mx-auto flex max-w-[1800px] flex-col gap-2 px-4 py-3 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.05em] text-[#7A8982]">
-              Clinical Operations
-            </p>
+              {ui("Clinical Operations")}</p>
 
             <h1 className="mt-0.5 text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
-              Home
-            </h1>
+              {ui("Home")}</h1>
           </div>
 
           <div className="flex flex-wrap gap-1.5">
             <DashboardAction
               href="/add-vitals"
-              label="Record Vitals"
+              label={ui("Record Vitals")}
             />
 
             <DashboardAction
               href="/add-medication"
-              label="Add Medication"
+              label={ui("Add Medication")}
             />
 
             <DashboardAction
               href="/add-nursing-note"
-              label="Progress Note"
+              label={ui("Progress Note")}
             />
 
             <DashboardAction
               href="/residents"
-              label="Resident List"
+              label={ui("Resident List")}
               primary
             />
           </div>
@@ -256,13 +277,12 @@ export default async function DashboardPage() {
         <section className="mb-3 border border-[#C7D1CC] bg-white">
           <div className="border-b border-[#D4DDD8] bg-[#E7EDE9] px-3 py-1.5">
             <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
-              Clinical Overview
-            </h2>
+              {ui("Clinical Overview")}</h2>
           </div>
 
           <div className="grid sm:grid-cols-2 xl:grid-cols-5">
             <MetricCell
-              label="Residents"
+              label={ui("Residents")}
               value={stats.residents}
               href="/residents"
               icon={
@@ -271,7 +291,7 @@ export default async function DashboardPage() {
             />
 
             <MetricCell
-              label="Staff"
+              label={ui("Staff")}
               value={stats.staff}
               icon={
                 <Users size={15} />
@@ -279,7 +299,7 @@ export default async function DashboardPage() {
             />
 
             <MetricCell
-              label="Medication Orders"
+              label={ui("Medication Orders")}
               value={
                 stats.medications
               }
@@ -290,7 +310,7 @@ export default async function DashboardPage() {
             />
 
             <MetricCell
-              label="Vital Records"
+              label={ui("Vital Records")}
               value={stats.vitals}
               href="/add-vitals"
               icon={
@@ -301,7 +321,7 @@ export default async function DashboardPage() {
             />
 
             <MetricCell
-              label="Medication Passes"
+              label={ui("Medication Passes")}
               value={
                 stats.medicationAdministration
               }
@@ -322,10 +342,10 @@ export default async function DashboardPage() {
           {/* ALERTS */}
 
           <ClinicalPanel
-            title="Clinical Alerts"
+            title={ui("Clinical Alerts")}
             right={
               alerts.length > 0
-                ? `${alerts.length} requiring review`
+                ? `${alerts.length} ${ui("requiring review")}`
                 : "No active alerts"
             }
           >
@@ -337,8 +357,8 @@ export default async function DashboardPage() {
                     size={17}
                   />
                 }
-                title="No active clinical alerts"
-                description="No resident alerts currently require review."
+                title={ui("No active clinical alerts")}
+                description={ui("No resident alerts currently require review.")}
                 success
               />
             ) : (
@@ -347,20 +367,16 @@ export default async function DashboardPage() {
                   <thead>
                     <tr className="bg-[#F4F6F4] text-[10px] font-bold uppercase tracking-[0.03em] text-[#40544B]">
                       <ClinicalHead>
-                        Severity
-                      </ClinicalHead>
+                        {ui("Severity")}</ClinicalHead>
 
                       <ClinicalHead>
-                        Resident
-                      </ClinicalHead>
+                        {ui("Resident")}</ClinicalHead>
 
                       <ClinicalHead>
-                        Alert
-                      </ClinicalHead>
+                        {ui("Alert")}</ClinicalHead>
 
                       <ClinicalHead>
-                        Message
-                      </ClinicalHead>
+                        {ui("Message")}</ClinicalHead>
                     </tr>
                   </thead>
 
@@ -448,8 +464,8 @@ export default async function DashboardPage() {
           {/* OPERATIONAL COUNTERS */}
 
           <ClinicalPanel
-            title="Clinical Workload"
-            right="Current recorded activity"
+            title={ui("Clinical Workload")}
+            right={ui("Current recorded activity")}
           >
             {tasks.length ===
             0 ? (
@@ -459,8 +475,8 @@ export default async function DashboardPage() {
                     size={17}
                   />
                 }
-                title="No workload counters"
-                description="No task data is currently available."
+                title={ui("No workload counters")}
+                description={ui("No task data is currently available.")}
                 success
               />
             ) : (
@@ -510,43 +526,37 @@ export default async function DashboardPage() {
           {/* MEDICATION ACTIVITY */}
 
           <ClinicalPanel
-            title="Recent Medication Activity"
+            title={ui("Recent Medication Activity")}
             right={
               <Link
                 href="/medication-administration"
                 className="font-semibold text-[#073B2F] hover:underline"
               >
-                View MAR
-              </Link>
+                {ui("View MAR")}</Link>
             }
           >
             {medicationActivity.length ===
             0 ? (
-              <TableEmpty message="No recent medication administration activity." />
+              <TableEmpty message={ui("No recent medication administration activity.")} />
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[760px] border-collapse">
                   <thead>
                     <tr className="bg-[#F4F6F4] text-[10px] font-bold uppercase tracking-[0.03em] text-[#40544B]">
                       <ClinicalHead>
-                        Date / Time
-                      </ClinicalHead>
+                        {ui("Date / Time")}</ClinicalHead>
 
                       <ClinicalHead>
-                        Resident
-                      </ClinicalHead>
+                        {ui("Resident")}</ClinicalHead>
 
                       <ClinicalHead>
-                        Medication
-                      </ClinicalHead>
+                        {ui("Medication")}</ClinicalHead>
 
                       <ClinicalHead>
-                        Status
-                      </ClinicalHead>
+                        {ui("Status")}</ClinicalHead>
 
                       <ClinicalHead>
-                        Staff
-                      </ClinicalHead>
+                        {ui("Staff")}</ClinicalHead>
                     </tr>
                   </thead>
 
@@ -607,28 +617,29 @@ export default async function DashboardPage() {
                           >
                             <td className="whitespace-nowrap px-3 py-2 text-[#5C6D65]">
                               {formatDateTime(
-                                item.administered_at
+                                item.administered_at,
+                                locale
                               )}
                             </td>
 
                             <td className="px-3 py-2 font-semibold text-[#263A32]">
                               {resident ||
-                                "Resident"}
+                                ui("Resident")}
                             </td>
 
                             <td className="px-3 py-2 text-[#40544B]">
                               {medication ||
-                                "Medication"}
+                                ui("Medication")}
                             </td>
 
                             <td className="px-3 py-2">
                               <StatusBadge
-                                value={
+                                value={ui(
                                   cleanText(
                                     item.status
                                   ) ||
                                   "Recorded"
-                                }
+                                )}
                               />
                             </td>
 
@@ -652,39 +663,34 @@ export default async function DashboardPage() {
           {/* VITAL ACTIVITY */}
 
           <ClinicalPanel
-            title="Recent Vital-Sign Activity"
+            title={ui("Recent Vital-Sign Activity")}
             right={
               <Link
                 href="/add-vitals"
                 className="font-semibold text-[#073B2F] hover:underline"
               >
-                Record vitals
-              </Link>
+                {ui("Record vitals")}</Link>
             }
           >
             {vitalActivity.length ===
             0 ? (
-              <TableEmpty message="No recent vital-sign activity." />
+              <TableEmpty message={ui("No recent vital-sign activity.")} />
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[680px] border-collapse">
                   <thead>
                     <tr className="bg-[#F4F6F4] text-[10px] font-bold uppercase tracking-[0.03em] text-[#40544B]">
                       <ClinicalHead>
-                        Date / Time
-                      </ClinicalHead>
+                        {ui("Date / Time")}</ClinicalHead>
 
                       <ClinicalHead>
-                        Resident
-                      </ClinicalHead>
+                        {ui("Resident")}</ClinicalHead>
 
                       <ClinicalHead>
-                        Activity
-                      </ClinicalHead>
+                        {ui("Activity")}</ClinicalHead>
 
                       <ClinicalHead>
-                        Recorded By
-                      </ClinicalHead>
+                        {ui("Recorded By")}</ClinicalHead>
                     </tr>
                   </thead>
 
@@ -714,7 +720,8 @@ export default async function DashboardPage() {
                         >
                           <td className="whitespace-nowrap px-3 py-2 text-[#5C6D65]">
                             {formatDateTime(
-                              item.recorded_at
+                              item.recorded_at,
+                              locale
                             )}
                           </td>
 
@@ -723,12 +730,11 @@ export default async function DashboardPage() {
                               item.residents
                                 ?.full_name
                             ) ||
-                              "Resident"}
+                              ui("Resident")}
                           </td>
 
                           <td className="px-3 py-2 text-[#40544B]">
-                            Vital signs recorded
-                          </td>
+                            {ui("Vital signs recorded")}</td>
 
                           <td className="px-3 py-2 text-[#5C6D65]">
                             {cleanText(
@@ -752,8 +758,7 @@ export default async function DashboardPage() {
         <section className="mt-3 border border-[#C7D1CC] bg-white">
           <div className="border-b border-[#D4DDD8] bg-[#E7EDE9] px-3 py-1.5">
             <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
-              Clinical Shortcuts
-            </h2>
+              {ui("Clinical Shortcuts")}</h2>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4">
@@ -762,8 +767,8 @@ export default async function DashboardPage() {
               icon={
                 <Users size={15} />
               }
-              title="Residents"
-              detail="Open resident records"
+              title={ui("Residents")}
+              detail={ui("Open resident records")}
             />
 
             <Shortcut
@@ -771,8 +776,8 @@ export default async function DashboardPage() {
               icon={
                 <Pill size={15} />
               }
-              title="Medication Orders"
-              detail="Review medication records"
+              title={ui("Medication Orders")}
+              detail={ui("Review medication records")}
             />
 
             <Shortcut
@@ -782,8 +787,8 @@ export default async function DashboardPage() {
                   size={15}
                 />
               }
-              title="Medication Administration"
-              detail="Open MAR workspace"
+              title={ui("Medication Administration")}
+              detail={ui("Open MAR workspace")}
             />
 
             <Shortcut
@@ -793,8 +798,8 @@ export default async function DashboardPage() {
                   size={15}
                 />
               }
-              title="Appointments"
-              detail="Review clinical schedule"
+              title={ui("Appointments")}
+              detail={ui("Review clinical schedule")}
             />
           </div>
         </section>

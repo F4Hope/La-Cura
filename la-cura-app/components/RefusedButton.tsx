@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import { useState } from "react";
 
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +25,9 @@ export default function RefusedButton({
   resident,
   medication,
 }: Props) {
+  const { ui } =
+    useAppUi();
+
   const [open, setOpen] = useState(false);
 
   async function handleConfirm(
@@ -31,7 +36,7 @@ export default function RefusedButton({
   ) {
     if (!reason) {
       throw new Error(
-        "Select a reason before recording the refusal."
+        ui("Select a reason before recording the refusal.")
       );
     }
 
@@ -39,7 +44,7 @@ export default function RefusedButton({
 
     if (!staff) {
       throw new Error(
-        "Unable to identify the logged-in staff member."
+        ui("Unable to identify the logged-in staff member.")
       );
     }
 
@@ -70,15 +75,14 @@ export default function RefusedButton({
           className="text-lg"
         />
 
-        Refused
-      </button>
+        {ui("Refused")}</button>
 
       <MedicationActionModal
         open={open}
-        title="Refuse Medication"
+        title={ui("Refuse Medication")}
         resident={resident}
         medication={medication}
-        confirmText="Confirm Refusal"
+        confirmText={ui("Confirm Refusal")}
         confirmColor="bg-red-600 hover:bg-red-700"
         onClose={() => setOpen(false)}
         onConfirm={handleConfirm}

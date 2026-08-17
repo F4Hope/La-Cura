@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import type {
   ReactNode,
 } from "react";
@@ -249,6 +251,9 @@ export default function RoleGuard({
   allow,
   children,
 }: Props) {
+  const { ui } =
+    useAppUi();
+
   const pathname =
     usePathname();
 
@@ -326,7 +331,7 @@ export default function RoleGuard({
   ) {
     return (
       <AccessLoading
-        message="Verifying staff access..."
+        message={ui("Verifying staff access...")}
       />
     );
   }
@@ -337,7 +342,7 @@ export default function RoleGuard({
   ) {
     return (
       <AccessLoading
-        message="Redirecting to login..."
+        message={ui("Redirecting to login...")}
       />
     );
   }
@@ -348,12 +353,12 @@ export default function RoleGuard({
     return (
       <AccessMessage
         type="error"
-        title="Access Verification Failed"
+        title={ui("Access Verification Failed")}
         message={
           error ||
           "La-Cura could not verify your staff session."
         }
-        actionLabel="Return to Login"
+        actionLabel={ui("Return to Login")}
         actionHref="/login"
       />
     );
@@ -365,9 +370,9 @@ export default function RoleGuard({
     return (
       <AccessMessage
         type="denied"
-        title="Account Inactive"
-        message="This staff account is inactive. Contact an administrator."
-        actionLabel="Return to Login"
+        title={ui("Account Inactive")}
+        message={ui("This staff account is inactive. Contact an administrator.")}
+        actionLabel={ui("Return to Login")}
         actionHref="/login"
       />
     );
@@ -380,7 +385,7 @@ export default function RoleGuard({
   ) {
     return (
       <AccessLoading
-        message="Preparing password update..."
+        message={ui("Preparing password update...")}
       />
     );
   }
@@ -389,9 +394,9 @@ export default function RoleGuard({
     return (
       <AccessMessage
         type="denied"
-        title="Role Not Assigned"
-        message="Your staff account does not have a recognized La-Cura role. Contact an administrator."
-        actionLabel="Return to Login"
+        title={ui("Role Not Assigned")}
+        message={ui("Your staff account does not have a recognized La-Cura role. Contact an administrator.")}
+        actionLabel={ui("Return to Login")}
         actionHref="/login"
       />
     );
@@ -401,9 +406,9 @@ export default function RoleGuard({
     return (
       <AccessMessage
         type="denied"
-        title="Access Denied"
-        message="Your staff role does not have permission to access this area of La-Cura."
-        actionLabel="Return to Dashboard"
+        title={ui("Access Denied")}
+        message={ui("Your staff role does not have permission to access this area of La-Cura.")}
+        actionLabel={ui("Return to Dashboard")}
         actionHref={getSafeDestination(
           currentRole
         )}

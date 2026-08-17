@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import StaffLanguageSettings from "@/components/settings/StaffLanguageSettings";
 
 import {
@@ -69,7 +71,8 @@ function cleanText(
 function formatDateTime(
   value:
     | number
-    | null
+    | null,
+  locale = "en-CM"
 ) {
   if (!value) {
     return "—";
@@ -89,7 +92,7 @@ function formatDateTime(
   }
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    locale,
     {
       month: "short",
       day: "numeric",
@@ -120,6 +123,9 @@ function getOfflineVitalCount() {
 
 
 export default function SettingsPage() {
+  const { ui, locale } =
+    useAppUi();
+
   const router =
     useRouter();
 
@@ -409,14 +415,14 @@ export default function SettingsPage() {
     cleanText(
       staff?.name
     ) ||
-    "Clinical Staff";
+    ui("Clinical Staff");
 
 
   const role =
     cleanText(
       staff?.role
     ) ||
-    "Clinical Staff";
+    ui("Clinical Staff");
 
 
   const staffCode =
@@ -449,24 +455,20 @@ export default function SettingsPage() {
                 href="/dashboard"
                 className="hover:text-[#073B2F]"
               >
-                Home
-              </Link>
+                {ui("Home")}</Link>
 
               <span>/</span>
 
               <span className="font-semibold text-[#40524B]">
-                Settings
-              </span>
+                {ui("Settings")}</span>
             </div>
 
             <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
-                Settings
-              </h1>
+                {ui("Settings")}</h1>
 
               <p className="text-xs text-[#718078]">
-                Account, access, connection, and system status
-              </p>
+                {ui("Account, access, connection, and system status")}</p>
             </div>
           </div>
 
@@ -503,8 +505,7 @@ export default function SettingsPage() {
               }
             />
 
-            Refresh Account
-          </button>
+            {ui("Refresh Account")}</button>
         </div>
       </section>
 
@@ -526,8 +527,8 @@ export default function SettingsPage() {
 
         <section className="border border-[#C8D2CD] bg-white">
           <SectionHeader
-            title="My Account"
-            description="Information from your authenticated La-Cura staff account"
+            title={ui("My Account")}
+            description={ui("Information from your authenticated La-Cura staff account")}
           />
 
 
@@ -535,7 +536,7 @@ export default function SettingsPage() {
             <div className="border-b border-[#D9E1DD] lg:border-b-0 lg:border-r">
               <div className="grid sm:grid-cols-2">
                 <SettingValue
-                  label="Staff Member"
+                  label={ui("Staff Member")}
                   value={
                     fullName
                   }
@@ -543,23 +544,23 @@ export default function SettingsPage() {
                 />
 
                 <SettingValue
-                  label="Staff Code"
+                  label={ui("Staff Code")}
                   value={
                     staffCode
                   }
                 />
 
                 <SettingValue
-                  label="Role"
-                  value={role}
+                  label={ui("Role")}
+                  value={ui(role)}
                 />
 
                 <SettingValue
-                  label="Account Status"
+                  label={ui("Account Status")}
                   value={
                     accountActive
-                      ? "Active"
-                      : "Inactive"
+                      ? ui("Active")
+                      : ui("Inactive")
                   }
                   status={
                     accountActive
@@ -569,12 +570,12 @@ export default function SettingsPage() {
                 />
 
                 <SettingValue
-                  label="Password Status"
+                  label={ui("Password Status")}
                   value={
                     staff
                       ?.must_change_password
-                      ? "Password change required"
-                      : "Current"
+                      ? ui("Password change required")
+                      : ui("Current")
                   }
                   status={
                     staff
@@ -585,15 +586,15 @@ export default function SettingsPage() {
                 />
 
                 <SettingValue
-                  label="Authentication"
+                  label={ui("Authentication")}
                   value={
                     authStatus ===
                     "authenticated"
-                      ? "Authenticated"
+                      ? ui("Authenticated")
                       : authStatus ===
                           "checking"
-                        ? "Checking..."
-                        : "No active session"
+                        ? ui("Checking...")
+                        : ui("No active session")
                   }
                   status={
                     authStatus ===
@@ -619,12 +620,10 @@ export default function SettingsPage() {
 
                 <div>
                   <h2 className="text-[12px] font-bold text-[#30443B]">
-                    Account Security
-                  </h2>
+                    {ui("Account Security")}</h2>
 
                   <p className="mt-1 text-[10px] leading-5 text-[#718078]">
-                    Password changes are processed through La-Cura&apos;s authenticated password endpoint.
-                  </p>
+                    {ui("Password changes are processed through La-Cura&apos;s authenticated password endpoint.")}</p>
                 </div>
               </div>
 
@@ -650,8 +649,7 @@ export default function SettingsPage() {
                     size={13}
                   />
 
-                  Change Password
-                </Link>
+                  {ui("Change Password")}</Link>
 
                 <button
                   type="button"
@@ -690,8 +688,8 @@ export default function SettingsPage() {
                   )}
 
                   {signingOut
-                    ? "Signing Out..."
-                    : "Sign Out"}
+                    ? ui("Signing Out...")
+                    : ui("Sign Out")}
                 </button>
               </div>
             </div>
@@ -705,8 +703,8 @@ export default function SettingsPage() {
 
         <section className="mt-3 border border-[#C8D2CD] bg-white">
           <SectionHeader
-            title="Connection & System"
-            description="Live status from this browser, the authenticated session, and Supabase"
+            title={ui("Connection & System")}
+            description={ui("Live status from this browser, the authenticated session, and Supabase")}
             action={
               <button
                 type="button"
@@ -738,8 +736,7 @@ export default function SettingsPage() {
                   }
                 />
 
-                Check Now
-              </button>
+                {ui("Check Now")}</button>
             }
           />
 
@@ -757,13 +754,13 @@ export default function SettingsPage() {
                   />
                 )
               }
-              title="Network"
+              title={ui("Network")}
               value={
                 online
-                  ? "Online"
-                  : "Offline"
+                  ? ui("Online")
+                  : ui("Offline")
               }
-              detail="Browser network status"
+              detail={ui("Browser network status")}
               status={
                 online
                   ? "success"
@@ -777,22 +774,23 @@ export default function SettingsPage() {
                   size={15}
                 />
               }
-              title="Session"
+              title={ui("Session")}
               value={
                 authStatus ===
                 "authenticated"
-                  ? "Authenticated"
+                  ? ui("Authenticated")
                   : authStatus ===
                       "checking"
-                    ? "Checking..."
-                    : "Unavailable"
+                    ? ui("Checking...")
+                    : ui("Unavailable")
               }
               detail={
                 sessionExpiresAt
-                  ? `Expires ${formatDateTime(
-                      sessionExpiresAt
+                  ? `${ui("Expires")} ${formatDateTime(
+                      sessionExpiresAt,
+                      locale
                     )}`
-                  : "Authentication session"
+                  : ui("Authentication session")
               }
               status={
                 authStatus ===
@@ -811,26 +809,25 @@ export default function SettingsPage() {
                   size={15}
                 />
               }
-              title="Database"
+              title={ui("Database")}
               value={
                 databaseStatus ===
                 "connected"
-                  ? "Connected"
+                  ? ui("Connected")
                   : databaseStatus ===
                       "checking"
-                    ? "Checking..."
-                    : "Unavailable"
+                    ? ui("Checking...")
+                    : ui("Unavailable")
               }
               detail={
                 residentCount !==
                 null
-                  ? `${residentCount} resident record${
-                      residentCount ===
-                      1
-                        ? ""
-                        : "s"
-                    } accessible`
-                  : "Supabase connection"
+                  ? `${residentCount} ${ui(
+                      residentCount === 1
+                        ? "resident record"
+                        : "resident records"
+                    )} ${ui("accessible")}`
+                  : ui("Supabase connection")
               }
               status={
                 databaseStatus ===
@@ -849,20 +846,19 @@ export default function SettingsPage() {
                   size={15}
                 />
               }
-              title="Offline Vitals"
+              title={ui("Offline Vitals")}
               value={String(
                 offlineVitals
               )}
               detail={
                 offlineVitals ===
                 0
-                  ? "No locally queued vital records"
-                  : `${offlineVitals} local record${
-                      offlineVitals ===
-                      1
-                        ? ""
-                        : "s"
-                    } waiting in this browser`
+                  ? ui("No locally queued vital records")
+                  : `${offlineVitals} ${ui(
+                      offlineVitals === 1
+                        ? "local record"
+                        : "local records"
+                    )} ${ui("waiting in this browser")}`
               }
               status={
                 offlineVitals > 0
@@ -875,11 +871,11 @@ export default function SettingsPage() {
 
           <div className="flex flex-col gap-2 border-t border-[#D9E1DD] bg-[#FBFAF7] px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-[9px] text-[#75837C]">
-              Last system check:{" "}
+              {ui("Last system check:")}{" "}
               <strong className="font-semibold text-[#4B5F56]">
                 {lastChecked
                   ? new Intl.DateTimeFormat(
-                      "en-US",
+                      locale,
                       {
                         month:
                           "short",
@@ -893,7 +889,7 @@ export default function SettingsPage() {
                     ).format(
                       lastChecked
                     )
-                  : "Not checked"}
+                  : ui("Not checked")}
               </strong>
             </p>
 
@@ -903,8 +899,7 @@ export default function SettingsPage() {
                 href="/add-vitals"
                 className="text-[9px] font-bold text-[#073B2F] hover:underline"
               >
-                Open Vital Signs
-              </Link>
+                {ui("Open Vital Signs")}</Link>
             )}
           </div>
         </section>
@@ -917,8 +912,8 @@ export default function SettingsPage() {
         {administrator && (
           <section className="mt-3 border border-[#C8D2CD] bg-white">
             <SectionHeader
-              title="Administration"
-              description="Real administrative functions available to your account"
+              title={ui("Administration")}
+              description={ui("Real administrative functions available to your account")}
             />
 
 
@@ -944,12 +939,10 @@ export default function SettingsPage() {
 
                 <div>
                   <p className="text-[11px] font-bold text-[#30443B]">
-                    Staff Management
-                  </p>
+                    {ui("Staff Management")}</p>
 
                   <p className="mt-1 text-[9px] leading-4 text-[#718078]">
-                    Create staff accounts, edit staff information, reset passwords, deactivate accounts, and reactivate staff.
-                  </p>
+                    {ui("Create staff accounts, edit staff information, reset passwords, deactivate accounts, and reactivate staff.")}</p>
                 </div>
               </Link>
 
@@ -963,12 +956,10 @@ export default function SettingsPage() {
 
                 <div>
                   <p className="text-[11px] font-bold text-[#30443B]">
-                    System Configuration
-                  </p>
+                    {ui("System Configuration")}</p>
 
                   <p className="mt-1 text-[9px] leading-4 text-[#718078]">
-                    Facility-wide clinical policies are not exposed as editable settings until they have server-backed enforcement throughout La-Cura.
-                  </p>
+                    {ui("Facility-wide clinical policies are not exposed as editable settings until they have server-backed enforcement throughout La-Cura.")}</p>
                 </div>
               </div>
             </div>
@@ -981,8 +972,7 @@ export default function SettingsPage() {
         {staffSessionStatus ===
           "error" && (
           <section className="mt-3 border border-red-200 bg-red-50 px-3 py-2 text-[10px] font-semibold text-red-700">
-            La-Cura could not verify the current staff account. Refresh the session or sign in again.
-          </section>
+            {ui("La-Cura could not verify the current staff account. Refresh the session or sign in again.")}</section>
         )}
       </main>
     </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import {
   ResponsiveContainer,
   PieChart,
@@ -31,6 +33,15 @@ const COLORS = [
 ];
 
 export default function ResidentStatusChart() {
+  const { ui } =
+    useAppUi();
+
+  const localizedData =
+    data.map((entry) => ({
+      ...entry,
+      name: ui(entry.name),
+    }));
+
 
   return (
 
@@ -40,15 +51,11 @@ export default function ResidentStatusChart() {
 
         <h2 className="text-2xl font-bold text-gray-900">
 
-          Resident Status
-
-        </h2>
+          {ui("Resident Status")}</h2>
 
         <p className="text-gray-500 mt-2">
 
-          Overall health distribution
-
-        </p>
+          {ui("Overall health distribution")}</p>
 
       </div>
 
@@ -59,7 +66,7 @@ export default function ResidentStatusChart() {
           <PieChart>
 
             <Pie
-              data={data}
+              data={localizedData}
               dataKey="value"
               nameKey="name"
               innerRadius={70}
@@ -67,7 +74,7 @@ export default function ResidentStatusChart() {
               paddingAngle={4}
             >
 
-              {data.map((entry, index) => (
+              {localizedData.map((entry, index) => (
 
                 <Cell
                   key={index}

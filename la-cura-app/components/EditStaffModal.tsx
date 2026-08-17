@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import type { ReactNode } from "react";
 
 import {
@@ -119,6 +121,9 @@ export default function EditStaffModal({
   onClose,
   staff,
 }: Props) {
+  const { ui } =
+    useAppUi();
+
   const [form, setForm] =
     useState<StaffForm | null>(null);
 
@@ -193,7 +198,7 @@ export default function EditStaffModal({
       form.full_name.trim().length < 2
     ) {
       setError(
-        "Enter the staff member's full name."
+        ui("Enter the staff member's full name.")
       );
 
       return;
@@ -218,7 +223,7 @@ export default function EditStaffModal({
         !accessToken
       ) {
         throw new Error(
-          "Your administrator session has expired. Sign in again."
+          ui("Your administrator session has expired. Sign in again.")
         );
       }
 
@@ -290,7 +295,7 @@ export default function EditStaffModal({
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : "Unable to update the staff member."
+          : ui("Unable to update the staff member.")
       );
     } finally {
       setLoading(false);
@@ -331,13 +336,10 @@ export default function EditStaffModal({
                   id="edit-staff-title"
                   className="text-[16px] font-bold"
                 >
-                  Edit Staff Member
-                </h2>
+                  {ui("Edit Staff Member")}</h2>
 
                 <p className="mt-1 text-blue-100">
-                  Update employment and
-                  account information.
-                </p>
+                  {ui("Update employment and account information.")}</p>
               </div>
             </div>
 
@@ -345,7 +347,7 @@ export default function EditStaffModal({
               type="button"
               onClick={handleClose}
               disabled={loading}
-              aria-label="Close edit staff modal"
+              aria-label={ui("Close edit staff modal")}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <AppIcon icon={faXmark} />
@@ -358,7 +360,7 @@ export default function EditStaffModal({
             <div className="sm:col-span-2">
               <EditField
                 id="edit-staff-name"
-                label="Full Name"
+                label={ui("Full Name")}
                 icon={faUser}
               >
                 <input
@@ -380,7 +382,7 @@ export default function EditStaffModal({
 
             <EditField
               id="edit-staff-phone"
-              label="Phone Number"
+              label={ui("Phone Number")}
               icon={faPhone}
             >
               <input
@@ -394,7 +396,7 @@ export default function EditStaffModal({
                   )
                 }
                 disabled={loading}
-                placeholder="Optional"
+                placeholder={ui("Optional")}
                 autoComplete="tel"
                 className="edit-input"
               />
@@ -402,7 +404,7 @@ export default function EditStaffModal({
 
             <EditField
               id="edit-staff-role"
-              label="Role"
+              label={ui("Role")}
               icon={faIdCard}
             >
               <select
@@ -419,22 +421,19 @@ export default function EditStaffModal({
                 className="edit-input"
               >
                 <option value="Administrator">
-                  Administrator
-                </option>
+                  {ui("Administrator")}</option>
 
                 <option value="Nurse">
-                  Nurse
-                </option>
+                  {ui("Nurse")}</option>
 
                 <option value="Physician">
-                  Physician
-                </option>
+                  {ui("Physician")}</option>
               </select>
             </EditField>
 
             <EditField
               id="edit-staff-department"
-              label="Department"
+              label={ui("Department")}
               icon={faBuilding}
             >
               <input
@@ -448,14 +447,14 @@ export default function EditStaffModal({
                   )
                 }
                 disabled={loading}
-                placeholder="Optional"
+                placeholder={ui("Optional")}
                 className="edit-input"
               />
             </EditField>
 
             <EditField
               id="edit-staff-license"
-              label="License Number"
+              label={ui("License Number")}
               icon={faIdCard}
             >
               <input
@@ -471,14 +470,14 @@ export default function EditStaffModal({
                   )
                 }
                 disabled={loading}
-                placeholder="Optional"
+                placeholder={ui("Optional")}
                 className="edit-input"
               />
             </EditField>
 
             <EditField
               id="edit-staff-shift"
-              label="Shift"
+              label={ui("Shift")}
               icon={faClock}
             >
               <select
@@ -495,18 +494,16 @@ export default function EditStaffModal({
                 className="edit-input"
               >
                 <option value="Day">
-                  Day
-                </option>
+                  {ui("Day")}</option>
 
                 <option value="Night">
-                  Night
-                </option>
+                  {ui("Night")}</option>
               </select>
             </EditField>
 
             <EditField
               id="edit-staff-date"
-              label="Employment Date"
+              label={ui("Employment Date")}
               icon={faCalendarDays}
             >
               <input
@@ -537,18 +534,14 @@ export default function EditStaffModal({
 
                 <div>
                   <p className="text-sm font-semibold text-slate-500">
-                    Staff Code
-                  </p>
+                    {ui("Staff Code")}</p>
 
                   <p className="mt-1 font-mono font-bold tracking-wider text-slate-900">
                     {form.staff_code}
                   </p>
 
                   <p className="mt-2 text-xs leading-5 text-slate-500">
-                    Staff codes are permanent
-                    and cannot be changed from
-                    this form.
-                  </p>
+                    {ui("Staff codes are permanent and cannot be changed from this form.")}</p>
                 </div>
               </div>
             </div>
@@ -578,8 +571,7 @@ export default function EditStaffModal({
             disabled={loading}
             className="rounded-[3px] border border-slate-300 bg-white px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Cancel
-          </button>
+            {ui("Cancel")}</button>
 
           <button
             type="button"
@@ -601,8 +593,8 @@ export default function EditStaffModal({
             />
 
             {loading
-              ? "Saving Changes..."
-              : "Save Changes"}
+              ? ui("Saving Changes...")
+              : ui("Save Changes")}
           </button>
         </footer>
       </section>

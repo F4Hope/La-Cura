@@ -1200,7 +1200,7 @@ export default function ResidentImmunizationsTab({
 
                             {record.vaccine_code && (
                               <p className="text-[8px] text-[#75827B]">
-                                Code:{" "}
+                                {clinicalText(language, "Code")}: {" "}
                                 {record.vaccine_code}
                               </p>
                             )}
@@ -2403,7 +2403,7 @@ function ImmunizationModal({
               <div className="p-3">
                 <label>
                   <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
-                    Refusal Reason{" "}
+                    {clinicalText(language, "Refusal Reason")}{" "}
                     <span className="text-red-600">
                       *
                     </span>
@@ -2441,7 +2441,7 @@ function ImmunizationModal({
               <div className="p-3">
                 <label>
                   <span className="mb-1 block text-[10px] font-bold text-[#33483F]">
-                    Contraindication Reason{" "}
+                    {clinicalText(language, "Contraindication Reason")}{" "}
                     <span className="text-red-600">
                       *
                     </span>

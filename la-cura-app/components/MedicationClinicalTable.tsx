@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import Link from "next/link";
 
 import {
@@ -147,7 +149,8 @@ function formatDate(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+  locale = "en-CM"
 ) {
   if (!value) {
     return "—";
@@ -165,7 +168,7 @@ function formatDate(
   }
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    locale,
     {
       month: "numeric",
       day: "numeric",
@@ -179,6 +182,9 @@ export default function MedicationClinicalTable({
   medications,
   loadError = false,
 }: Props) {
+  const { ui, locale } =
+    useAppUi();
+
   const [
     search,
     setSearch,
@@ -333,24 +339,20 @@ export default function MedicationClinicalTable({
                 href="/dashboard"
                 className="hover:text-[#073B2F]"
               >
-                Home
-              </Link>
+                {ui("Home")}</Link>
 
               <span>/</span>
 
               <span className="font-semibold text-[#40524B]">
-                Medications
-              </span>
+                {ui("Medications")}</span>
             </div>
 
             <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
-                Medication Orders
-              </h1>
+                {ui("Medication Orders")}</h1>
 
               <p className="text-xs text-[#718078]">
-                Resident medication record
-              </p>
+                {ui("Resident medication record")}</p>
             </div>
           </div>
 
@@ -374,8 +376,7 @@ export default function MedicationClinicalTable({
           >
             <Plus size={14} />
 
-            Add Medication
-          </Link>
+            {ui("Add Medication")}</Link>
         </div>
       </section>
 
@@ -385,19 +386,19 @@ export default function MedicationClinicalTable({
 
         <section className="mb-3 grid border border-[#CCD5D0] bg-white sm:grid-cols-4">
           <SummaryCell
-            label="Medication Records"
+            label={ui("Medication Records")}
             value={
               medications.length
             }
           />
 
           <SummaryCell
-            label="Active"
+            label={ui("Active")}
             value={activeCount}
           />
 
           <SummaryCell
-            label="Held"
+            label={ui("Held")}
             value={heldCount}
             warning={
               heldCount > 0
@@ -405,7 +406,7 @@ export default function MedicationClinicalTable({
           />
 
           <SummaryCell
-            label="Discontinued"
+            label={ui("Discontinued")}
             value={
               discontinuedCount
             }
@@ -435,7 +436,7 @@ export default function MedicationClinicalTable({
                         .value
                     )
                   }
-                  placeholder="Search resident, medication, dosage, frequency, instructions..."
+                  placeholder={ui("Search resident, medication, dosage, frequency, instructions...")}
                   className="
                     h-8 w-full
                     border
@@ -455,7 +456,7 @@ export default function MedicationClinicalTable({
 
               <div className="flex flex-wrap items-center gap-1">
                 <FilterButton
-                  label="All"
+                  label={ui("All")}
                   active={
                     status ===
                     "all"
@@ -468,7 +469,7 @@ export default function MedicationClinicalTable({
                 />
 
                 <FilterButton
-                  label="Active"
+                  label={ui("Active")}
                   active={
                     status ===
                     "active"
@@ -481,7 +482,7 @@ export default function MedicationClinicalTable({
                 />
 
                 <FilterButton
-                  label="Held"
+                  label={ui("Held")}
                   active={
                     status ===
                     "held"
@@ -494,7 +495,7 @@ export default function MedicationClinicalTable({
                 />
 
                 <FilterButton
-                  label="Discontinued"
+                  label={ui("Discontinued")}
                   active={
                     status ===
                     "discontinu"
@@ -536,8 +537,7 @@ export default function MedicationClinicalTable({
                       size={11}
                     />
 
-                    Reset
-                  </button>
+                    {ui("Reset")}</button>
                 )}
               </div>
             </div>
@@ -548,20 +548,18 @@ export default function MedicationClinicalTable({
 
           <div className="flex items-center justify-between gap-3 border-b border-[#D8DFDB] bg-[#FBFAF7] px-3 py-1.5 text-[10px]">
             <p className="text-[#607169]">
-              Showing{" "}
+              {ui("Showing")}{" "}
               <strong className="text-[#263A32]">
                 {filtered.length}
               </strong>{" "}
-              medication record
-              {filtered.length ===
+              {ui("medication record")}{filtered.length ===
               1
                 ? ""
                 : "s"}
             </p>
 
             <p className="font-semibold text-[#7D6A35]">
-              Resident order
-            </p>
+              {ui("Resident order")}</p>
           </div>
 
 
@@ -569,8 +567,7 @@ export default function MedicationClinicalTable({
 
           {loadError && (
             <div className="border-b border-red-200 bg-red-50 px-4 py-3 text-[11px] font-semibold text-red-700">
-              Medication records could not be loaded.
-            </div>
+              {ui("Medication records could not be loaded.")}</div>
           )}
 
 
@@ -584,48 +581,37 @@ export default function MedicationClinicalTable({
                 <thead>
                   <tr className="bg-[#E8EEEA] text-[10px] font-bold uppercase tracking-[0.035em] text-[#354A41]">
                     <ClinicalHead>
-                      Resident
-                    </ClinicalHead>
+                      {ui("Resident")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Medication
-                    </ClinicalHead>
+                      {ui("Medication")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Dosage
-                    </ClinicalHead>
+                      {ui("Dosage")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Frequency
-                    </ClinicalHead>
+                      {ui("Frequency")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Scheduled Time
-                    </ClinicalHead>
+                      {ui("Scheduled Time")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Route
-                    </ClinicalHead>
+                      {ui("Route")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Instructions
-                    </ClinicalHead>
+                      {ui("Instructions")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Start
-                    </ClinicalHead>
+                      {ui("Start")}</ClinicalHead>
 
                     <ClinicalHead>
-                      End
-                    </ClinicalHead>
+                      {ui("End")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Status
-                    </ClinicalHead>
+                      {ui("Status")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Action
-                    </ClinicalHead>
+                      {ui("Action")}</ClinicalHead>
                   </tr>
                 </thead>
 
@@ -730,13 +716,15 @@ export default function MedicationClinicalTable({
 
                           <td className="whitespace-nowrap px-3 py-2 text-[#607169]">
                             {formatDate(
-                              medication.start_date
+                              medication.start_date,
+                              locale
                             )}
                           </td>
 
                           <td className="whitespace-nowrap px-3 py-2 text-[#607169]">
                             {formatDate(
-                              medication.end_date
+                              medication.end_date,
+                              locale
                             )}
                           </td>
 
@@ -755,7 +743,7 @@ export default function MedicationClinicalTable({
                                 )}
                               `}
                             >
-                              {medStatus}
+                              {ui(medStatus)}
                             </span>
                           </td>
 
@@ -777,8 +765,7 @@ export default function MedicationClinicalTable({
                                   hover:bg-[#F0F4F1]
                                 "
                               >
-                                Resident
-                              </Link>
+                                {ui("Resident")}</Link>
                             ) : (
                               <span className="text-[10px] text-[#87948E]">
                                 —
@@ -795,8 +782,7 @@ export default function MedicationClinicalTable({
           ) : !loadError ? (
             <div className="px-6 py-12 text-center">
               <p className="text-[12px] font-semibold text-[#30443B]">
-                No medication records match the selected filters.
-              </p>
+                {ui("No medication records match the selected filters.")}</p>
 
               {(search ||
                 status !==
@@ -811,8 +797,7 @@ export default function MedicationClinicalTable({
                   }}
                   className="mt-2 text-[10px] font-bold text-[#073B2F] underline"
                 >
-                  Reset filters
-                </button>
+                  {ui("Reset filters")}</button>
               )}
             </div>
           ) : null}
@@ -821,8 +806,7 @@ export default function MedicationClinicalTable({
           {/* FOOTER */}
 
           <div className="border-t border-[#D1D9D5] bg-[#F8F7F2] px-3 py-2 text-[10px] text-[#607169]">
-            Medication records are displayed in resident alphabetical order.
-          </div>
+            {ui("Medication records are displayed in resident alphabetical order.")}</div>
         </section>
       </main>
     </div>

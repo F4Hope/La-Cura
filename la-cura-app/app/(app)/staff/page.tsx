@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import type {
   ReactNode,
 } from "react";
@@ -103,7 +105,8 @@ function formatDate(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+  locale = "en-CM"
 ) {
   if (!value) {
     return "—";
@@ -121,7 +124,7 @@ function formatDate(
   }
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    locale,
     {
       month: "short",
       day: "numeric",
@@ -132,6 +135,9 @@ function formatDate(
 
 
 export default function StaffPage() {
+  const { ui, locale } =
+    useAppUi();
+
   const [
     staff,
     setStaff,
@@ -442,24 +448,20 @@ export default function StaffPage() {
                 href="/dashboard"
                 className="hover:text-[#073B2F]"
               >
-                Home
-              </Link>
+                {ui("Home")}</Link>
 
               <span>/</span>
 
               <span className="font-semibold text-[#40524B]">
-                Staff
-              </span>
+                {ui("Staff")}</span>
             </div>
 
             <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
-                Staff Management
-              </h1>
+                {ui("Staff Management")}</h1>
 
               <p className="text-xs text-[#718078]">
-                Accounts, roles, credentials, and access
-              </p>
+                {ui("Accounts, roles, credentials, and access")}</p>
             </div>
           </div>
 
@@ -495,8 +497,7 @@ export default function StaffPage() {
                 }
               />
 
-              Refresh
-            </button>
+              {ui("Refresh")}</button>
 
             <Link
               href="/settings"
@@ -516,8 +517,7 @@ export default function StaffPage() {
                 size={11}
               />
 
-              Settings
-            </Link>
+              {ui("Settings")}</Link>
 
             <button
               type="button"
@@ -543,8 +543,7 @@ export default function StaffPage() {
                 size={12}
               />
 
-              Create Staff Account
-            </button>
+              {ui("Create Staff Account")}</button>
           </div>
         </div>
       </section>
@@ -555,35 +554,35 @@ export default function StaffPage() {
 
         <section className="mb-3 grid border border-[#CBD4D0] bg-white sm:grid-cols-5">
           <SummaryCell
-            label="Staff Accounts"
+            label={ui("Staff Accounts")}
             value={
               statistics.total
             }
           />
 
           <SummaryCell
-            label="Active"
+            label={ui("Active")}
             value={
               statistics.active
             }
           />
 
           <SummaryCell
-            label="Nurses"
+            label={ui("Nurses")}
             value={
               statistics.nurses
             }
           />
 
           <SummaryCell
-            label="Physicians"
+            label={ui("Physicians")}
             value={
               statistics.physicians
             }
           />
 
           <SummaryCell
-            label="Administrators"
+            label={ui("Administrators")}
             value={
               statistics.administrators
             }
@@ -613,7 +612,7 @@ export default function StaffPage() {
                         .value
                     )
                   }
-                  placeholder="Search name, staff code, role, department, phone, email..."
+                  placeholder={ui("Search name, staff code, role, department, phone, email...")}
                   className="
                     h-8 w-full
                     border
@@ -658,8 +657,7 @@ export default function StaffPage() {
                 "
               >
                 <option value="all">
-                  All Roles
-                </option>
+                  {ui("All Roles")}</option>
 
                 {roles.map(
                   (role) => (
@@ -667,7 +665,7 @@ export default function StaffPage() {
                       key={role}
                       value={role}
                     >
-                      {role}
+                      {ui(role)}
                     </option>
                   )
                 )}
@@ -700,16 +698,13 @@ export default function StaffPage() {
                 "
               >
                 <option value="all">
-                  All Accounts
-                </option>
+                  {ui("All Accounts")}</option>
 
                 <option value="active">
-                  Active
-                </option>
+                  {ui("Active")}</option>
 
                 <option value="inactive">
-                  Inactive
-                </option>
+                  {ui("Inactive")}</option>
               </select>
 
 
@@ -733,8 +728,7 @@ export default function StaffPage() {
                     hover:bg-[#F2F4F2]
                   "
                 >
-                  Reset
-                </button>
+                  {ui("Reset")}</button>
               )}
             </div>
           </div>
@@ -742,22 +736,20 @@ export default function StaffPage() {
 
           <div className="flex items-center justify-between border-b border-[#D8DFDB] bg-[#FBFAF7] px-3 py-1.5 text-[10px]">
             <span className="text-[#607169]">
-              Showing{" "}
+              {ui("Showing")}{" "}
               <strong className="text-[#263A32]">
                 {
                   filteredStaff.length
                 }
               </strong>{" "}
-              staff account
-              {filteredStaff.length ===
+              {ui("staff account")}{filteredStaff.length ===
               1
                 ? ""
                 : "s"}
             </span>
 
             <span className="font-semibold text-[#7D6A35]">
-              A–Z Staff Directory
-            </span>
+              {ui("A–Z Staff Directory")}</span>
           </div>
 
 
@@ -777,8 +769,7 @@ export default function StaffPage() {
                 />
 
                 <p className="mt-2 text-[10px] font-semibold text-[#65756D]">
-                  Loading staff directory...
-                </p>
+                  {ui("Loading staff directory...")}</p>
               </div>
             </div>
           ) : filteredStaff.length >
@@ -788,48 +779,37 @@ export default function StaffPage() {
                 <thead>
                   <tr className="bg-[#E8EEEA] text-[10px] font-bold uppercase tracking-[0.035em] text-[#354A41]">
                     <ClinicalHead>
-                      Staff Member
-                    </ClinicalHead>
+                      {ui("Staff Member")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Staff Code
-                    </ClinicalHead>
+                      {ui("Staff Code")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Role
-                    </ClinicalHead>
+                      {ui("Role")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Department
-                    </ClinicalHead>
+                      {ui("Department")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Contact
-                    </ClinicalHead>
+                      {ui("Contact")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Shift
-                    </ClinicalHead>
+                      {ui("Shift")}</ClinicalHead>
 
                     <ClinicalHead>
-                      License
-                    </ClinicalHead>
+                      {ui("License")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Employment
-                    </ClinicalHead>
+                      {ui("Employment")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Credentials
-                    </ClinicalHead>
+                      {ui("Credentials")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Status
-                    </ClinicalHead>
+                      {ui("Status")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Actions
-                    </ClinicalHead>
+                      {ui("Actions")}</ClinicalHead>
                   </tr>
                 </thead>
 
@@ -892,10 +872,12 @@ export default function StaffPage() {
 
                           <td className="px-3 py-2">
                             <span className="inline-flex border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[9px] font-bold text-blue-700">
-                              {cleanText(
-                                person.role
-                              ) ||
-                                "Staff"}
+                              {ui(
+                                cleanText(
+                                  person.role
+                                ) ||
+                                  "Staff"
+                              )}
                             </span>
                           </td>
 
@@ -927,8 +909,9 @@ export default function StaffPage() {
                           <td className="px-3 py-2 text-[#506159]">
                             {cleanText(
                               person.shift
-                            ) ||
-                              "—"}
+                            )
+                              ? ui(cleanText(person.shift))
+                              : "—"}
                           </td>
 
                           <td className="px-3 py-2 text-[#506159]">
@@ -940,19 +923,18 @@ export default function StaffPage() {
 
                           <td className="whitespace-nowrap px-3 py-2 text-[#607169]">
                             {formatDate(
-                              person.employment_date
+                              person.employment_date,
+                              locale
                             )}
                           </td>
 
                           <td className="px-3 py-2">
                             {person.must_change_password ? (
                               <span className="inline-flex border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[9px] font-bold text-amber-800">
-                                Password Change Required
-                              </span>
+                                {ui("Password Change Required")}</span>
                             ) : (
                               <span className="inline-flex border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800">
-                                Credentials Current
-                              </span>
+                                {ui("Credentials Current")}</span>
                             )}
                           </td>
 
@@ -972,8 +954,8 @@ export default function StaffPage() {
                               `}
                             >
                               {active
-                                ? "Active"
-                                : "Inactive"}
+                                ? ui("Active")
+                                : ui("Inactive")}
                             </span>
                           </td>
 
@@ -1008,8 +990,7 @@ export default function StaffPage() {
                                   hover:bg-blue-100
                                 "
                               >
-                                Edit
-                              </button>
+                                {ui("Edit")}</button>
 
                               <ResetPasswordButton
                                 staffId={
@@ -1043,8 +1024,7 @@ export default function StaffPage() {
           ) : (
             <div className="px-6 py-12 text-center">
               <p className="text-[12px] font-semibold text-[#30443B]">
-                No staff accounts match the selected filters.
-              </p>
+                {ui("No staff accounts match the selected filters.")}</p>
 
               <button
                 type="button"
@@ -1053,15 +1033,13 @@ export default function StaffPage() {
                 }
                 className="mt-2 text-[10px] font-bold text-[#073B2F] underline"
               >
-                Reset filters
-              </button>
+                {ui("Reset filters")}</button>
             </div>
           )}
 
 
           <div className="border-t border-[#D1D9D5] bg-[#F8F7F2] px-3 py-2 text-[10px] text-[#607169]">
-            Staff accounts are displayed alphabetically by staff member name.
-          </div>
+            {ui("Staff accounts are displayed alphabetically by staff member name.")}</div>
         </section>
       </main>
 

@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import Link from "next/link";
 
 import {
@@ -122,6 +124,9 @@ function statusStyle(
 export default function MedicationAdministrationClinicalTable({
   medications,
 }: Props) {
+  const { ui } =
+    useAppUi();
+
   const [
     search,
     setSearch,
@@ -291,24 +296,20 @@ export default function MedicationAdministrationClinicalTable({
                 href="/dashboard"
                 className="hover:text-[#073B2F]"
               >
-                Home
-              </Link>
+                {ui("Home")}</Link>
 
               <span>/</span>
 
               <span className="font-semibold text-[#40524B]">
-                Medication Administration
-              </span>
+                {ui("Medication Administration")}</span>
             </div>
 
             <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
-                Medication Administration Record
-              </h1>
+                {ui("Medication Administration Record")}</h1>
 
               <p className="text-xs text-[#718078]">
-                Administer, hold, or document refused medications
-              </p>
+                {ui("Administer, hold, or document refused medications")}</p>
             </div>
           </div>
 
@@ -326,8 +327,7 @@ export default function MedicationAdministrationClinicalTable({
               hover:bg-[#F2F5F3]
             "
           >
-            Medication Orders
-          </Link>
+            {ui("Medication Orders")}</Link>
         </div>
       </section>
 
@@ -337,14 +337,14 @@ export default function MedicationAdministrationClinicalTable({
 
         <section className="mb-3 grid border border-[#CBD4D0] bg-white sm:grid-cols-5">
           <SummaryCell
-            label="Scheduled"
+            label={ui("Scheduled")}
             value={
               medications.length
             }
           />
 
           <SummaryCell
-            label="Pending"
+            label={ui("Pending")}
             value={
               Math.max(
                 0,
@@ -355,7 +355,7 @@ export default function MedicationAdministrationClinicalTable({
           />
 
           <SummaryCell
-            label="Administered"
+            label={ui("Administered")}
             value={
               administered
             }
@@ -363,7 +363,7 @@ export default function MedicationAdministrationClinicalTable({
           />
 
           <SummaryCell
-            label="Held"
+            label={ui("Held")}
             value={held}
             warning={
               held > 0
@@ -371,7 +371,7 @@ export default function MedicationAdministrationClinicalTable({
           />
 
           <SummaryCell
-            label="Refused"
+            label={ui("Refused")}
             value={refused}
             danger={
               refused > 0
@@ -402,7 +402,7 @@ export default function MedicationAdministrationClinicalTable({
                         .value
                     )
                   }
-                  placeholder="Search resident, medication, dosage, time..."
+                  placeholder={ui("Search resident, medication, dosage, time...")}
                   className="
                     h-8 w-full
                     border
@@ -422,7 +422,7 @@ export default function MedicationAdministrationClinicalTable({
 
               <div className="flex flex-wrap gap-1">
                 <FilterButton
-                  label="All"
+                  label={ui("All")}
                   active={
                     statusFilter ===
                     "all"
@@ -435,7 +435,7 @@ export default function MedicationAdministrationClinicalTable({
                 />
 
                 <FilterButton
-                  label="Pending"
+                  label={ui("Pending")}
                   active={
                     statusFilter ===
                     "pending"
@@ -448,7 +448,7 @@ export default function MedicationAdministrationClinicalTable({
                 />
 
                 <FilterButton
-                  label="Administered"
+                  label={ui("Administered")}
                   active={
                     statusFilter ===
                     "administer"
@@ -461,7 +461,7 @@ export default function MedicationAdministrationClinicalTable({
                 />
 
                 <FilterButton
-                  label="Held"
+                  label={ui("Held")}
                   active={
                     statusFilter ===
                     "held"
@@ -474,7 +474,7 @@ export default function MedicationAdministrationClinicalTable({
                 />
 
                 <FilterButton
-                  label="Refused"
+                  label={ui("Refused")}
                   active={
                     statusFilter ===
                     "refus"
@@ -513,8 +513,7 @@ export default function MedicationAdministrationClinicalTable({
                       size={11}
                     />
 
-                    Reset
-                  </button>
+                    {ui("Reset")}</button>
                 )}
               </div>
             </div>
@@ -525,20 +524,18 @@ export default function MedicationAdministrationClinicalTable({
 
           <div className="flex items-center justify-between border-b border-[#D8DFDB] bg-[#FBFAF7] px-3 py-1.5 text-[10px]">
             <span className="text-[#607169]">
-              Showing{" "}
+              {ui("Showing")}{" "}
               <strong className="text-[#263A32]">
                 {filtered.length}
               </strong>{" "}
-              medication
-              {filtered.length ===
+              {ui("medication")}{filtered.length ===
               1
                 ? ""
                 : "s"}
             </span>
 
             <span className="font-semibold text-[#7D6A35]">
-              eMAR Worklist
-            </span>
+              {ui("eMAR Worklist")}</span>
           </div>
 
 
@@ -551,36 +548,28 @@ export default function MedicationAdministrationClinicalTable({
                 <thead>
                   <tr className="bg-[#E8EEEA] text-[10px] font-bold uppercase tracking-[0.035em] text-[#354A41]">
                     <ClinicalHead>
-                      Resident
-                    </ClinicalHead>
+                      {ui("Resident")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Medication
-                    </ClinicalHead>
+                      {ui("Medication")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Dosage
-                    </ClinicalHead>
+                      {ui("Dosage")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Frequency
-                    </ClinicalHead>
+                      {ui("Frequency")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Time
-                    </ClinicalHead>
+                      {ui("Time")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Route
-                    </ClinicalHead>
+                      {ui("Route")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Status
-                    </ClinicalHead>
+                      {ui("Status")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Administration Action
-                    </ClinicalHead>
+                      {ui("Administration Action")}</ClinicalHead>
                   </tr>
                 </thead>
 
@@ -629,8 +618,7 @@ export default function MedicationAdministrationClinicalTable({
                             </Link>
 
                             <p className="mt-0.5 text-[9px] text-[#85918B]">
-                              Resident #
-                              {
+                              {ui("Resident #")}{
                                 medication.resident_id
                               }
                             </p>
@@ -685,7 +673,7 @@ export default function MedicationAdministrationClinicalTable({
                                 )}
                               `}
                             >
-                              {status}
+                              {ui(status)}
                             </span>
                           </td>
 
@@ -759,8 +747,7 @@ export default function MedicationAdministrationClinicalTable({
           ) : (
             <div className="px-6 py-12 text-center">
               <p className="text-[12px] font-semibold text-[#30443B]">
-                No medications match the selected worklist.
-              </p>
+                {ui("No medications match the selected worklist.")}</p>
 
               <button
                 type="button"
@@ -769,15 +756,13 @@ export default function MedicationAdministrationClinicalTable({
                 }
                 className="mt-2 text-[10px] font-bold text-[#073B2F] underline"
               >
-                Reset filters
-              </button>
+                {ui("Reset filters")}</button>
             </div>
           )}
 
 
           <div className="border-t border-[#D1D9D5] bg-[#F8F7F2] px-3 py-2 text-[10px] text-[#607169]">
-            Medication administration actions are written to the resident&apos;s medication administration record.
-          </div>
+            {ui("Medication administration actions are written to the resident&apos;s medication administration record.")}</div>
         </section>
       </main>
     </div>

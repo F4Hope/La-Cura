@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -36,6 +38,9 @@ export default function MedicationActionModal({
   onClose,
   onConfirm,
 }: MedicationActionModalProps) {
+  const { ui } =
+    useAppUi();
+
   const titleId = useId();
   const descriptionId = useId();
 
@@ -125,7 +130,7 @@ export default function MedicationActionModal({
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : "The medication action could not be saved. Please try again."
+          : ui("The medication action could not be saved. Please try again.")
       );
     } finally {
       setLoading(false);
@@ -174,9 +179,7 @@ export default function MedicationActionModal({
                   id={descriptionId}
                   className="mt-1 text-green-100"
                 >
-                  Review the medication details before
-                  confirming.
-                </p>
+                  {ui("Review the medication details before confirming.")}</p>
               </div>
             </div>
 
@@ -184,7 +187,7 @@ export default function MedicationActionModal({
               type="button"
               onClick={handleClose}
               disabled={loading}
-              aria-label="Close medication action"
+              aria-label={ui("Close medication action")}
               className="shrink-0 rounded-[3px] bg-white/20 p-2 transition hover:bg-white/30 focus:outline-none focus:ring-4 focus:ring-white/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <AppIcon
@@ -200,8 +203,7 @@ export default function MedicationActionModal({
             <section className="grid gap-6 md:grid-cols-2">
               <div className="rounded-[4px] bg-slate-50 p-5">
                 <p className="text-sm font-medium text-gray-500">
-                  Resident
-                </p>
+                  {ui("Resident")}</p>
 
                 <h3 className="mt-2 break-words text-xl font-bold text-slate-900">
                   {resident}
@@ -210,8 +212,7 @@ export default function MedicationActionModal({
 
               <div className="rounded-[4px] bg-slate-50 p-5">
                 <p className="text-sm font-medium text-gray-500">
-                  Medication
-                </p>
+                  {ui("Medication")}</p>
 
                 <h3 className="mt-2 break-words text-xl font-bold text-slate-900">
                   {medication}
@@ -224,8 +225,7 @@ export default function MedicationActionModal({
                 htmlFor="medication-action-reason"
                 className="mb-2 block font-semibold text-slate-900"
               >
-                Reason
-              </label>
+                {ui("Reason")}</label>
 
               <select
                 id="medication-action-reason"
@@ -236,51 +236,40 @@ export default function MedicationActionModal({
                 disabled={loading}
                 className="w-full rounded-[4px] border border-gray-300 bg-white px-3 py-2.5 text-[11px] text-slate-900 outline-none transition focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-70"
               >
-                <option value="">Select reason</option>
+                <option value="">{ui("Select reason")}</option>
 
                 <option value="Blood Pressure Low">
-                  Blood Pressure Low
-                </option>
+                  {ui("Blood Pressure Low")}</option>
 
                 <option value="Blood Sugar Low">
-                  Blood Sugar Low
-                </option>
+                  {ui("Blood Sugar Low")}</option>
 
                 <option value="Resident Sleeping">
-                  Resident Sleeping
-                </option>
+                  {ui("Resident Sleeping")}</option>
 
                 <option value="Resident Refused">
-                  Resident Refused
-                </option>
+                  {ui("Resident Refused")}</option>
 
                 <option value="Doctor Ordered Hold">
-                  Doctor Ordered Hold
-                </option>
+                  {ui("Doctor Ordered Hold")}</option>
 
                 <option value="Nausea">
-                  Nausea
-                </option>
+                  {ui("Nausea")}</option>
 
                 <option value="Vomiting">
-                  Vomiting
-                </option>
+                  {ui("Vomiting")}</option>
 
                 <option value="Family Declined">
-                  Family Declined
-                </option>
+                  {ui("Family Declined")}</option>
 
                 <option value="Medication Unavailable">
-                  Medication Unavailable
-                </option>
+                  {ui("Medication Unavailable")}</option>
 
                 <option value="Clinical Parameter Not Met">
-                  Clinical Parameter Not Met
-                </option>
+                  {ui("Clinical Parameter Not Met")}</option>
 
                 <option value="Other">
-                  Other
-                </option>
+                  {ui("Other")}</option>
               </select>
             </section>
 
@@ -289,8 +278,7 @@ export default function MedicationActionModal({
                 htmlFor="medication-clinical-notes"
                 className="mb-2 block font-semibold text-slate-900"
               >
-                Clinical Notes
-              </label>
+                {ui("Clinical Notes")}</label>
 
               <textarea
                 id="medication-clinical-notes"
@@ -300,7 +288,7 @@ export default function MedicationActionModal({
                   setNotes(event.target.value)
                 }
                 disabled={loading}
-                placeholder="Document clinical observations, relevant vital signs, resident response, provider instructions, or other details."
+                placeholder={ui("Document clinical observations, relevant vital signs, resident response, provider instructions, or other details.")}
                 className="w-full resize-none rounded-[4px] border border-gray-300 px-3 py-2.5 text-[11px] text-slate-900 outline-none transition placeholder:text-gray-400 focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:opacity-70"
               />
             </section>
@@ -328,8 +316,7 @@ export default function MedicationActionModal({
             disabled={loading}
             className="rounded-[4px] border border-gray-300 px-3 py-2 text-[10px] font-semibold text-slate-700 transition hover:bg-gray-100 focus:outline-none focus:ring-4 focus:ring-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            Cancel
-          </button>
+            {ui("Cancel")}</button>
 
           <button
             type="button"

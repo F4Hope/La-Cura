@@ -48,6 +48,10 @@ import {
   type ResidentLanguage,
 } from "@/lib/i18n/resident";
 
+import {
+  uiText,
+} from "@/lib/i18n/appUi";
+
 export const dynamic =
   "force-dynamic";
 
@@ -1410,6 +1414,9 @@ function ResidentTabContent({
         items={
           progressNotes
         }
+        language={
+          language
+        }
       />
     );
   }
@@ -1531,8 +1538,8 @@ function ResidentTabContent({
   ) {
     return (
       <EmptyModule
-        title="Assessments"
-        description="Resident assessments will appear here as assessment modules are added."
+        title={residentText(language, "title.assmnts")}
+        description={residentText(language, "empty.assessments")}
       />
     );
   }
@@ -1543,8 +1550,8 @@ function ResidentTabContent({
   ) {
     return (
       <EmptyModule
-        title="Therapy"
-        description="Therapy documentation and treatment records will appear here."
+        title={residentText(language, "title.therapy")}
+        description={residentText(language, "empty.therapy")}
       />
     );
   }
@@ -1555,8 +1562,8 @@ function ResidentTabContent({
   ) {
     return (
       <EmptyModule
-        title="Tasks"
-        description="Resident-specific clinical tasks will appear here."
+        title={residentText(language, "title.tasks")}
+        description={residentText(language, "empty.tasks")}
       />
     );
   }
@@ -1582,6 +1589,9 @@ function ResidentTabContent({
       incidentCount={
         incidentCount
       }
+      language={
+        language
+      }
     />
   );
 }
@@ -1594,6 +1604,7 @@ function DashboardTab({
   timeline,
   progressNotes,
   incidentCount,
+  language,
 }: {
   resident: ResidentRecord;
   latestVital:
@@ -1606,7 +1617,14 @@ function DashboardTab({
   progressNotes:
     TimelineItem[];
   incidentCount: number;
+  language: ResidentLanguage;
 }) {
+  const ui =
+    (value: string) =>
+      uiText(
+        language,
+        value
+      );
   const latestMeds =
     medications.slice(0, 6);
 
@@ -1616,7 +1634,7 @@ function DashboardTab({
   return (
     <div className="grid gap-3 bg-[#F3F2ED] p-3 xl:grid-cols-[minmax(0,1fr)_390px]">
       <div className="min-w-0 space-y-3">
-        <RecordPanel title="Recent Medication Administration">
+        <RecordPanel title={ui("Recent Medication Administration")}>
           <MedicationTable
             medications={
               latestMeds
@@ -1624,13 +1642,19 @@ function DashboardTab({
             residentId={
               resident.id
             }
+            language={
+              language
+            }
           />
         </RecordPanel>
 
-        <RecordPanel title="Recent Clinical Activity">
+        <RecordPanel title={ui("Recent Clinical Activity")}>
           <TimelineTable
             items={
               latestActivity
+            }
+            language={
+              language
             }
           />
         </RecordPanel>
@@ -1638,10 +1662,10 @@ function DashboardTab({
 
 
       <div className="space-y-3">
-        <RecordPanel title="Current Clinical Snapshot">
+        <RecordPanel title={ui("Current Clinical Snapshot")}>
           <div className="grid grid-cols-2 gap-px bg-[#D8DFDB]">
             <SnapshotCell
-              label="Blood Pressure"
+              label={ui("Blood Pressure")}
               value={
                 latestVital
                   ?.systolic !==
@@ -1661,7 +1685,7 @@ function DashboardTab({
             />
 
             <SnapshotCell
-              label="Temperature"
+              label={ui("Temperature")}
               value={displayVital(
                 latestVital
                   ?.temperature,
@@ -1670,7 +1694,7 @@ function DashboardTab({
             />
 
             <SnapshotCell
-              label="Pulse"
+              label={ui("Pulse")}
               value={displayVital(
                 latestVital
                   ?.pulse,
@@ -1679,7 +1703,7 @@ function DashboardTab({
             />
 
             <SnapshotCell
-              label="Oxygen"
+              label={ui("Oxygen")}
               value={displayVital(
                 latestVital
                   ?.oxygen_saturation,
@@ -1690,31 +1714,31 @@ function DashboardTab({
         </RecordPanel>
 
 
-        <RecordPanel title="Clinical Record Summary">
+        <RecordPanel title={ui("Clinical Record Summary")}>
           <div className="grid grid-cols-2 gap-px bg-[#D8DFDB]">
             <SummaryMetric
-              label="Medication Records"
+              label={ui("Medication Records")}
               value={
                 medications.length
               }
             />
 
             <SummaryMetric
-              label="Clinical Events"
+              label={ui("Clinical Events")}
               value={
                 timeline.length
               }
             />
 
             <SummaryMetric
-              label="Progress Notes"
+              label={ui("Progress Notes")}
               value={
                 progressNotes.length
               }
             />
 
             <SummaryMetric
-              label="Incidents"
+              label={ui("Incidents")}
               value={
                 incidentCount
               }
@@ -1726,36 +1750,36 @@ function DashboardTab({
         </RecordPanel>
 
 
-        <RecordPanel title="Resident Summary">
+        <RecordPanel title={ui("Resident Summary")}>
           <RecordRows
             rows={[
               [
-                "Diagnosis",
+                ui("Diagnosis"),
                 cleanText(
                   resident.diagnosis
                 ) ||
-                  "Not recorded",
+                  ui("Not recorded"),
               ],
               [
-                "Room",
+                ui("Room"),
                 cleanText(
                   resident.room
                 ) ||
-                  "Unassigned",
+                  ui("Unassigned"),
               ],
               [
-                "Physician",
+                ui("Physician"),
                 cleanText(
                   resident.primary_doctor
                 ) ||
-                  "Not assigned",
+                  ui("Not assigned"),
               ],
               [
-                "Blood Group",
+                ui("Blood Group"),
                 cleanText(
                   resident.blood_group
                 ) ||
-                  "Not recorded",
+                  ui("Not recorded"),
               ],
             ]}
           />
@@ -1769,17 +1793,25 @@ function DashboardTab({
 function MedicationTable({
   medications,
   residentId,
+  language,
 }: {
   medications:
     MedicationHistoryRow[];
   residentId: number;
+  language: ResidentLanguage;
 }) {
+  const ui =
+    (value: string) =>
+      uiText(
+        language,
+        value
+      );
   if (
     medications.length ===
     0
   ) {
     return (
-      <TableEmpty message="No medication administration records." />
+      <TableEmpty message={ui("No medication administration records.")} />
     );
   }
 
@@ -1790,27 +1822,27 @@ function MedicationTable({
           <thead>
             <tr className="bg-[#EEF2EF] text-[10px] font-bold uppercase text-[#40544B]">
               <ClinicalHead>
-                Medication
+                {ui("Medication")}
               </ClinicalHead>
 
               <ClinicalHead>
-                Dosage
+                {ui("Dosage")}
               </ClinicalHead>
 
               <ClinicalHead>
-                Status
+                {ui("Status")}
               </ClinicalHead>
 
               <ClinicalHead>
-                Date / Time
+                {ui("Date / Time")}
               </ClinicalHead>
 
               <ClinicalHead>
-                Staff
+                {ui("Staff")}
               </ClinicalHead>
 
               <ClinicalHead>
-                Notes
+                {ui("Notes")}
               </ClinicalHead>
             </tr>
           </thead>
@@ -1867,14 +1899,16 @@ function MedicationTable({
                       >
                         {cleanText(
                           item.status
-                        ) ||
-                          "Not recorded"}
+                        )
+                          ? ui(cleanText(item.status))
+                          : ui("Not recorded")}
                       </span>
                     </td>
 
                     <td className="whitespace-nowrap px-3 py-2 text-[#4B5F56]">
                       {formatDateTime(
-                        item.administered_at
+                        item.administered_at,
+                        language
                       )}
                     </td>
 
@@ -1909,7 +1943,7 @@ function MedicationTable({
           href={`/residents/${residentId}/medication-history`}
           className="text-[11px] font-bold text-[#073B2F] hover:underline"
         >
-          Complete medication history
+          {ui("Complete medication history")}
         </Link>
       </div>
     </>
@@ -1919,12 +1953,20 @@ function MedicationTable({
 
 function TimelineTable({
   items,
+  language,
 }: {
   items: TimelineItem[];
+  language: ResidentLanguage;
 }) {
+  const ui =
+    (value: string) =>
+      uiText(
+        language,
+        value
+      );
   if (items.length === 0) {
     return (
-      <TableEmpty message="No clinical activity recorded." />
+      <TableEmpty message={ui("No clinical activity recorded.")} />
     );
   }
 
@@ -1934,19 +1976,19 @@ function TimelineTable({
         <thead>
           <tr className="bg-[#EEF2EF] text-[10px] font-bold uppercase text-[#40544B]">
             <ClinicalHead>
-              Date / Time
+              {ui("Date / Time")}
             </ClinicalHead>
 
             <ClinicalHead>
-              Type
+              {ui("Type")}
             </ClinicalHead>
 
             <ClinicalHead>
-              Entry
+              {ui("Entry")}
             </ClinicalHead>
 
             <ClinicalHead>
-              Detail
+              {ui("Detail")}
             </ClinicalHead>
           </tr>
         </thead>
@@ -1973,15 +2015,17 @@ function TimelineTable({
               >
                 <td className="whitespace-nowrap px-3 py-2 text-[#52645C]">
                   {formatDateTime(
-                    item.date
+                    item.date,
+                    language
                   )}
                 </td>
 
                 <td className="px-3 py-2 font-semibold text-[#274036]">
                   {cleanText(
                     item.type
-                  ) ||
-                    "Clinical Record"}
+                  )
+                    ? ui(cleanText(item.type))
+                    : ui("Clinical Record")}
                 </td>
 
                 <td className="max-w-[260px] px-3 py-2 text-[#40544B]">
@@ -2009,12 +2053,20 @@ function TimelineTable({
 
 function ProgressNotesTable({
   items,
+  language,
 }: {
   items: TimelineItem[];
+  language: ResidentLanguage;
 }) {
+  const ui =
+    (value: string) =>
+      uiText(
+        language,
+        value
+      );
   if (items.length === 0) {
     return (
-      <TableEmpty message="No progress notes recorded for this resident." />
+      <TableEmpty message={ui("No progress notes recorded for this resident.")} />
     );
   }
 
@@ -2024,19 +2076,19 @@ function ProgressNotesTable({
         <thead>
           <tr className="bg-[#E8EEEA] text-[10px] font-bold uppercase text-[#40544B]">
             <ClinicalHead>
-              Date / Time
+              {ui("Date / Time")}
             </ClinicalHead>
 
             <ClinicalHead>
-              Type
+              {ui("Type")}
             </ClinicalHead>
 
             <ClinicalHead>
-              Note
+              {ui("Note")}
             </ClinicalHead>
 
             <ClinicalHead>
-              Detail
+              {ui("Detail")}
             </ClinicalHead>
           </tr>
         </thead>
@@ -2064,15 +2116,17 @@ function ProgressNotesTable({
               >
                 <td className="whitespace-nowrap px-3 py-2 text-[#52645C]">
                   {formatDateTime(
-                    item.date
+                    item.date,
+                    language
                   )}
                 </td>
 
                 <td className="px-3 py-2 font-semibold text-[#274036]">
                   {cleanText(
                     item.type
-                  ) ||
-                    "Progress Note"}
+                  )
+                    ? ui(cleanText(item.type))
+                    : ui("Progress Note")}
                 </td>
 
                 <td className="px-3 py-2 text-[#2E443A]">
@@ -2098,12 +2152,21 @@ function ProgressNotesTable({
 
 function VitalsTable({
   vitals,
+  language,
 }: {
   vitals: VitalRecord[];
+  language: ResidentLanguage;
 }) {
+  const ui =
+    (value: string) =>
+      uiText(
+        language,
+        value
+      );
+
   if (vitals.length === 0) {
     return (
-      <TableEmpty message="No vital signs recorded for this resident." />
+      <TableEmpty message={ui("No vital signs recorded for this resident.")} />
     );
   }
 
@@ -2113,31 +2176,31 @@ function VitalsTable({
         <thead>
           <tr className="bg-[#E8EEEA] text-[10px] font-bold uppercase text-[#40544B]">
             <ClinicalHead>
-              Date / Time
+              {ui("Date / Time")}
             </ClinicalHead>
 
             <ClinicalHead>
-              BP
+              {ui("BP")}
             </ClinicalHead>
 
             <ClinicalHead>
-              Temp
+              {ui("Temp")}
             </ClinicalHead>
 
             <ClinicalHead>
-              Pulse
+              {ui("Pulse")}
             </ClinicalHead>
 
             <ClinicalHead>
-              O₂
+              {ui("O₂")}
             </ClinicalHead>
 
             <ClinicalHead>
-              Pain
+              {ui("Pain")}
             </ClinicalHead>
 
             <ClinicalHead>
-              Recorded By
+              {ui("Recorded By")}
             </ClinicalHead>
           </tr>
         </thead>
@@ -2164,7 +2227,8 @@ function VitalsTable({
               >
                 <td className="whitespace-nowrap px-3 py-2 text-[#52645C]">
                   {formatDateTime(
-                    vital.recorded_at
+                    vital.recorded_at,
+                    language
                   )}
                 </td>
 

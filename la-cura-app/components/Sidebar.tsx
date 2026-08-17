@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import Link from "next/link";
 
 import {
@@ -200,6 +202,9 @@ function formatRole(
 }
 
 export default function Sidebar() {
+  const { ui } =
+    useAppUi();
+
   const pathname =
     usePathname();
 
@@ -298,20 +303,17 @@ export default function Sidebar() {
 
           <div className="min-w-0">
             <h1 className="text-3xl font-black leading-none tracking-tight text-white">
-              La-Cura
-            </h1>
+              {ui("La-Cura")}</h1>
 
             <p className="mt-2 whitespace-nowrap text-sm text-green-200">
-              Compassionate Care
-            </p>
+              {ui("Compassionate Care")}</p>
           </div>
         </Link>
       </div>
 
       <div className="border-b border-green-700/50 px-8 py-6">
         <p className="text-sm text-green-300">
-          Logged in as
-        </p>
+          {ui("Logged in as")}</p>
 
         <h2 className="mt-1 truncate text-xl font-bold text-white">
           {staffName}
@@ -327,7 +329,7 @@ export default function Sidebar() {
       </div>
 
       <nav
-        aria-label="Main navigation"
+        aria-label={ui("Main navigation")}
         className="flex-1 overflow-y-auto px-5 py-8"
       >
         <div className="space-y-3">
@@ -382,14 +384,10 @@ export default function Sidebar() {
           {menu.length === 0 && (
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <p className="font-semibold text-white">
-                No navigation assigned
-              </p>
+                {ui("No navigation assigned")}</p>
 
               <p className="mt-2 text-sm leading-6 text-green-100">
-                This account does not
-                have an approved La-Cura
-                navigation profile.
-              </p>
+                {ui("This account does not have an approved La-Cura navigation profile.")}</p>
             </div>
           )}
         </div>

@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import {
   useEffect,
   useState,
@@ -53,6 +55,9 @@ type NotificationState =
 
 
 export default function AddNursingNotePage() {
+  const { ui } =
+    useAppUi();
+
   const {
     staff,
   } = useStaffSession();
@@ -188,7 +193,7 @@ export default function AddNursingNotePage() {
         setNotification({
           type: "error",
           message:
-            "La-Cura could not load the resident from the profile. Select the resident manually.",
+            ui("La-Cura could not load the resident from the profile. Select the resident manually."),
         });
 
         setLoadingResident(
@@ -318,7 +323,7 @@ export default function AddNursingNotePage() {
       setNotification({
         type: "error",
         message:
-          "La-Cura could not identify the logged-in staff member.",
+          ui("La-Cura could not identify the logged-in staff member."),
       });
 
       return;
@@ -373,7 +378,7 @@ export default function AddNursingNotePage() {
       setNotification({
         type: "success",
         message:
-          `Nursing note saved successfully for ${resident.full_name}.`,
+          `${ui("Nursing note saved successfully for")} ${resident.full_name}.`,
       });
 
       clearNoteFields();
@@ -393,7 +398,7 @@ export default function AddNursingNotePage() {
         message:
           error instanceof Error
             ? error.message
-            : "The nursing note could not be saved.",
+            : ui("The nursing note could not be saved."),
       });
     } finally {
       setSaving(false);
@@ -421,8 +426,7 @@ export default function AddNursingNotePage() {
                 href="/dashboard"
                 className="hover:text-[#073B2F]"
               >
-                Home
-              </Link>
+                {ui("Home")}</Link>
 
               <span>/</span>
 
@@ -441,18 +445,15 @@ export default function AddNursingNotePage() {
               ) : null}
 
               <span className="font-semibold text-[#40524B]">
-                Prog Notes
-              </span>
+                {ui("Prog Notes")}</span>
             </div>
 
             <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
-                Nursing Progress Note
-              </h1>
+                {ui("Nursing Progress Note")}</h1>
 
               <p className="text-xs text-[#718078]">
-                SOAP clinical documentation
-              </p>
+                {ui("SOAP clinical documentation")}</p>
             </div>
           </div>
 
@@ -477,8 +478,7 @@ export default function AddNursingNotePage() {
                   size={12}
                 />
 
-                Resident Progress Notes
-              </Link>
+                {ui("Resident Progress Notes")}</Link>
             )}
         </div>
       </section>
@@ -526,13 +526,11 @@ export default function AddNursingNotePage() {
           <section className="border border-[#C8D2CD] bg-white">
             <div className="flex items-center justify-between border-b border-[#D3DCD7] bg-[#E7EDE9] px-3 py-1.5">
               <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
-                Resident Context
-              </h2>
+                {ui("Resident Context")}</h2>
 
               {cameFromResidentProfile && (
                 <span className="text-[9px] font-bold uppercase tracking-[0.05em] text-[#8B6E27]">
-                  Profile Context
-                </span>
+                  {ui("Profile Context")}</span>
               )}
             </div>
 
@@ -546,15 +544,14 @@ export default function AddNursingNotePage() {
                   />
 
                   <span className="text-[11px] text-[#5A6D64]">
-                    Loading resident...
-                  </span>
+                    {ui("Loading resident...")}</span>
                 </div>
               ) : resident &&
                 !changingResident ? (
                 <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                   <div className="grid gap-2 sm:grid-cols-[minmax(220px,1fr)_160px_120px]">
                     <ResidentField
-                      label="Resident"
+                      label={ui("Resident")}
                       value={
                         resident.full_name
                       }
@@ -562,7 +559,7 @@ export default function AddNursingNotePage() {
                     />
 
                     <ResidentField
-                      label="Room / Bed"
+                      label={ui("Room / Bed")}
                       value={
                         resident.room ||
                         "Unassigned"
@@ -570,13 +567,13 @@ export default function AddNursingNotePage() {
                     />
 
                     <ResidentField
-                      label="Age"
+                      label={ui("Age")}
                       value={
                         resident.age !==
                           null &&
                         resident.age !==
                           undefined
-                          ? `${resident.age} years`
+                          ? `${resident.age} ${ui("years")}`
                           : "Not recorded"
                       }
                     />
@@ -607,8 +604,7 @@ export default function AddNursingNotePage() {
                       size={12}
                     />
 
-                    Change Resident
-                  </button>
+                    {ui("Change Resident")}</button>
                 </div>
               ) : (
                 <div>
@@ -629,7 +625,7 @@ export default function AddNursingNotePage() {
                         }
                         className="mt-2 text-[10px] font-bold text-[#073B2F] hover:underline"
                       >
-                        Keep{" "}
+                        {ui("Keep")}{" "}
                         {
                           resident.full_name
                         }
@@ -646,11 +642,10 @@ export default function AddNursingNotePage() {
           <section className="border border-[#C8D2CD] bg-white">
             <div className="flex flex-col gap-1 border-b border-[#D3DCD7] bg-[#E7EDE9] px-3 py-1.5 sm:flex-row sm:items-center sm:justify-between">
               <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
-                SOAP Documentation
-              </h2>
+                {ui("SOAP Documentation")}</h2>
 
               <span className="text-[9px] text-[#73817A]">
-                Recorded by{" "}
+                {ui("Recorded by")}{" "}
                 <strong className="font-semibold text-[#40544B]">
                   {recordedBy}
                 </strong>
@@ -661,9 +656,9 @@ export default function AddNursingNotePage() {
             <div className="divide-y divide-[#DCE3DF]">
               <SoapRow
                 letter="S"
-                title="Subjective"
-                description="Resident-reported symptoms, concerns, statements, or changes."
-                placeholder="Document what the resident reports..."
+                title={ui("Subjective")}
+                description={ui("Resident-reported symptoms, concerns, statements, or changes.")}
+                placeholder={ui("Document what the resident reports...")}
                 value={
                   subjective
                 }
@@ -674,9 +669,9 @@ export default function AddNursingNotePage() {
 
               <SoapRow
                 letter="O"
-                title="Objective"
-                description="Observed findings, measurements, vital signs, and clinical observations."
-                placeholder="Document objective findings and observations..."
+                title={ui("Objective")}
+                description={ui("Observed findings, measurements, vital signs, and clinical observations.")}
+                placeholder={ui("Document objective findings and observations...")}
                 value={
                   objective
                 }
@@ -687,9 +682,9 @@ export default function AddNursingNotePage() {
 
               <SoapRow
                 letter="A"
-                title="Assessment"
-                description="Clinical assessment based on the documented subjective and objective findings."
-                placeholder="Document nursing assessment..."
+                title={ui("Assessment")}
+                description={ui("Clinical assessment based on the documented subjective and objective findings.")}
+                placeholder={ui("Document nursing assessment...")}
                 value={
                   assessment
                 }
@@ -700,9 +695,9 @@ export default function AddNursingNotePage() {
 
               <SoapRow
                 letter="P"
-                title="Plan / Intervention"
-                description="Interventions, monitoring, notifications, follow-up, and planned care."
-                placeholder="Document interventions and plan..."
+                title={ui("Plan / Intervention")}
+                description={ui("Interventions, monitoring, notifications, follow-up, and planned care.")}
+                placeholder={ui("Document interventions and plan...")}
                 value={plan}
                 onChange={
                   setPlan
@@ -718,13 +713,12 @@ export default function AddNursingNotePage() {
             <div>
               <p className="text-[11px] font-semibold text-[#344940]">
                 {resident
-                  ? `Ready to save a progress note for ${resident.full_name}.`
+                  ? `${ui("Ready to save a progress note for")} ${resident.full_name}.`
                   : "Select a resident before saving."}
               </p>
 
               <p className="mt-0.5 text-[9px] text-[#73817A]">
-                This entry will become part of the resident&apos;s clinical record.
-              </p>
+                {ui("This entry will become part of the resident&apos;s clinical record.")}</p>
             </div>
 
             <button
@@ -759,16 +753,14 @@ export default function AddNursingNotePage() {
                     className="animate-spin"
                   />
 
-                  Saving...
-                </>
+                  {ui("Saving...")}</>
               ) : (
                 <>
                   <Save
                     size={14}
                   />
 
-                  Save Progress Note
-                </>
+                  {ui("Save Progress Note")}</>
               )}
             </button>
           </section>

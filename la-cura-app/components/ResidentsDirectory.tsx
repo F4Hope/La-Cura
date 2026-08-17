@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import Link from "next/link";
 
 import {
@@ -110,7 +112,8 @@ function formatDate(
   value:
     | string
     | null
-    | undefined
+    | undefined,
+  locale = "en-CM"
 ) {
   if (!value) {
     return "—";
@@ -128,7 +131,7 @@ function formatDate(
   }
 
   return new Intl.DateTimeFormat(
-    "en-US",
+    locale,
     {
       month: "numeric",
       day: "numeric",
@@ -252,6 +255,9 @@ function statusStyle(
 export default function ResidentsDirectory({
   residents,
 }: Props) {
+  const { ui, locale } =
+    useAppUi();
+
   const [
     search,
     setSearch,
@@ -495,24 +501,20 @@ export default function ResidentsDirectory({
                 href="/dashboard"
                 className="hover:text-[#073B2F]"
               >
-                Home
-              </Link>
+                {ui("Home")}</Link>
 
               <span>/</span>
 
               <span className="font-semibold text-[#40524B]">
-                Residents
-              </span>
+                {ui("Residents")}</span>
             </div>
 
             <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
-                Resident List
-              </h1>
+                {ui("Resident List")}</h1>
 
               <p className="text-xs text-[#718078]">
-                Current resident clinical directory
-              </p>
+                {ui("Current resident clinical directory")}</p>
             </div>
           </div>
 
@@ -532,8 +534,7 @@ export default function ResidentsDirectory({
           >
             <Plus size={14} />
 
-            Add Resident
-          </Link>
+            {ui("Add Resident")}</Link>
         </div>
       </section>
 
@@ -550,19 +551,19 @@ export default function ResidentsDirectory({
           "
         >
           <SummaryCell
-            label="Residents"
+            label={ui("Residents")}
             value={
               sortedResidents.length
             }
           />
 
           <SummaryCell
-            label="Rooms in use"
+            label={ui("Rooms in use")}
             value={roomsInUse}
           />
 
           <SummaryCell
-            label="Need attention"
+            label={ui("Need attention")}
             value={
               attentionCount
             }
@@ -601,7 +602,7 @@ export default function ResidentsDirectory({
                         .value
                     )
                   }
-                  placeholder="Search resident, room, diagnosis, physician, contact..."
+                  placeholder={ui("Search resident, room, diagnosis, physician, contact...")}
                   className="
                     h-8 w-full
                     rounded-[4px]
@@ -645,8 +646,7 @@ export default function ResidentsDirectory({
                   "
                 >
                   <option value="all">
-                    All Statuses
-                  </option>
+                    {ui("All Statuses")}</option>
 
                   {statuses.map(
                     (status) => (
@@ -654,7 +654,7 @@ export default function ResidentsDirectory({
                         key={status}
                         value={status}
                       >
-                        {status}
+                        {ui(status)}
                       </option>
                     )
                   )}
@@ -683,8 +683,7 @@ export default function ResidentsDirectory({
                   "
                 >
                   <option value="all">
-                    All Rooms
-                  </option>
+                    {ui("All Rooms")}</option>
 
                   {rooms.map(
                     (room) => (
@@ -692,7 +691,7 @@ export default function ResidentsDirectory({
                         key={room}
                         value={room}
                       >
-                        Room {room}
+                        {ui("Room")}{room}
                       </option>
                     )
                   )}
@@ -719,8 +718,7 @@ export default function ResidentsDirectory({
                       size={12}
                     />
 
-                    Reset
-                  </button>
+                    {ui("Reset")}</button>
                 )}
               </div>
             </div>
@@ -753,8 +751,7 @@ export default function ResidentsDirectory({
                   }
                 `}
               >
-                ALL
-              </button>
+                {ui("ALL")}</button>
 
               {alphabet.map(
                 (letter) => (
@@ -794,22 +791,20 @@ export default function ResidentsDirectory({
 
           <div className="flex items-center justify-between gap-3 border-b border-[#D8DFDB] bg-[#FBFAF7] px-3 py-1.5 text-[11px]">
             <p className="text-[#607169]">
-              Showing{" "}
+              {ui("Showing")}{" "}
               <strong className="text-[#263A32]">
                 {
                   filteredResidents.length
                 }
               </strong>{" "}
-              matching resident
-              {filteredResidents.length ===
+              {ui("matching resident")}{filteredResidents.length ===
               1
                 ? ""
                 : "s"}
             </p>
 
             <p className="font-semibold text-[#7D6A35]">
-              A–Z order
-            </p>
+              {ui("A–Z order")}</p>
           </div>
 
 
@@ -820,52 +815,40 @@ export default function ResidentsDirectory({
               <thead>
                 <tr className="bg-[#E8EEEA] text-[10px] font-bold uppercase tracking-[0.035em] text-[#354A41]">
                   <TableHead>
-                    Resident
-                  </TableHead>
+                    {ui("Resident")}</TableHead>
 
                   <TableHead>
-                    ID
-                  </TableHead>
+                    {ui("ID")}</TableHead>
 
                   <TableHead>
-                    Sex
-                  </TableHead>
+                    {ui("Sex")}</TableHead>
 
                   <TableHead>
-                    Age
-                  </TableHead>
+                    {ui("Age")}</TableHead>
 
                   <TableHead>
-                    Room
-                  </TableHead>
+                    {ui("Room")}</TableHead>
 
                   <TableHead>
-                    Status
-                  </TableHead>
+                    {ui("Status")}</TableHead>
 
                   <TableHead>
-                    Admit Date
-                  </TableHead>
+                    {ui("Admit Date")}</TableHead>
 
                   <TableHead>
-                    Diagnosis
-                  </TableHead>
+                    {ui("Diagnosis")}</TableHead>
 
                   <TableHead>
-                    Physician
-                  </TableHead>
+                    {ui("Physician")}</TableHead>
 
                   <TableHead>
-                    Allergies
-                  </TableHead>
+                    {ui("Allergies")}</TableHead>
 
                   <TableHead>
-                    Contact
-                  </TableHead>
+                    {ui("Contact")}</TableHead>
 
                   <TableHead>
-                    Action
-                  </TableHead>
+                    {ui("Action")}</TableHead>
                 </tr>
               </thead>
 
@@ -1017,7 +1000,7 @@ export default function ResidentsDirectory({
                                 cleanText(
                                   resident.emergency_contact
                                 ) ||
-                                "No phone"}
+                                ui("No phone")}
                             </div>
                           </td>
 
@@ -1038,8 +1021,7 @@ export default function ResidentsDirectory({
                                 hover:bg-[#F0F4F1]
                               "
                             >
-                              Open
-                            </Link>
+                              {ui("Open")}</Link>
                           </td>
                         </tr>
                       );
@@ -1052,8 +1034,7 @@ export default function ResidentsDirectory({
                       className="px-6 py-14 text-center"
                     >
                       <p className="text-sm font-semibold text-[#30443B]">
-                        No residents match the selected filters.
-                      </p>
+                        {ui("No residents match the selected filters.")}</p>
 
                       <button
                         type="button"
@@ -1062,8 +1043,7 @@ export default function ResidentsDirectory({
                         }
                         className="mt-2 text-xs font-bold text-[#073B2F] underline"
                       >
-                        Reset filters
-                      </button>
+                        {ui("Reset filters")}</button>
                     </td>
                   </tr>
                 )}
@@ -1101,8 +1081,7 @@ export default function ResidentsDirectory({
                           </Link>
 
                           <p className="mt-0.5 text-[10px] text-[#76857E]">
-                            Resident #
-                            {resident.id}
+                            {ui("Resident #")}{resident.id}
                           </p>
                         </div>
 
@@ -1118,7 +1097,7 @@ export default function ResidentsDirectory({
 
                       <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
                         <MobileField
-                          label="Room"
+                          label={ui("Room")}
                           value={
                             cleanText(
                               resident.room
@@ -1127,14 +1106,14 @@ export default function ResidentsDirectory({
                         />
 
                         <MobileField
-                          label="Age"
+                          label={ui("Age")}
                           value={formatAge(
                             resident.age
                           )}
                         />
 
                         <MobileField
-                          label="Diagnosis"
+                          label={ui("Diagnosis")}
                           value={
                             cleanText(
                               resident.diagnosis
@@ -1143,7 +1122,7 @@ export default function ResidentsDirectory({
                         />
 
                         <MobileField
-                          label="Physician"
+                          label={ui("Physician")}
                           value={
                             cleanText(
                               resident.primary_doctor
@@ -1163,7 +1142,7 @@ export default function ResidentsDirectory({
 
           <div className="flex flex-col gap-2 border-t border-[#D1D9D5] bg-[#F8F7F2] px-3 py-2 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-[11px] text-[#607169]">
-              Showing{" "}
+              {ui("Showing")}{" "}
               <strong>
                 {firstRecord}
               </strong>{" "}
@@ -1171,7 +1150,7 @@ export default function ResidentsDirectory({
               <strong>
                 {lastRecord}
               </strong>{" "}
-              of{" "}
+              {ui("of")}{" "}
               <strong>
                 {
                   filteredResidents.length
@@ -1182,7 +1161,7 @@ export default function ResidentsDirectory({
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                aria-label="Previous page"
+                aria-label={ui("Previous page")}
                 disabled={
                   currentPage === 1
                 }
@@ -1210,13 +1189,13 @@ export default function ResidentsDirectory({
               </button>
 
               <span className="min-w-[92px] text-center text-[11px] font-semibold text-[#4A5D54]">
-                Page {currentPage} of{" "}
+                {ui("Page")}{currentPage} {ui("of")}{" "}
                 {totalPages}
               </span>
 
               <button
                 type="button"
-                aria-label="Next page"
+                aria-label={ui("Next page")}
                 disabled={
                   currentPage ===
                   totalPages
@@ -1352,6 +1331,9 @@ function StatusBadge({
 }: {
   status: string;
 }) {
+  const { ui } =
+    useAppUi();
+
   return (
     <span
       className={`
@@ -1366,7 +1348,7 @@ function StatusBadge({
         ${statusStyle(status)}
       `}
     >
-      {status}
+      {ui(status)}
     </span>
   );
 }

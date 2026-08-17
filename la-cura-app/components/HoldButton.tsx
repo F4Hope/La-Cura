@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import { useState } from "react";
 
 import { faCirclePause } from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +25,9 @@ export default function HoldButton({
   resident,
   medication,
 }: Props) {
+  const { ui } =
+    useAppUi();
+
   const [open, setOpen] = useState(false);
 
   async function handleConfirm(
@@ -31,7 +36,7 @@ export default function HoldButton({
   ) {
     if (!reason) {
       throw new Error(
-        "Select a reason before holding the medication."
+        ui("Select a reason before holding the medication.")
       );
     }
 
@@ -39,7 +44,7 @@ export default function HoldButton({
 
     if (!staff) {
       throw new Error(
-        "Unable to identify the logged-in staff member."
+        ui("Unable to identify the logged-in staff member.")
       );
     }
 
@@ -70,15 +75,14 @@ export default function HoldButton({
           className="text-lg"
         />
 
-        Hold
-      </button>
+        {ui("Hold")}</button>
 
       <MedicationActionModal
         open={open}
-        title="Hold Medication"
+        title={ui("Hold Medication")}
         resident={resident}
         medication={medication}
-        confirmText="Hold Medication"
+        confirmText={ui("Hold Medication")}
         confirmColor="bg-amber-500 hover:bg-amber-600"
         onClose={() => setOpen(false)}
         onConfirm={handleConfirm}

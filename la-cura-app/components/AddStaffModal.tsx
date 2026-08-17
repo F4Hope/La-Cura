@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import type {
   ReactNode,
 } from "react";
@@ -103,6 +105,9 @@ export default function AddStaffModal({
   open,
   onClose,
 }: Props) {
+  const { ui } =
+    useAppUi();
+
   const [step, setStep] = useState(1);
 
   const [form, setForm] =
@@ -187,7 +192,7 @@ export default function AddStaffModal({
       );
 
       setError(
-        "The credentials could not be copied automatically. Select and copy them manually."
+        ui("The credentials could not be copied automatically. Select and copy them manually.")
       );
     }
   }
@@ -199,7 +204,7 @@ export default function AddStaffModal({
 
     if (!form.full_name.trim()) {
       setError(
-        "Enter the staff member's full name."
+        ui("Enter the staff member's full name.")
       );
 
       setStep(1);
@@ -221,7 +226,7 @@ export default function AddStaffModal({
         !sessionData.session?.access_token
       ) {
         throw new Error(
-          "Your administrator session has expired. Sign in again."
+          ui("Your administrator session has expired. Sign in again.")
         );
       }
 
@@ -287,7 +292,7 @@ export default function AddStaffModal({
         !temporaryPassword
       ) {
         throw new Error(
-          "The staff account was created, but the credentials were not returned. Reset the password from Staff Management."
+          ui("The staff account was created, but the credentials were not returned. Reset the password from Staff Management.")
         );
       }
 
@@ -307,7 +312,7 @@ export default function AddStaffModal({
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : "Unable to create the staff account."
+          : ui("Unable to create the staff account.")
       );
     } finally {
       setLoading(false);
@@ -321,12 +326,12 @@ export default function AddStaffModal({
   const credentialsText =
     createdCredentials
       ? [
-          "La-Cura Staff Login",
+          ui("La-Cura Staff Login"),
           "",
-          `Staff Code: ${createdCredentials.staffCode}`,
-          `Temporary Password: ${createdCredentials.temporaryPassword}`,
+          `${ui("Staff Code")}: ${createdCredentials.staffCode}`,
+          `${ui("Temporary Password")}: ${createdCredentials.temporaryPassword}`,
           "",
-          "The staff member must keep these credentials private.",
+          ui("The staff member must keep these credentials private."),
         ].join("\n")
       : "";
 
@@ -341,7 +346,7 @@ export default function AddStaffModal({
         aria-modal="true"
         aria-label={
           createdCredentials
-            ? "Staff account credentials"
+            ? ui("Staff account credentials")
             : "Add staff member"
         }
         onMouseDown={(event) =>
@@ -363,20 +368,17 @@ export default function AddStaffModal({
 
                   <div>
                     <h2 className="text-[16px] font-bold">
-                      Staff Account Created
-                    </h2>
+                      {ui("Staff Account Created")}</h2>
 
                     <p className="mt-1 text-green-100">
-                      Copy these credentials
-                      before closing.
-                    </p>
+                      {ui("Copy these credentials before closing.")}</p>
                   </div>
                 </div>
 
                 <button
                   type="button"
                   onClick={handleClose}
-                  aria-label="Close credentials"
+                  aria-label={ui("Close credentials")}
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25"
                 >
                   <AppIcon icon={faXmark} />
@@ -394,18 +396,12 @@ export default function AddStaffModal({
                 />
 
                 <p>
-                  The temporary password is
-                  displayed only now. Give the
-                  staff code and password
-                  directly to the staff member.
-                  Do not send them through an
-                  unsecured public message.
-                </p>
+                  {ui("The temporary password is displayed only now. Give the staff code and password directly to the staff member. Do not send them through an unsecured public message.")}</p>
               </div>
 
               <div className="mt-6 space-y-5">
                 <CredentialField
-                  label="Staff Code"
+                  label={ui("Staff Code")}
                   value={
                     createdCredentials.staffCode
                   }
@@ -429,8 +425,7 @@ export default function AddStaffModal({
                       className="text-[#073B2F]"
                     />
 
-                    Temporary Password
-                  </label>
+                    {ui("Temporary Password")}</label>
 
                   <div className="flex items-stretch overflow-hidden rounded-[3px] border border-slate-300 bg-slate-50">
                     <div className="min-w-0 flex-1 px-4 py-3.5 font-mono text-sm font-bold tracking-wider text-slate-900 sm:text-base">
@@ -449,8 +444,8 @@ export default function AddStaffModal({
                       }
                       aria-label={
                         showTemporaryPassword
-                          ? "Hide temporary password"
-                          : "Show temporary password"
+                          ? ui("Hide temporary password")
+                          : ui("Show temporary password")
                       }
                       className="border-l border-slate-300 px-4 text-slate-600 transition hover:bg-slate-100 hover:text-[#073B2F]"
                     >
@@ -486,7 +481,7 @@ export default function AddStaffModal({
                         {copiedField ===
                         "password"
                           ? "Copied"
-                          : "Copy"}
+                          : ui("Copy")}
                       </span>
                     </button>
                   </div>
@@ -502,17 +497,10 @@ export default function AddStaffModal({
 
                   <div>
                     <p className="font-bold text-blue-900">
-                      Staff login instructions
-                    </p>
+                      {ui("Staff login instructions")}</p>
 
                     <p className="mt-2 text-sm leading-6 text-blue-700">
-                      The staff member should
-                      open the La-Cura login page,
-                      enter the staff code and
-                      temporary password, then
-                      create a private password
-                      when prompted.
-                    </p>
+                      {ui("The staff member should open the La-Cura login page, enter the staff code and temporary password, then create a private password when prompted.")}</p>
                   </div>
                 </div>
               </div>
@@ -539,7 +527,7 @@ export default function AddStaffModal({
 
                 {copiedField === "both"
                   ? "Credentials Copied"
-                  : "Copy Both Credentials"}
+                  : ui("Copy Both Credentials")}
               </button>
 
               <button
@@ -549,8 +537,7 @@ export default function AddStaffModal({
               >
                 <AppIcon icon={faCheck} />
 
-                Done
-              </button>
+                {ui("Done")}</button>
             </footer>
           </>
         ) : (
@@ -567,12 +554,10 @@ export default function AddStaffModal({
 
                   <div>
                     <h2 className="text-[16px] font-bold">
-                      Add Staff Member
-                    </h2>
+                      {ui("Add Staff Member")}</h2>
 
                     <p className="mt-1 text-green-100">
-                      Step {step} of 2
-                    </p>
+                      {ui("Step")}{step} {ui("of 2")}</p>
                   </div>
                 </div>
 
@@ -580,7 +565,7 @@ export default function AddStaffModal({
                   type="button"
                   onClick={handleClose}
                   disabled={loading}
-                  aria-label="Close add staff modal"
+                  aria-label={ui("Close add staff modal")}
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[3px] bg-white/15 transition hover:bg-white/25 disabled:opacity-50"
                 >
                   <AppIcon icon={faXmark} />
@@ -611,7 +596,7 @@ export default function AddStaffModal({
                 <div className="space-y-5">
                   <FormField
                     id="add-staff-name"
-                    label="Full Name"
+                    label={ui("Full Name")}
                     icon={faUser}
                   >
                     <input
@@ -627,7 +612,7 @@ export default function AddStaffModal({
                         )
                       }
                       disabled={loading}
-                      placeholder="Enter full name"
+                      placeholder={ui("Enter full name")}
                       autoComplete="name"
                       className="staff-input"
                     />
@@ -635,7 +620,7 @@ export default function AddStaffModal({
 
                   <FormField
                     id="add-staff-phone"
-                    label="Phone Number"
+                    label={ui("Phone Number")}
                     icon={faPhone}
                   >
                     <input
@@ -649,7 +634,7 @@ export default function AddStaffModal({
                         )
                       }
                       disabled={loading}
-                      placeholder="Optional phone number"
+                      placeholder={ui("Optional phone number")}
                       autoComplete="tel"
                       className="staff-input"
                     />
@@ -657,7 +642,7 @@ export default function AddStaffModal({
 
                   <FormField
                     id="add-staff-role"
-                    label="Role"
+                    label={ui("Role")}
                     icon={faIdCard}
                   >
                     <select
@@ -674,16 +659,13 @@ export default function AddStaffModal({
                       className="staff-input"
                     >
                       <option value="Administrator">
-                        Administrator
-                      </option>
+                        {ui("Administrator")}</option>
 
                       <option value="Nurse">
-                        Nurse
-                      </option>
+                        {ui("Nurse")}</option>
 
                       <option value="Physician">
-                        Physician
-                      </option>
+                        {ui("Physician")}</option>
                     </select>
                   </FormField>
 
@@ -696,16 +678,10 @@ export default function AddStaffModal({
 
                       <div>
                         <p className="font-bold text-green-900">
-                          No email invitation
-                        </p>
+                          {ui("No email invitation")}</p>
 
                         <p className="mt-1 text-sm leading-6 text-[#073B2F]">
-                          La-Cura will generate a
-                          staff code and temporary
-                          password. You will give
-                          them directly to the
-                          staff member.
-                        </p>
+                          {ui("La-Cura will generate a staff code and temporary password. You will give them directly to the staff member.")}</p>
                       </div>
                     </div>
                   </div>
@@ -714,7 +690,7 @@ export default function AddStaffModal({
                 <div className="space-y-5">
                   <FormField
                     id="add-staff-department"
-                    label="Department"
+                    label={ui("Department")}
                     icon={faBuilding}
                   >
                     <input
@@ -730,14 +706,14 @@ export default function AddStaffModal({
                         )
                       }
                       disabled={loading}
-                      placeholder="Optional department"
+                      placeholder={ui("Optional department")}
                       className="staff-input"
                     />
                   </FormField>
 
                   <FormField
                     id="add-staff-license"
-                    label="License Number"
+                    label={ui("License Number")}
                     icon={faIdCard}
                   >
                     <input
@@ -753,14 +729,14 @@ export default function AddStaffModal({
                         )
                       }
                       disabled={loading}
-                      placeholder="Optional license number"
+                      placeholder={ui("Optional license number")}
                       className="staff-input"
                     />
                   </FormField>
 
                   <FormField
                     id="add-staff-shift"
-                    label="Shift"
+                    label={ui("Shift")}
                     icon={faClock}
                   >
                     <select
@@ -777,18 +753,16 @@ export default function AddStaffModal({
                       className="staff-input"
                     >
                       <option value="Day">
-                        Day
-                      </option>
+                        {ui("Day")}</option>
 
                       <option value="Night">
-                        Night
-                      </option>
+                        {ui("Night")}</option>
                     </select>
                   </FormField>
 
                   <FormField
                     id="add-staff-date"
-                    label="Employment Date"
+                    label={ui("Employment Date")}
                     icon={faCalendarDays}
                   >
                     <input
@@ -835,8 +809,7 @@ export default function AddStaffModal({
                   disabled={loading}
                   className="rounded-[3px] border border-slate-300 bg-white px-6 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
                 >
-                  Cancel
-                </button>
+                  {ui("Cancel")}</button>
               ) : (
                 <button
                   type="button"
@@ -850,8 +823,7 @@ export default function AddStaffModal({
                     icon={faArrowLeft}
                   />
 
-                  Back
-                </button>
+                  {ui("Back")}</button>
               )}
 
               {step === 1 ? (
@@ -862,7 +834,7 @@ export default function AddStaffModal({
                       !form.full_name.trim()
                     ) {
                       setError(
-                        "Enter the staff member's full name."
+                        ui("Enter the staff member's full name.")
                       );
 
                       return;
@@ -877,9 +849,7 @@ export default function AddStaffModal({
                   }
                   className="inline-flex items-center gap-2 rounded-[3px] bg-[#073B2F] px-6 py-3 font-bold text-white transition hover:bg-[#0D4A3A] disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  Next
-
-                  <AppIcon
+                  {ui("Next")}<AppIcon
                     icon={faArrowRight}
                   />
                 </button>
@@ -900,8 +870,8 @@ export default function AddStaffModal({
                   />
 
                   {loading
-                    ? "Creating Account..."
-                    : "Create Staff Account"}
+                    ? ui("Creating Account...")
+                    : ui("Create Staff Account")}
                 </button>
               )}
             </footer>
@@ -983,6 +953,9 @@ function CredentialField({
   copied,
   onCopy,
 }: CredentialFieldProps) {
+  const { ui } =
+    useAppUi();
+
   return (
     <div>
       <label className="mb-2 flex items-center gap-2 font-bold text-slate-800">
@@ -1011,7 +984,7 @@ function CredentialField({
           />
 
           <span className="hidden sm:inline">
-            {copied ? "Copied" : "Copy"}
+            {copied ? ui("Copied") : ui("Copy")}
           </span>
         </button>
       </div>

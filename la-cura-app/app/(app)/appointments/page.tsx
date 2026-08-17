@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import Link from "next/link";
 
 import {
@@ -84,6 +86,9 @@ function statusStyle(
 
 
 export default function AppointmentsPage() {
+  const { ui } =
+    useAppUi();
+
   const [
     search,
     setSearch,
@@ -221,24 +226,20 @@ export default function AppointmentsPage() {
                 href="/dashboard"
                 className="hover:text-[#073B2F]"
               >
-                Home
-              </Link>
+                {ui("Home")}</Link>
 
               <span>/</span>
 
               <span className="font-semibold text-[#40524B]">
-                Appointments
-              </span>
+                {ui("Appointments")}</span>
             </div>
 
             <div className="mt-1 flex flex-wrap items-baseline gap-x-4 gap-y-1">
               <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#10231E]">
-                Resident Appointments
-              </h1>
+                {ui("Resident Appointments")}</h1>
 
               <p className="text-xs text-[#718078]">
-                Clinical and external appointment schedule
-              </p>
+                {ui("Clinical and external appointment schedule")}</p>
             </div>
           </div>
 
@@ -258,8 +259,7 @@ export default function AppointmentsPage() {
                 hover:bg-[#F2F5F3]
               "
             >
-              Resident List
-            </Link>
+              {ui("Resident List")}</Link>
 
             <Link
               href="/reports"
@@ -275,8 +275,7 @@ export default function AppointmentsPage() {
                 hover:bg-[#0D4A3A]
               "
             >
-              Appointment Reports
-            </Link>
+              {ui("Appointment Reports")}</Link>
           </div>
         </div>
       </section>
@@ -287,26 +286,26 @@ export default function AppointmentsPage() {
 
         <section className="mb-3 grid border border-[#CBD4D0] bg-white sm:grid-cols-4">
           <SummaryCell
-            label="Appointments"
+            label={ui("Appointments")}
             value={
               appointmentRecords.length
             }
           />
 
           <SummaryCell
-            label="Scheduled"
+            label={ui("Scheduled")}
             value={scheduled}
             info
           />
 
           <SummaryCell
-            label="Completed"
+            label={ui("Completed")}
             value={completed}
             success
           />
 
           <SummaryCell
-            label="Missed / Cancelled"
+            label={ui("Missed / Cancelled")}
             value={exceptions}
             danger={
               exceptions > 0
@@ -336,7 +335,7 @@ export default function AppointmentsPage() {
                       event.target.value
                     )
                   }
-                  placeholder="Search resident, provider, appointment type, location..."
+                  placeholder={ui("Search resident, provider, appointment type, location...")}
                   className="
                     h-8 w-full
                     border border-[#BCC9C3]
@@ -356,7 +355,7 @@ export default function AppointmentsPage() {
 
               <div className="flex flex-wrap gap-1">
                 <FilterButton
-                  label="All"
+                  label={ui("All")}
                   active={
                     statusFilter ===
                     "all"
@@ -369,7 +368,7 @@ export default function AppointmentsPage() {
                 />
 
                 <FilterButton
-                  label="Scheduled"
+                  label={ui("Scheduled")}
                   active={
                     statusFilter ===
                     "schedul"
@@ -382,7 +381,7 @@ export default function AppointmentsPage() {
                 />
 
                 <FilterButton
-                  label="Completed"
+                  label={ui("Completed")}
                   active={
                     statusFilter ===
                     "complete"
@@ -395,7 +394,7 @@ export default function AppointmentsPage() {
                 />
 
                 <FilterButton
-                  label="Cancelled"
+                  label={ui("Cancelled")}
                   active={
                     statusFilter ===
                     "cancel"
@@ -408,7 +407,7 @@ export default function AppointmentsPage() {
                 />
 
                 <FilterButton
-                  label="Missed"
+                  label={ui("Missed")}
                   active={
                     statusFilter ===
                     "miss"
@@ -447,8 +446,7 @@ export default function AppointmentsPage() {
                       size={11}
                     />
 
-                    Reset
-                  </button>
+                    {ui("Reset")}</button>
                 )}
               </div>
             </div>
@@ -459,20 +457,18 @@ export default function AppointmentsPage() {
 
           <div className="flex items-center justify-between gap-3 border-b border-[#D8DFDB] bg-[#FBFAF7] px-3 py-1.5 text-[10px]">
             <span className="text-[#607169]">
-              Showing{" "}
+              {ui("Showing")}{" "}
               <strong className="text-[#263A32]">
                 {filtered.length}
               </strong>{" "}
-              appointment
-              {filtered.length ===
+              {ui("appointment")}{filtered.length ===
               1
                 ? ""
                 : "s"}
             </span>
 
             <span className="font-semibold text-[#7D6A35]">
-              Appointment Schedule
-            </span>
+              {ui("Appointment Schedule")}</span>
           </div>
 
 
@@ -485,40 +481,31 @@ export default function AppointmentsPage() {
                 <thead>
                   <tr className="bg-[#E8EEEA] text-[10px] font-bold uppercase tracking-[0.035em] text-[#354A41]">
                     <ClinicalHead>
-                      Date
-                    </ClinicalHead>
+                      {ui("Date")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Time
-                    </ClinicalHead>
+                      {ui("Time")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Resident
-                    </ClinicalHead>
+                      {ui("Resident")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Appointment Type
-                    </ClinicalHead>
+                      {ui("Appointment Type")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Provider
-                    </ClinicalHead>
+                      {ui("Provider")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Location
-                    </ClinicalHead>
+                      {ui("Location")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Status
-                    </ClinicalHead>
+                      {ui("Status")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Notes
-                    </ClinicalHead>
+                      {ui("Notes")}</ClinicalHead>
 
                     <ClinicalHead>
-                      Action
-                    </ClinicalHead>
+                      {ui("Action")}</ClinicalHead>
                   </tr>
                 </thead>
 
@@ -626,7 +613,7 @@ export default function AppointmentsPage() {
                                 )}
                               `}
                             >
-                              {status}
+                              {ui(status)}
                             </span>
                           </td>
 
@@ -655,8 +642,7 @@ export default function AppointmentsPage() {
                                   hover:bg-[#F0F4F1]
                                 "
                               >
-                                Resident
-                              </Link>
+                                {ui("Resident")}</Link>
                             ) : (
                               "—"
                             )}
@@ -678,12 +664,10 @@ export default function AppointmentsPage() {
                 </span>
 
                 <h2 className="mt-3 text-[12px] font-bold text-[#30443B]">
-                  No appointment records available
-                </h2>
+                  {ui("No appointment records available")}</h2>
 
                 <p className="mx-auto mt-1 max-w-md text-[10px] leading-5 text-[#728078]">
-                  The appointment workspace is ready, but no appointment records are currently connected to this module.
-                </p>
+                  {ui("The appointment workspace is ready, but no appointment records are currently connected to this module.")}</p>
 
                 {(search ||
                   statusFilter !==
@@ -695,8 +679,7 @@ export default function AppointmentsPage() {
                     }
                     className="mt-2 text-[10px] font-bold text-[#073B2F] underline"
                   >
-                    Reset filters
-                  </button>
+                    {ui("Reset filters")}</button>
                 )}
               </div>
             </div>
@@ -704,8 +687,7 @@ export default function AppointmentsPage() {
 
 
           <div className="border-t border-[#D1D9D5] bg-[#F8F7F2] px-3 py-2 text-[10px] text-[#607169]">
-            Appointment scheduling data will populate this worklist when the appointment data source is connected.
-          </div>
+            {ui("Appointment scheduling data will populate this worklist when the appointment data source is connected.")}</div>
         </section>
       </main>
     </div>

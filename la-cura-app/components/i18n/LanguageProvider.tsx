@@ -14,6 +14,10 @@ import type {
 } from "react";
 
 import {
+  useRouter,
+} from "next/navigation";
+
+import {
   useStaffSession,
 } from "@/components/StaffSessionProvider";
 
@@ -310,6 +314,9 @@ export default function LanguageProvider({
   children:
     ReactNode;
 }) {
+  const router =
+    useRouter();
+
   const {
     staff,
     refreshStaff,
@@ -509,6 +516,8 @@ export default function LanguageProvider({
 
           await refreshStaff();
 
+          router.refresh();
+
 
           return true;
         } catch (
@@ -543,6 +552,7 @@ export default function LanguageProvider({
       [
         language,
         refreshStaff,
+        router,
         saving,
       ]
     );
@@ -593,6 +603,13 @@ export default function LanguageProvider({
     >
       {children}
     </LanguageContext.Provider>
+  );
+}
+
+
+export function useOptionalLanguage() {
+  return useContext(
+    LanguageContext
   );
 }
 

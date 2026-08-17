@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import { useState } from "react";
 
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +25,9 @@ export default function AdministerButton({
   resident,
   medication,
 }: Props) {
+  const { ui } =
+    useAppUi();
+
   const [open, setOpen] = useState(false);
 
   async function handleConfirm(
@@ -33,7 +38,7 @@ export default function AdministerButton({
 
     if (!staff) {
       throw new Error(
-        "Unable to identify the logged-in staff member."
+        ui("Unable to identify the logged-in staff member.")
       );
     }
 
@@ -63,15 +68,14 @@ export default function AdministerButton({
           className="text-lg"
         />
 
-        Administer
-      </button>
+        {ui("Administer")}</button>
 
       <MedicationActionModal
         open={open}
-        title="Administer Medication"
+        title={ui("Administer Medication")}
         resident={resident}
         medication={medication}
-        confirmText="Confirm Administration"
+        confirmText={ui("Confirm Administration")}
         confirmColor="bg-[#073B2F] hover:bg-[#0D4A3A]"
         onClose={() => setOpen(false)}
         onConfirm={handleConfirm}

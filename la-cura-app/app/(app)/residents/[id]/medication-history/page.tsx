@@ -3,12 +3,31 @@ import { ArrowLeft, CheckCircle, PauseCircle, XCircle } from "lucide-react";
 
 import { getMedicationHistory } from "@/lib/medicationHistory";
 
+import {
+  getServerLanguage,
+} from "@/lib/i18n/serverLanguage";
+
+import {
+  uiLocale,
+  uiText,
+} from "@/lib/i18n/appUi";
+
 export default async function MedicationHistoryPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+
+  const language =
+    await getServerLanguage();
+
+  const locale =
+    uiLocale(language);
+
+  const ui =
+    (value: string) =>
+      uiText(language, value);
 
   const history = await getMedicationHistory(Number(id));
 
@@ -22,12 +41,10 @@ export default async function MedicationHistoryPage({
           className="flex items-center gap-2 mb-4 hover:underline"
         >
           <ArrowLeft size={20} />
-          Back to Resident
-        </Link>
+          {ui("Back to Resident")}</Link>
 
         <h1 className="text-[22px] font-bold tracking-[-0.02em]">
-          Medication History
-        </h1>
+          {ui("Medication History")}</h1>
 
       </header>
 
@@ -39,9 +56,7 @@ export default async function MedicationHistoryPage({
 
             <div className="border border-[#C8D2CD] bg-white p-6 text-center text-[11px] text-[#687970]">
 
-              No medication history found.
-
-            </div>
+              {ui("No medication history found.")}</div>
 
           )}
 
@@ -97,15 +112,15 @@ export default async function MedicationHistoryPage({
 
                 <div>
 
-                  <b>Status</b>
+                  <b>{ui("Status")}</b>
 
-                  <p>{item.status}</p>
+                  <p>{ui(item.status)}</p>
 
                 </div>
 
                 <div>
 
-                  <b>Nurse</b>
+                  <b>{ui("Nurse")}</b>
 
                   <p>{item.administered_by}</p>
 
@@ -113,7 +128,7 @@ export default async function MedicationHistoryPage({
 
                 <div>
 
-                  <b>Reason</b>
+                  <b>{ui("Reason")}</b>
 
                   <p>{item.reason || "-"}</p>
 
@@ -121,11 +136,11 @@ export default async function MedicationHistoryPage({
 
                 <div>
 
-                  <b>Date & Time</b>
+                  <b>{ui("Date & Time")}</b>
 
                   <p>
 
-                    {new Date(item.administered_at).toLocaleString()}
+                    {new Date(item.administered_at).toLocaleString(locale)}
 
                   </p>
 
@@ -135,7 +150,7 @@ export default async function MedicationHistoryPage({
 
               <div className="mt-5">
 
-                <b>Notes</b>
+                <b>{ui("Notes")}</b>
 
                 <p className="mt-2 text-gray-700">
 

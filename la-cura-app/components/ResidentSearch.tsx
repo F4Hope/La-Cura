@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase/client";
 
@@ -17,6 +19,9 @@ type Props = {
 export default function ResidentSearch({
   onResidentSelected,
 }: Props) {
+  const { ui } =
+    useAppUi();
+
 
   const [search, setSearch] = useState("");
 
@@ -55,7 +60,7 @@ export default function ResidentSearch({
 
       <input
         type="text"
-        placeholder="Search resident..."
+        placeholder={ui("Search resident...")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="border rounded-xl p-3 w-full"
@@ -88,7 +93,7 @@ export default function ResidentSearch({
 
               <div className="text-sm text-gray-500">
 
-                Room {resident.room}
+                {ui("Room")}{resident.room}
 
               </div>
 

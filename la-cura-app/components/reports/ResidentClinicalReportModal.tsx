@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -89,6 +91,9 @@ export default function ResidentClinicalReportModal({
   onClose,
   onGenerated,
 }: Props) {
+  const { ui } =
+    useAppUi();
+
   const [mounted, setMounted] = useState(false);
   const [residents, setResidents] = useState<ResidentListItem[]>([]);
   const [selectedResidentId, setSelectedResidentId] = useState("");
@@ -163,7 +168,7 @@ export default function ResidentClinicalReportModal({
         console.error("Unable to load residents:", caughtError);
 
         if (isActive) {
-          setError("Residents could not be loaded. Please try again.");
+          setError(ui("Residents could not be loaded. Please try again."));
         }
       } finally {
         if (isActive) {
@@ -249,16 +254,19 @@ export default function ResidentClinicalReportModal({
       const reportingPeriodLabel =
         reportingPeriodLabels[reportingPeriod];
 
+      const localizedReportingPeriod =
+        ui(reportingPeriodLabel);
+
       await generateResidentClinicalPdf({
         resident: resident as ResidentPdfData,
         timeline,
-        reportingPeriod: reportingPeriodLabel,
+        reportingPeriod: localizedReportingPeriod,
         generatedBy: "La-Cura Staff",
       });
 
       onGenerated?.({
         residentName: selectedResident.full_name,
-        reportingPeriod: reportingPeriodLabel,
+        reportingPeriod: localizedReportingPeriod,
       });
 
       onClose();
@@ -300,19 +308,16 @@ export default function ResidentClinicalReportModal({
 
               <div>
                 <p className="text-sm font-semibold text-green-100">
-                  Branded PDF Report
-                </p>
+                  {ui("Branded PDF Report")}</p>
 
                 <h2
                   id="resident-report-modal-title"
                   className="mt-1 text-[16px] font-bold"
                 >
-                  Resident Clinical Summary
-                </h2>
+                  {ui("Resident Clinical Summary")}</h2>
 
                 <p className="mt-1 text-sm text-green-100">
-                  Select a resident and download their La-Cura clinical report.
-                </p>
+                  {ui("Select a resident and download their La-Cura clinical report.")}</p>
               </div>
             </div>
 
@@ -320,7 +325,7 @@ export default function ResidentClinicalReportModal({
               type="button"
               onClick={handleClose}
               disabled={generating}
-              aria-label="Close resident report"
+              aria-label={ui("Close resident report")}
               className="shrink-0 rounded-[3px] bg-white/15 p-2 transition hover:bg-white/25 disabled:opacity-50"
             >
               <AppIcon icon={faXmark} />
@@ -334,8 +339,7 @@ export default function ResidentClinicalReportModal({
               htmlFor="resident-report-search"
               className="mb-2 block font-bold text-slate-800"
             >
-              Search Resident
-            </label>
+              {ui("Search Resident")}</label>
 
             <div className="relative">
               <AppIcon
@@ -349,7 +353,7 @@ export default function ResidentClinicalReportModal({
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 disabled={loadingResidents || generating}
-                placeholder="Search by resident name, room, or age..."
+                placeholder={ui("Search by resident name, room, or age...")}
                 className="w-full rounded-[3px] border border-slate-300 py-3.5 pl-11 pr-4 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10 disabled:bg-slate-100"
               />
             </div>
@@ -360,8 +364,7 @@ export default function ResidentClinicalReportModal({
               htmlFor="resident-report-resident"
               className="mb-2 block font-bold text-slate-800"
             >
-              Select Resident
-            </label>
+              {ui("Select Resident")}</label>
 
             <select
               id="resident-report-resident"
@@ -377,15 +380,14 @@ export default function ResidentClinicalReportModal({
               {filteredResidents.map((resident) => (
                 <option key={resident.id} value={String(resident.id)}>
                   {resident.full_name}
-                  {resident.room ? ` — Room ${resident.room}` : ""}
+                  {resident.room ? ` — ${ui("Room")} ${resident.room}` : ""}
                 </option>
               ))}
             </select>
 
             {!loadingResidents && filteredResidents.length === 0 && (
               <p className="mt-2 text-sm text-slate-500">
-                No residents matched your search.
-              </p>
+                {ui("No residents matched your search.")}</p>
             )}
           </section>
 
@@ -401,9 +403,9 @@ export default function ResidentClinicalReportModal({
                 </p>
 
                 <p className="mt-1 text-sm text-slate-600">
-                  Room {selectedResident.room ?? "Not documented"}
+                  {ui("Room")}: {selectedResident.room ?? ui("Not documented")}
                   {" • "}
-                  Age {selectedResident.age ?? "not documented"}
+                  {ui("Age")}: {selectedResident.age ?? ui("Not documented")}
                 </p>
               </div>
             </section>
@@ -414,8 +416,7 @@ export default function ResidentClinicalReportModal({
               htmlFor="resident-report-period"
               className="mb-2 block font-bold text-slate-800"
             >
-              Reporting Period
-            </label>
+              {ui("Reporting Period")}</label>
 
             <select
               id="resident-report-period"
@@ -426,21 +427,18 @@ export default function ResidentClinicalReportModal({
               disabled={generating}
               className="w-full rounded-[3px] border border-slate-300 bg-white px-4 py-3.5 text-slate-900 outline-none transition focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10 disabled:bg-slate-100"
             >
-              <option value="30">Last 30 days</option>
-              <option value="90">Last 90 days</option>
-              <option value="365">Last 12 months</option>
-              <option value="all">Complete clinical history</option>
+              <option value="30">{ui("Last 30 days")}</option>
+              <option value="90">{ui("Last 90 days")}</option>
+              <option value="365">{ui("Last 12 months")}</option>
+              <option value="all">{ui("Complete clinical history")}</option>
             </select>
           </section>
 
           <section className="rounded-[4px] border border-slate-200 bg-slate-50 p-5">
-            <p className="font-bold text-slate-800">Report contents</p>
+            <p className="font-bold text-slate-800">{ui("Report contents")}</p>
 
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              The PDF includes the La-Cura logo, resident demographics,
-              available diagnoses, allergies, clinical timeline, generation
-              date, confidentiality notice, and page numbers.
-            </p>
+              {ui("The PDF includes the La-Cura logo, resident demographics, available diagnoses, allergies, clinical timeline, generation date, confidentiality notice, and page numbers.")}</p>
           </section>
 
           {error && (
@@ -460,8 +458,7 @@ export default function ResidentClinicalReportModal({
             disabled={generating}
             className="rounded-[3px] border border-slate-300 bg-white px-5 py-3 font-bold text-slate-700 transition hover:bg-slate-100 disabled:opacity-50"
           >
-            Cancel
-          </button>
+            {ui("Cancel")}</button>
 
           <button
             type="button"
@@ -472,13 +469,11 @@ export default function ResidentClinicalReportModal({
             {generating ? (
               <>
                 <AppIcon icon={faSpinner} spin />
-                Creating PDF...
-              </>
+                {ui("Creating PDF...")}</>
             ) : (
               <>
                 <AppIcon icon={faDownload} />
-                Download Patient PDF
-              </>
+                {ui("Download Patient PDF")}</>
             )}
           </button>
         </footer>

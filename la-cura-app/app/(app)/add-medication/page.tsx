@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import type {
   FormEvent,
 } from "react";
@@ -74,6 +76,9 @@ const EMPTY_FORM: MedicationForm = {
 };
 
 export default function AddMedicationPage() {
+  const { ui } =
+    useAppUi();
+
   const [
     residents,
     setResidents,
@@ -140,7 +145,7 @@ export default function AddMedicationPage() {
         setNotification({
           type: "error",
           message:
-            "La-Cura could not load the resident list.",
+            ui("La-Cura could not load the resident list."),
         });
 
         setResidents([]);
@@ -203,7 +208,7 @@ export default function AddMedicationPage() {
         setNotification({
           type: "error",
           message:
-            "The resident from the profile could not be found. Select a resident manually.",
+            ui("The resident from the profile could not be found. Select a resident manually."),
         });
 
         setLoadingResidents(false);
@@ -326,7 +331,7 @@ export default function AddMedicationPage() {
       setNotification({
         type: "error",
         message:
-          "Please complete all required fields.",
+          ui("Please complete all required fields."),
       });
 
       return;
@@ -411,7 +416,7 @@ export default function AddMedicationPage() {
       setNotification({
         type: "success",
         message:
-          `Medication added successfully for ${residentName}.`,
+          `${ui("Medication added successfully for")} ${residentName}.`,
       });
 
       if (
@@ -437,7 +442,7 @@ export default function AddMedicationPage() {
         message:
           error instanceof Error
             ? error.message
-            : "The medication could not be saved.",
+            : ui("The medication could not be saved."),
       });
     } finally {
       setSaving(false);
@@ -473,7 +478,7 @@ export default function AddMedicationPage() {
                   size={16}
                 />
 
-                Back to{" "}
+                {ui("Back to")}{" "}
                 {
                   selectedResident.full_name
                 }
@@ -485,25 +490,19 @@ export default function AddMedicationPage() {
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-green-100">
                 <Pill size={15} />
 
-                Medication Management
-              </div>
+                {ui("Medication Management")}</div>
 
               <h1 className="mt-2 text-[22px] font-bold tracking-[-0.02em]">
-                Add Medication
-              </h1>
+                {ui("Add Medication")}</h1>
 
               <p className="mt-2 max-w-2xl text-sm leading-6 text-green-100">
-                Register a medication
-                order for the selected
-                resident.
-              </p>
+                {ui("Register a medication order for the selected resident.")}</p>
             </div>
 
             {selectedResident && (
               <div className="rounded-[3px] border border-white/15 bg-white/10 px-4 py-3 backdrop-blur-sm">
                 <p className="text-xs text-green-100">
-                  Current resident
-                </p>
+                  {ui("Current resident")}</p>
 
                 <p className="mt-1 font-semibold text-white">
                   {
@@ -534,14 +533,10 @@ export default function AddMedicationPage() {
 
                 <div>
                   <h2 className="font-semibold text-slate-900">
-                    Resident
-                  </h2>
+                    {ui("Resident")}</h2>
 
                   <p className="mt-0.5 text-sm text-slate-500">
-                    Confirm who this
-                    medication order is
-                    for.
-                  </p>
+                    {ui("Confirm who this medication order is for.")}</p>
                 </div>
               </div>
             </header>
@@ -555,8 +550,7 @@ export default function AddMedicationPage() {
                   />
 
                   <p className="text-sm font-medium text-slate-600">
-                    Loading residents...
-                  </p>
+                    {ui("Loading residents...")}</p>
                 </div>
               ) : selectedResident &&
                 !changingResident ? (
@@ -578,9 +572,7 @@ export default function AddMedicationPage() {
 
                         {cameFromResidentProfile && (
                           <span className="rounded-full bg-[#073B2F] px-2.5 py-1 text-[11px] font-semibold text-white">
-                            From resident
-                            profile
-                          </span>
+                            {ui("From resident profile")}</span>
                         )}
                       </div>
 
@@ -590,7 +582,7 @@ export default function AddMedicationPage() {
                             size={15}
                           />
 
-                          Room{" "}
+                          {ui("Room")}{" "}
                           {selectedResident.room ||
                             "Unassigned"}
                         </span>
@@ -603,8 +595,7 @@ export default function AddMedicationPage() {
                               {
                                 selectedResident.age
                               }{" "}
-                              years
-                            </span>
+                              {ui("years")}</span>
                           )}
                       </div>
                     </div>
@@ -621,14 +612,13 @@ export default function AddMedicationPage() {
                       size={16}
                     />
 
-                    Change Resident
-                  </button>
+                    {ui("Change Resident")}</button>
                 </div>
               ) : (
                 <div>
                   <label className="block">
                     <span className="mb-2 block text-sm font-semibold text-slate-700">
-                      Select Resident{" "}
+                      {ui("Select Resident")}{" "}
                       <span className="text-red-500">
                         *
                       </span>
@@ -649,8 +639,7 @@ export default function AddMedicationPage() {
                       className="h-12 w-full rounded-[3px] border border-slate-300 bg-white px-3.5 text-sm text-slate-900 outline-none transition focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10"
                     >
                       <option value="">
-                        Choose a resident
-                      </option>
+                        {ui("Choose a resident")}</option>
 
                       {residents.map(
                         (
@@ -668,7 +657,7 @@ export default function AddMedicationPage() {
                               resident.full_name
                             }
                             {resident.room
-                              ? ` — Room ${resident.room}`
+                              ? ` — ${ui("Room")} ${resident.room}`
                               : ""}
                           </option>
                         )
@@ -685,7 +674,7 @@ export default function AddMedicationPage() {
                         }
                         className="mt-3 text-sm font-semibold text-[#073B2F] hover:text-[#0D4A3A]"
                       >
-                        Keep{" "}
+                        {ui("Keep")}{" "}
                         {
                           selectedResident.full_name
                         }
@@ -705,21 +694,17 @@ export default function AddMedicationPage() {
 
                 <div>
                   <h2 className="font-semibold text-slate-900">
-                    Medication Details
-                  </h2>
+                    {ui("Medication Details")}</h2>
 
                   <p className="mt-0.5 text-sm text-slate-500">
-                    Enter the prescribed
-                    medication and dosing
-                    instructions.
-                  </p>
+                    {ui("Enter the prescribed medication and dosing instructions.")}</p>
                 </div>
               </div>
             </header>
 
             <div className="grid gap-5 p-5 md:grid-cols-2">
               <FormField
-                label="Medication Name"
+                label={ui("Medication Name")}
                 required
               >
                 <input
@@ -736,13 +721,13 @@ export default function AddMedicationPage() {
                         .value
                     )
                   }
-                  placeholder="Example: Lisinopril"
+                  placeholder={ui("Example: Lisinopril")}
                   className={inputClass}
                 />
               </FormField>
 
               <FormField
-                label="Dosage"
+                label={ui("Dosage")}
                 required
               >
                 <input
@@ -759,13 +744,13 @@ export default function AddMedicationPage() {
                         .value
                     )
                   }
-                  placeholder="Example: 10 mg"
+                  placeholder={ui("Example: 10 mg")}
                   className={inputClass}
                 />
               </FormField>
 
               <FormField
-                label="Frequency"
+                label={ui("Frequency")}
                 required
               >
                 <input
@@ -782,12 +767,12 @@ export default function AddMedicationPage() {
                         .value
                     )
                   }
-                  placeholder="Example: Once daily"
+                  placeholder={ui("Example: Once daily")}
                   className={inputClass}
                 />
               </FormField>
 
-              <FormField label="Route">
+              <FormField label={ui("Route")}>
                 <select
                   value={form.route}
                   onChange={(
@@ -802,48 +787,38 @@ export default function AddMedicationPage() {
                   className={inputClass}
                 >
                   <option value="">
-                    Select route
-                  </option>
+                    {ui("Select route")}</option>
 
                   <option value="Oral">
-                    Oral
-                  </option>
+                    {ui("Oral")}</option>
 
                   <option value="G-Tube">
-                    G-Tube
-                  </option>
+                    {ui("G-Tube")}</option>
 
                   <option value="PEG-Tube">
-                    PEG-Tube
-                  </option>
+                    {ui("PEG-Tube")}</option>
 
                   <option value="IV">
-                    IV
-                  </option>
+                    {ui("IV")}</option>
 
                   <option value="IM">
-                    IM
-                  </option>
+                    {ui("IM")}</option>
 
                   <option value="Subcutaneous">
-                    Subcutaneous
-                  </option>
+                    {ui("Subcutaneous")}</option>
 
                   <option value="Topical">
-                    Topical
-                  </option>
+                    {ui("Topical")}</option>
 
                   <option value="Inhalation">
-                    Inhalation
-                  </option>
+                    {ui("Inhalation")}</option>
 
                   <option value="Other">
-                    Other
-                  </option>
+                    {ui("Other")}</option>
                 </select>
               </FormField>
 
-              <FormField label="Administration Time">
+              <FormField label={ui("Administration Time")}>
                 <div className="relative">
                   <Clock3
                     size={17}
@@ -869,7 +844,7 @@ export default function AddMedicationPage() {
                 </div>
               </FormField>
 
-              <FormField label="Prescribed By">
+              <FormField label={ui("Prescribed By")}>
                 <div className="relative">
                   <Stethoscope
                     size={17}
@@ -890,7 +865,7 @@ export default function AddMedicationPage() {
                           .value
                       )
                     }
-                    placeholder="Prescribing provider"
+                    placeholder={ui("Prescribing provider")}
                     className={`${inputClass} pl-10`}
                   />
                 </div>
@@ -909,20 +884,16 @@ export default function AddMedicationPage() {
 
                 <div>
                   <h2 className="font-semibold text-slate-900">
-                    Schedule
-                  </h2>
+                    {ui("Schedule")}</h2>
 
                   <p className="mt-0.5 text-sm text-slate-500">
-                    Define the treatment
-                    period where
-                    applicable.
-                  </p>
+                    {ui("Define the treatment period where applicable.")}</p>
                 </div>
               </div>
             </header>
 
             <div className="grid gap-5 p-5 md:grid-cols-2">
-              <FormField label="Start Date">
+              <FormField label={ui("Start Date")}>
                 <input
                   type="date"
                   value={
@@ -941,7 +912,7 @@ export default function AddMedicationPage() {
                 />
               </FormField>
 
-              <FormField label="End Date">
+              <FormField label={ui("End Date")}>
                 <input
                   type="date"
                   value={
@@ -973,14 +944,10 @@ export default function AddMedicationPage() {
 
                 <div>
                   <h2 className="font-semibold text-slate-900">
-                    Order Notes
-                  </h2>
+                    {ui("Order Notes")}</h2>
 
                   <p className="mt-0.5 text-sm text-slate-500">
-                    Add instructions or
-                    relevant medication
-                    information.
-                  </p>
+                    {ui("Add instructions or relevant medication information.")}</p>
                 </div>
               </div>
             </header>
@@ -997,7 +964,7 @@ export default function AddMedicationPage() {
                     event.target.value
                   )
                 }
-                placeholder="Enter administration instructions, precautions, or other relevant notes..."
+                placeholder={ui("Enter administration instructions, precautions, or other relevant notes...")}
                 className="w-full resize-y rounded-[3px] border border-slate-300 bg-white px-3.5 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#667E72] focus:ring-4 focus:ring-[#073B2F]/10"
               />
             </div>
@@ -1007,15 +974,12 @@ export default function AddMedicationPage() {
             <div>
               <p className="text-sm font-medium text-slate-700">
                 {selectedResident
-                  ? `Ready to add medication for ${selectedResident.full_name}.`
+                  ? `${ui("Ready to add medication for")} ${selectedResident.full_name}.`
                   : "Select a resident before saving."}
               </p>
 
               <p className="mt-1 text-xs text-slate-400">
-                Medication name,
-                dosage, and frequency
-                are required.
-              </p>
+                {ui("Medication name, dosage, and frequency are required.")}</p>
             </div>
 
             <button
@@ -1034,14 +998,12 @@ export default function AddMedicationPage() {
                     className="animate-spin"
                   />
 
-                  Saving...
-                </>
+                  {ui("Saving...")}</>
               ) : (
                 <>
                   <Save size={18} />
 
-                  Save Medication
-                </>
+                  {ui("Save Medication")}</>
               )}
             </button>
           </section>
@@ -1055,8 +1017,7 @@ export default function AddMedicationPage() {
                   className="shrink-0"
                 />
 
-                Medication workflow
-                completed for{" "}
+                {ui("Medication workflow completed for")}{" "}
                 {
                   selectedResident.full_name
                 }

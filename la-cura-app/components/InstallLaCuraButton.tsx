@@ -1,5 +1,7 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import {
   useEffect,
   useState,
@@ -32,6 +34,9 @@ type NavigatorWithStandalone = Navigator & {
 };
 
 export default function InstallLaCuraButton() {
+  const { ui } =
+    useAppUi();
+
   const [installPrompt, setInstallPrompt] =
     useState<BeforeInstallPromptEvent | null>(
       null
@@ -131,8 +136,7 @@ export default function InstallLaCuraButton() {
       <div className="inline-flex items-center justify-center gap-3 rounded-2xl bg-green-100 px-7 py-4 font-bold text-green-800">
         <AppIcon icon={faCircleCheck} />
 
-        App Installed
-      </div>
+        {ui("App Installed")}</div>
     );
   }
 
@@ -145,8 +149,7 @@ export default function InstallLaCuraButton() {
       >
         <AppIcon icon={faDownload} />
 
-        Install App
-      </button>
+        {ui("Install App")}</button>
 
       {showInstructions && (
         <div
@@ -159,7 +162,7 @@ export default function InstallLaCuraButton() {
           <section
             role="dialog"
             aria-modal="true"
-            aria-label="Install La-Cura"
+            aria-label={ui("Install La-Cura")}
             onMouseDown={(event) =>
               event.stopPropagation()
             }
@@ -176,18 +179,16 @@ export default function InstallLaCuraButton() {
 
                 <div>
                   <h2 className="text-2xl font-black">
-                    Install La-Cura
-                  </h2>
+                    {ui("Install La-Cura")}</h2>
 
                   <p className="mt-1 text-sm text-green-100">
-                    Add La-Cura to your phone
-                  </p>
+                    {ui("Add La-Cura to your phone")}</p>
                 </div>
               </div>
 
               <button
                 type="button"
-                aria-label="Close instructions"
+                aria-label={ui("Close instructions")}
                 onClick={() =>
                   setShowInstructions(false)
                 }
@@ -201,50 +202,46 @@ export default function InstallLaCuraButton() {
               {isIOS ? (
                 <>
                   <p className="leading-7 text-gray-600">
-                    Open La-Cura in Safari, then
-                    follow these steps:
-                  </p>
+                    {ui("Open La-Cura in Safari, then follow these steps:")}</p>
 
                   <Instruction
                     number="1"
                     icon={faArrowUpFromBracket}
-                    title="Tap Share"
-                    description="Tap the square icon with the upward arrow in Safari."
+                    title={ui("Tap Share")}
+                    description={ui("Tap the square icon with the upward arrow in Safari.")}
                   />
 
                   <Instruction
                     number="2"
                     icon={faPlusSquare}
-                    title="Add to Home Screen"
-                    description="Scroll through the Share menu and select Add to Home Screen."
+                    title={ui("Add to Home Screen")}
+                    description={ui("Scroll through the Share menu and select Add to Home Screen.")}
                   />
 
                   <Instruction
                     number="3"
                     icon={faCircleCheck}
-                    title="Open as Web App"
-                    description="Turn on Open as Web App, then tap Add."
+                    title={ui("Open as Web App")}
+                    description={ui("Turn on Open as Web App, then tap Add.")}
                   />
                 </>
               ) : (
                 <>
                   <p className="leading-7 text-gray-600">
-                    Open your browser menu and choose
-                    one of these options:
-                  </p>
+                    {ui("Open your browser menu and choose one of these options:")}</p>
 
                   <Instruction
                     number="1"
                     icon={faDownload}
-                    title="Install App"
-                    description="Select Install App or Install La-Cura from the browser menu."
+                    title={ui("Install App")}
+                    description={ui("Select Install App or Install La-Cura from the browser menu.")}
                   />
 
                   <Instruction
                     number="2"
                     icon={faPlusSquare}
-                    title="Add to Home Screen"
-                    description="Some browsers label the option Add to Home Screen."
+                    title={ui("Add to Home Screen")}
+                    description={ui("Some browsers label the option Add to Home Screen.")}
                   />
                 </>
               )}
@@ -256,8 +253,7 @@ export default function InstallLaCuraButton() {
                 }
                 className="w-full rounded-2xl bg-green-700 px-6 py-4 font-bold text-white transition hover:bg-green-800"
               >
-                Done
-              </button>
+                {ui("Done")}</button>
             </div>
           </section>
         </div>

@@ -1,8 +1,13 @@
 "use client";
 
+import useAppUi from "@/components/i18n/useAppUi";
+
 import { useEffect, useState } from "react";
 
 export default function NetworkStatus() {
+
+  const { ui } =
+    useAppUi();
 
   const [online, setOnline] = useState(true);
 
@@ -52,8 +57,8 @@ export default function NetworkStatus() {
     >
 
       {online
-        ? "🟢 Online"
-        : "🔴 Offline Mode"}
+        ? `🟢 ${ui("Online")}`
+        : `🔴 ${ui("Offline Mode")}`}
 
     </div>
 
