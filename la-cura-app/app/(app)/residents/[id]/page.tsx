@@ -25,6 +25,8 @@ import ResidentImmunizationsTab from "@/components/immunizations/ResidentImmuniz
 
 import ResidentVitalsTab from "@/components/vitals/ResidentVitalsTab";
 
+import ResidentDiagnosesTab from "@/components/diagnoses/ResidentDiagnosesTab";
+
 import {
   getMedicationHistory,
 } from "@/lib/medicationHistory";
@@ -1349,25 +1351,17 @@ function ResidentTabContent({
     tab === "med-diag"
   ) {
     return (
-      <RecordPanel title={residentText(language, "diagnosis.title")}>
-        <div className="p-3">
-          <div className="border border-[#D4DDD8] bg-[#FBFAF7] p-3">
-            <p className="text-[10px] font-bold uppercase text-[#64756D]">
-              {residentText(
-                language,
-                "diagnosis.current"
-              )}
-            </p>
-
-            <p className="mt-2 whitespace-pre-wrap text-[12px] leading-5 text-[#293E35]">
-              {cleanText(
-                resident.diagnosis
-              ) ||
-                residentText(language, "diagnosis.none")}
-            </p>
-          </div>
-        </div>
-      </RecordPanel>
+      <ResidentDiagnosesTab
+        residentId={
+          resident.id
+        }
+        residentName={
+          getResidentName(
+            resident,
+            language
+          )
+        }
+      />
     );
   }
 
