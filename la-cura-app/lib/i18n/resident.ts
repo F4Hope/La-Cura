@@ -51,52 +51,52 @@ const english = {
     "Resident clinical record",
 
   "tab.dash":
-    "DASH",
+    "Dashboard",
 
   "tab.profile":
-    "PROFILE",
+    "Profile",
 
   "tab.census":
-    "CENSUS",
+    "Census",
 
   "tab.medDiag":
-    "MED DIAG",
+    "Med. diagnosis",
 
   "tab.allergies":
-    "ALLERGIES",
+    "Allergies",
 
   "tab.immun":
-    "IMMUN",
+    "Immunizations",
 
   "tab.orders":
-    "ORDERS",
+    "Orders",
 
   "tab.vitals":
-    "WTS/VITALS",
+    "Vitals / weight",
 
   "tab.results":
-    "RESULTS",
+    "Results",
 
   "tab.mds":
     "MDS",
 
   "tab.assmnts":
-    "ASSMNTS",
+    "Assessments",
 
   "tab.therapy":
-    "THERAPY",
+    "Therapy",
 
   "tab.progNotes":
-    "PROG NOTES",
+    "Progress notes",
 
   "tab.carePlan":
-    "CARE PLAN",
+    "Care plan",
 
   "tab.tasks":
-    "TASKS",
+    "Tasks",
 
   "tab.misc":
-    "MISC",
+    "Misc",
 
 
   "title.dash":
@@ -374,52 +374,52 @@ const french:
     "Dossier clinique du résident",
 
   "tab.dash":
-    "TABLEAU",
+    "Tableau",
 
   "tab.profile":
-    "PROFIL",
+    "Profil",
 
   "tab.census":
-    "RECENSEMENT",
+    "Recensement",
 
   "tab.medDiag":
-    "DIAG MÉD.",
+    "Diag. méd.",
 
   "tab.allergies":
-    "ALLERGIES",
+    "Allergies",
 
   "tab.immun":
-    "VACCINS",
+    "Vaccins",
 
   "tab.orders":
-    "ORDONNANCES",
+    "Ordonnances",
 
   "tab.vitals":
-    "POIDS/S.VITAUX",
+    "Poids / vitaux",
 
   "tab.results":
-    "RÉSULTATS",
+    "Résultats",
 
   "tab.mds":
     "MDS",
 
   "tab.assmnts":
-    "ÉVALUATIONS",
+    "Évaluations",
 
   "tab.therapy":
-    "THÉRAPIE",
+    "Thérapie",
 
   "tab.progNotes":
-    "NOTES ÉVOL.",
+    "Notes évol.",
 
   "tab.carePlan":
-    "PLAN SOINS",
+    "Plan de soins",
 
   "tab.tasks":
-    "TÂCHES",
+    "Tâches",
 
   "tab.misc":
-    "DIVERS",
+    "Divers",
 
 
   "title.dash":
