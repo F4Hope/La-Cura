@@ -2378,7 +2378,7 @@ function HeaderVital({
         {label}
       </p>
 
-      <p className="mt-1 text-[16px] font-bold leading-none text-[#14382B]">
+      <p className="lacura-clinical-data mt-1 text-[16px] font-bold leading-none text-[#14382B]">
         {value}
       </p>
     </div>

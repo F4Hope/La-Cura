@@ -206,7 +206,7 @@ export default function ResidentClinicalTabs({
           "tabs.aria"
         )
       }
-      className="border-b border-[#C9D3CE] bg-[#F8F7F2]"
+      className="resident-clinical-tabs border-b border-[#C9D3CE] bg-[#F8F7F2]"
     >
       <div className="overflow-x-auto">
         <div className="flex min-w-max items-stretch px-2 lg:px-3">

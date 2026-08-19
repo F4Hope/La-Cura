@@ -311,11 +311,11 @@ export default function Home() {
             fill
             priority
             sizes="100vw"
-            className="premium-hero-image object-cover object-center lg:object-right"
+            className="premium-hero-image object-cover object-[68%_center] contrast-[1.07] saturate-[1.08] brightness-[0.98] lg:object-[72%_center]"
           />
         </div>
 
-        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,1)_0%,rgba(255,255,255,0.98)_38%,rgba(255,255,255,0.78)_56%,rgba(255,255,255,0.18)_78%,rgba(255,255,255,0.04)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(247,245,239,1)_0%,rgba(247,245,239,0.98)_34%,rgba(247,245,239,0.90)_48%,rgba(247,245,239,0.52)_61%,rgba(247,245,239,0.14)_78%,rgba(247,245,239,0.02)_100%)]" />
 
         <HeroFloatingIcons />
 
@@ -375,7 +375,7 @@ export default function Home() {
             {trustFeatures.map((feature) => (
               <article
                 key={feature.title}
-                className="premium-card rounded-3xl bg-white p-7 shadow-xl ring-1 ring-slate-100 transition duration-300 hover:-translate-y-2 hover:shadow-2xl lg:p-8"
+                className="premium-card rounded-3xl bg-white p-7 shadow-xl ring-1 ring-slate-100 transition duration-300 hover:-translate-y-1 hover:shadow-2xl lg:p-8"
               >
                 <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
                   <AppIcon
@@ -414,7 +414,7 @@ export default function Home() {
             {services.map((service) => (
               <article
                 key={service.title}
-                className="premium-card rounded-3xl bg-white p-8 shadow-xl transition duration-300 hover:-translate-y-3 hover:shadow-2xl lg:p-10"
+                className="premium-card rounded-3xl bg-white p-8 shadow-xl transition duration-300 hover:-translate-y-1 hover:shadow-2xl lg:p-10"
               >
                 <div className="mb-7 flex h-16 w-16 items-center justify-center rounded-2xl bg-green-100">
                   <AppIcon
@@ -528,7 +528,7 @@ export default function Home() {
             {products.map((product) => (
               <article
                 key={product.title}
-                className="premium-card group overflow-hidden rounded-[32px] bg-white shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                className="premium-card group overflow-hidden rounded-[32px] bg-white shadow-xl transition duration-300 hover:-translate-y-1 hover:shadow-2xl"
               >
                 <div className="flex h-64 items-center justify-center bg-gradient-to-br from-green-100 to-green-200">
                   <AppIcon
@@ -576,7 +576,7 @@ export default function Home() {
             {testimonials.map((testimonial) => (
               <article
                 key={testimonial.name}
-                className="premium-card rounded-[32px] bg-slate-50 p-8 shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl lg:p-10"
+                className="premium-card rounded-[32px] bg-slate-50 p-8 shadow-xl transition duration-300 hover:-translate-y-1 hover:shadow-2xl lg:p-10"
               >
                 <AppIcon
                   icon={faQuoteLeft}
@@ -638,7 +638,7 @@ export default function Home() {
             {healthTips.map((tip) => (
               <article
                 key={tip.title}
-                className="premium-card group overflow-hidden rounded-[32px] bg-white shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
+                className="premium-card group overflow-hidden rounded-[32px] bg-white shadow-xl transition duration-300 hover:-translate-y-1 hover:shadow-2xl"
               >
                 <div className="h-3 bg-green-700" />
 

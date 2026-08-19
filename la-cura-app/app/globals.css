@@ -8,8 +8,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-la-cura-sans);
+  --font-serif: var(--font-la-cura-serif);
+  --font-mono: var(--font-la-cura-mono);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,7 +23,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-la-cura-sans), ui-sans-serif, system-ui, sans-serif;
 }
 @keyframes heartbeat {
   0% {
@@ -1118,3 +1119,237 @@ a:hover {
 }
 
 /* LA-CURA PREMIUM LOGIN END */
+
+/* LA-CURA CLINICAL TYPOGRAPHY START */
+
+/*
+ * Typography-only design system for the authenticated clinical app.
+ * No colors, spacing, borders, layout, or tab structure are changed here.
+ */
+.role-theme-shell {
+  font-family:
+    var(--font-la-cura-sans),
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+  font-synthesis: none;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.006em;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.role-theme-shell :where(button, input, select, textarea) {
+  font-family: inherit;
+}
+
+/*
+ * The serif is reserved for record/page identity only.
+ * This is what makes the clinical UI feel authored instead of template-like.
+ */
+.role-theme-shell :where(h1, h2) {
+  font-family:
+    var(--font-la-cura-serif),
+    ui-serif,
+    Georgia,
+    serif;
+  font-weight: 600;
+  letter-spacing: -0.028em;
+}
+
+.role-theme-shell :where(h3, h4) {
+  letter-spacing: -0.018em;
+}
+
+/* Pull back the default heavy dashboard look without changing hierarchy. */
+.role-theme-shell .font-black {
+  font-weight: 700 !important;
+}
+
+.role-theme-shell .font-bold {
+  font-weight: 600 !important;
+}
+
+.role-theme-shell .font-semibold {
+  font-weight: 600 !important;
+}
+
+/* Compact clinical labels keep a controlled, technical rhythm. */
+.role-theme-shell :where(.uppercase) {
+  letter-spacing: 0.07em;
+}
+
+/* Clinical data face for vitals, IDs, codes, and existing mono fields. */
+.role-theme-shell .font-mono,
+.role-theme-shell .lacura-clinical-data {
+  font-family:
+    var(--font-la-cura-mono),
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace !important;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.025em;
+}
+
+.role-theme-shell :where(td, th, input, select) {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* LA-CURA CLINICAL TYPOGRAPHY END */
+
+/* LA-CURA GLOBAL TYPE + RESIDENT TABS V5 START */
+
+/* --------------------------------------------------------------------------
+   GLOBAL PRODUCT TYPOGRAPHY
+   -------------------------------------------------------------------------- */
+html,
+body {
+  font-family:
+    var(--font-la-cura-sans),
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+select,
+textarea,
+optgroup {
+  font: inherit;
+}
+
+code,
+kbd,
+samp,
+pre {
+  font-family:
+    var(--font-la-cura-mono),
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Consolas,
+    monospace;
+}
+
+/* Better rhythm for small clinical labels across the authenticated app. */
+.role-theme-shell .uppercase {
+  letter-spacing: 0.055em !important;
+}
+
+/* Slightly stronger neutral contrast without changing component geometry. */
+.role-theme-shell .text-gray-500,
+.role-theme-shell .text-slate-500 {
+  color: #66766f !important;
+}
+
+.role-theme-shell .text-gray-600,
+.role-theme-shell .text-slate-600 {
+  color: #4b5e57 !important;
+}
+
+/* --------------------------------------------------------------------------
+   RESIDENT CLINICAL TABS
+   Quiet when inactive; semantic family becomes clear on hover/active.
+   -------------------------------------------------------------------------- */
+.resident-clinical-tabs a {
+  --tab-ink: #4c5b56;
+  --tab-rest: #fafbfa;
+  --tab-hover: #f1f4f2;
+  --tab-active-bg: #e8efec;
+  --tab-active-ink: #0a4738;
+  --tab-line: #0b7558;
+
+  color: var(--tab-ink) !important;
+  background-color: var(--tab-rest) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.012em !important;
+}
+
+.resident-clinical-tabs a:hover {
+  color: var(--tab-active-ink) !important;
+  background-color: var(--tab-hover) !important;
+}
+
+.resident-clinical-tabs a[aria-current="page"] {
+  color: var(--tab-active-ink) !important;
+  background-color: var(--tab-active-bg) !important;
+  font-weight: 700 !important;
+}
+
+.resident-clinical-tabs a[aria-current="page"] > span[aria-hidden="true"] {
+  background-color: var(--tab-line) !important;
+}
+
+/* Core resident context — green */
+.resident-clinical-tabs a:nth-child(1),
+.resident-clinical-tabs a:nth-child(2),
+.resident-clinical-tabs a:nth-child(3),
+.resident-clinical-tabs a:nth-child(10) {
+  --tab-ink: #315f54;
+  --tab-rest: #f7fbf9;
+  --tab-hover: #edf6f1;
+  --tab-active-bg: #dff0e8;
+  --tab-active-ink: #075a43;
+  --tab-line: #0b7a5a;
+}
+
+/* Diagnoses, allergies and tasks — muted amber */
+.resident-clinical-tabs a:nth-child(4),
+.resident-clinical-tabs a:nth-child(5),
+.resident-clinical-tabs a:nth-child(15) {
+  --tab-ink: #745b37;
+  --tab-rest: #fdfbf6;
+  --tab-hover: #faf3e7;
+  --tab-active-bg: #f5e7ca;
+  --tab-active-ink: #7e5518;
+  --tab-line: #af7927;
+}
+
+/* Immunizations, orders, vitals and results — clinical blue */
+.resident-clinical-tabs a:nth-child(6),
+.resident-clinical-tabs a:nth-child(7),
+.resident-clinical-tabs a:nth-child(8),
+.resident-clinical-tabs a:nth-child(9) {
+  --tab-ink: #41627d;
+  --tab-rest: #f8fafc;
+  --tab-hover: #eef4fa;
+  --tab-active-bg: #e1ecf6;
+  --tab-active-ink: #285f8f;
+  --tab-line: #3f7dad;
+}
+
+/* Assessments, therapy, notes and care plans — muted violet */
+.resident-clinical-tabs a:nth-child(11),
+.resident-clinical-tabs a:nth-child(12),
+.resident-clinical-tabs a:nth-child(13),
+.resident-clinical-tabs a:nth-child(14) {
+  --tab-ink: #65566f;
+  --tab-rest: #fbf9fc;
+  --tab-hover: #f2edf5;
+  --tab-active-bg: #ebe1f0;
+  --tab-active-ink: #67467e;
+  --tab-line: #81609a;
+}
+
+/* Miscellaneous — neutral slate */
+.resident-clinical-tabs a:nth-child(16) {
+  --tab-ink: #5b666c;
+  --tab-rest: #fafafa;
+  --tab-hover: #f0f2f3;
+  --tab-active-bg: #e6eaec;
+  --tab-active-ink: #4d5960;
+  --tab-line: #74818a;
+}
+
+/* LA-CURA GLOBAL TYPE + RESIDENT TABS V5 END */

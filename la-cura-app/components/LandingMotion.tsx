@@ -284,7 +284,7 @@ export function ClinicalWorkspaceTabs() {
             }
           );
         },
-        5000
+        6000
       );
 
     return () =>

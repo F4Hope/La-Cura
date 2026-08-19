@@ -3,6 +3,12 @@ import type {
   Viewport,
 } from "next";
 
+import {
+  IBM_Plex_Mono,
+  IBM_Plex_Sans,
+  IBM_Plex_Serif,
+} from "next/font/google";
+
 import "./globals.css";
 
 import {
@@ -16,6 +22,27 @@ import NetworkStatus from "@/components/NetworkStatus";
 import OfflineSync from "@/components/OfflineSync";
 
 config.autoAddCss = false;
+
+const laCuraSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-la-cura-sans",
+  display: "swap",
+});
+
+const laCuraSerif = IBM_Plex_Serif({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  variable: "--font-la-cura-serif",
+  display: "swap",
+});
+
+const laCuraMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-la-cura-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -97,7 +124,9 @@ export default function RootLayout({
 }: RootLayoutProps) {
   return (
     <html lang="en">
-      <body>
+      <body
+        className={`${laCuraSans.variable} ${laCuraSerif.variable} ${laCuraMono.variable}`}
+      >
         <OfflineSync />
 
         <NetworkStatus />
