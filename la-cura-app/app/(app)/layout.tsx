@@ -31,7 +31,7 @@ export default function AppLayout({
               "Physician",
             ]}
           >
-            <div className="min-h-screen bg-[#F7F5EF]">
+            <div className="lacura-auth-app min-h-screen bg-[#F7F5EF]">
               <ClinicalTopNav />
 
               <main className="min-w-0">
