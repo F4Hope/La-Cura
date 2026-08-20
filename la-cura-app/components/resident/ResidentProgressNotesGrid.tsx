@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 
 type Note = {
@@ -23,11 +23,51 @@ export default function ResidentProgressNotesGrid({
   notes,
 }: Props) {
 
-  const [expanded, setExpanded] =
-    useState<number | string | null>(null);
+  const [expanded,setExpanded] =
+    useState<number|string|null>(null);
+
+  const [search,setSearch] =
+    useState("");
+
+  const [filter,setFilter] =
+    useState("All");
 
 
-  function printNote(note: Note) {
+  const filtered =
+    useMemo(()=>{
+
+      return notes.filter((note)=>{
+
+        const matchesSearch =
+          `${note.type}
+          ${note.title}
+          ${note.subtitle}`
+          .toLowerCase()
+          .includes(
+            search.toLowerCase()
+          );
+
+
+        const matchesType =
+          filter === "All" ||
+          note.type === filter;
+
+
+        return (
+          matchesSearch &&
+          matchesType
+        );
+
+      });
+
+    },[
+      notes,
+      search,
+      filter
+    ]);
+
+
+  function printReport(){
 
     const win =
       window.open(
@@ -35,27 +75,24 @@ export default function ResidentProgressNotesGrid({
         "_blank"
       );
 
-    if (!win) return;
+    if(!win) return;
 
 
     win.document.write(`
-      <html>
-      <body>
-      <h2>${note.type || "Clinical Note"}</h2>
-      <p>
-      ${note.title || ""}
-      </p>
-      <p>
-      ${note.subtitle || ""}
-      </p>
-      </body>
-      </html>
+      <h1>Progress Notes Report</h1>
+      ${filtered.map(note=>`
+        <hr/>
+        <h3>${note.type || ""}</h3>
+        <p>${note.title || ""}</p>
+        <p>${note.subtitle || ""}</p>
+      `).join("")}
     `);
 
 
     win.document.close();
 
     win.print();
+
   }
 
 
@@ -71,60 +108,135 @@ export default function ResidentProgressNotesGrid({
 
       <div
         className="
-          flex
-          items-center
-          justify-between
           border-b
-          bg-[#EDF2EE]
-          px-4
-          py-3
+          bg-[#E7EDE9]
+          p-3
         "
       >
 
-        <div>
+        <div
+          className="
+            flex
+            flex-wrap
+            items-center
+            justify-between
+            gap-2
+          "
+        >
 
-          <h2
-            className="
-              text-sm
-              font-bold
-              uppercase
-              tracking-wide
-              text-[#073B2F]
-            "
-          >
-            Progress Notes
-          </h2>
+          <div>
 
-          <p
+            <h2
+              className="
+                text-sm
+                font-bold
+                uppercase
+                text-[#073B2F]
+              "
+            >
+              Progress Notes
+            </h2>
+
+            <p
+              className="
+                text-xs
+                text-[#687970]
+              "
+            >
+              Clinical documentation history
+            </p>
+
+          </div>
+
+
+          <button
+            onClick={printReport}
             className="
+              border
+              bg-white
+              px-3
+              py-1.5
               text-xs
-              text-[#64756D]
+              font-semibold
             "
           >
-            Clinical documentation history
-          </p>
+            Print Report
+          </button>
 
         </div>
 
 
-        <button
+        <div
           className="
-            border
-            bg-white
-            px-4
-            py-2
-            text-xs
-            font-semibold
+            mt-3
+            flex
+            flex-wrap
+            gap-2
           "
         >
-          Add Note
-        </button>
+
+          <input
+            value={search}
+            onChange={(e)=>
+              setSearch(e.target.value)
+            }
+            placeholder="Search notes..."
+            className="
+              border
+              px-3
+              py-1.5
+              text-xs
+            "
+          />
+
+
+          <select
+            value={filter}
+            onChange={(e)=>
+              setFilter(e.target.value)
+            }
+            className="
+              border
+              px-3
+              py-1.5
+              text-xs
+            "
+          >
+
+            <option>
+              All
+            </option>
+
+            {Array.from(
+              new Set(
+                notes.map(
+                  n=>n.type
+                )
+              )
+            )
+            .filter(Boolean)
+            .map(type=>(
+
+              <option
+                key={type}
+              >
+                {type}
+              </option>
+
+            ))}
+
+          </select>
+
+        </div>
 
       </div>
 
 
-
-      <div className="overflow-x-auto">
+      <div
+        className="
+          overflow-x-auto
+        "
+      >
 
         <table
           className="
@@ -135,10 +247,10 @@ export default function ResidentProgressNotesGrid({
 
           <thead
             className="
-              bg-[#F7F8F6]
+              bg-[#F6F7F4]
               text-[10px]
               uppercase
-              text-[#66776F]
+              text-[#64756D]
             "
           >
 
@@ -171,123 +283,115 @@ export default function ResidentProgressNotesGrid({
 
           <tbody>
 
-          {notes.map((note)=>(
+          {filtered.map((note)=>(
 
             <>
 
-            <tr
-              key={note.id}
-              className="
-                border-t
-                hover:bg-[#FAFBF8]
-              "
-            >
-
-              <td className="px-3 py-3">
-
-                <button
-                  onClick={() =>
-                    setExpanded(
-                      expanded === note.id
-                      ? null
-                      : note.id
-                    )
-                  }
-                  className="
-                    mr-3
-                    text-[#073B2F]
-                    underline
-                  "
-                >
-                  View
-                </button>
-
-
-                <button
-                  onClick={() =>
-                    printNote(note)
-                  }
-                  className="
-                    text-[#073B2F]
-                    underline
-                  "
-                >
-                  Print
-                </button>
-
-              </td>
-
-
-              <td className="px-3 py-3">
-                {note.date || "—"}
-              </td>
-
-
-              <td className="px-3 py-3 font-semibold">
-                {note.type || "—"}
-              </td>
-
-
-              <td className="px-3 py-3">
-                {note.author || "—"}
-              </td>
-
-
-              <td className="max-w-xl px-3 py-3">
-
-                <div className="truncate">
-                  {note.title || "No details"}
-                </div>
-
-              </td>
-
-
-            </tr>
-
-
-            {expanded === note.id && (
-
               <tr
-                key={`${note.id}-open`}
+                key={note.id}
+                className="
+                  border-t
+                  hover:bg-[#FAFBF8]
+                "
               >
 
                 <td
-                  colSpan={5}
                   className="
-                    bg-[#F8FAF8]
-                    px-5
-                    py-4
+                    whitespace-nowrap
+                    px-3
+                    py-3
                   "
                 >
 
-                  <div
+                  <button
+                    onClick={()=>
+                      setExpanded(
+                        expanded===note.id
+                        ? null
+                        : note.id
+                      )
+                    }
                     className="
-                      text-sm
-                      leading-6
-                      text-[#33483F]
+                      mr-3
+                      underline
                     "
                   >
+                    View
+                  </button>
 
-                    {note.title}
+                </td>
 
-                    <br />
 
-                    {note.subtitle}
+                <td className="px-3 py-3">
+                  {note.date || "—"}
+                </td>
 
+
+                <td
+                  className="
+                    px-3
+                    py-3
+                    font-semibold
+                  "
+                >
+                  {note.type || "—"}
+                </td>
+
+
+                <td className="px-3 py-3">
+                  {note.author || "—"}
+                </td>
+
+
+                <td className="max-w-xl px-3 py-3">
+
+                  <div className="truncate">
+                    {note.title || "—"}
                   </div>
 
                 </td>
 
+
               </tr>
 
-            )}
+
+              {expanded===note.id && (
+
+                <tr>
+
+                  <td
+                    colSpan={5}
+                    className="
+                      bg-[#F8FAF8]
+                      px-5
+                      py-4
+                      leading-6
+                    "
+                  >
+
+                    <strong>
+                      Details
+                    </strong>
+
+                    <br/>
+
+                    {note.title}
+
+                    <br/>
+
+                    {note.subtitle}
+
+                  </td>
+
+                </tr>
+
+              )}
 
             </>
 
           ))}
 
           </tbody>
-
 
         </table>
 

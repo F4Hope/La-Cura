@@ -1,0 +1,306 @@
+              href={`/add-medication${residentQuery}`}
+              label={residentText(language, "shell.addMedication")}
+            />
+
+            <ClinicalAction
+              href={`/add-nursing-note${residentQuery}`}
+              label={residentText(language, "shell.progressNote")}
+            />
+
+            <ClinicalAction
+              href={`/add-incident-report${residentQuery}`}
+              label={residentText(language, "shell.incident")}
+              danger
+            />
+          </div>
+        </div>
+      </div>
+
+
+      <main className="mx-auto max-w-[1800px] p-3 sm:p-4 lg:px-5">
+        {/* RESIDENT BANNER */}
+
+        <section className="border border-[#BFCBC5] bg-white">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_560px]">
+            {/* RESIDENT IDENTITY */}
+
+            <div className="flex min-w-0 gap-3 border-b border-[#D1DAD5] p-3 lg:border-b-0 lg:border-r">
+              {resident.photo_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={
+                    resident.photo_url
+                  }
+                  alt=""
+                  className="
+                    h-[92px] w-[78px]
+                    shrink-0
+                    rounded-[4px]
+                    border border-[#BFCBC5]
+                    object-cover
+                  "
+                />
+              ) : (
+                <div
+                  className="
+                    flex h-[92px]
+                    w-[78px]
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-[4px]
+                    border
+                    border-[#BFCBC5]
+                    bg-[#E6EEE8]
+                    text-lg
+                    font-bold
+                    text-[#073B2F]
+                  "
+                >
+                  {getInitials(
+                    resident
+                  )}
+                </div>
+              )}
+
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <h1 className="truncate text-[22px] font-bold tracking-[-0.025em] text-[#073B2F]">
+                    {residentName}
+                  </h1>
+
+                  <span className="rounded-[3px] border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800">
+                    {status}
+                  </span>
+                </div>
+
+                <p className="mt-0.5 text-[10px] font-medium text-[#75847D]">
+                  {residentText(
+                    language,
+                    "shell.residentNumber"
+                  )}{" "}
+                  {resident.id}
+                </p>
+
+                <div className="mt-3 grid gap-x-6 gap-y-1.5 text-[11px] sm:grid-cols-2 xl:grid-cols-4">
+                  <ResidentBannerField
+                    label={residentText(language, "shell.dobAge")}
+                    value={`${formatDate(
+                      resident.date_of_birth,
+                      language
+                    )} • ${formatAge(
+                      resident.age,
+                      language
+                    )}`}
+                  />
+
+                  <ResidentBannerField
+                    label={residentText(language, "shell.sex")}
+                    value={
+                      cleanText(
+                        resident.gender
+                      ) ||
+                      residentText(
+                        language,
+                        "common.notRecorded"
+                      )
+                    }
+                  />
+
+                  <ResidentBannerField
+                    label={residentText(language, "shell.room")}
+                    value={
+                      cleanText(
+                        resident.room
+                      ) ||
+                      residentText(
+                        language,
+                        "common.unassigned"
+                      )
+                    }
+                  />
+
+                  <ResidentBannerField
+                    label={residentText(language, "shell.physician")}
+                    value={
+                      cleanText(
+                        resident.primary_doctor
+                      ) ||
+                      residentText(
+                        language,
+                        "common.notAssigned"
+                      )
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+
+            {/* LATEST VITALS */}
+
+            <div className="bg-[#FBFAF7]">
+              <div className="border-b border-[#D4DDD8] px-2.5 py-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.05em] text-[#4D6158]">
+                    {residentText(
+                      language,
+                      "shell.recentVitals"
+                    )}
+                  </p>
+
+                  <p className="text-[9px] text-[#839089]">
+                    {latestVital
+                      ? formatDateTime(
+                          latestVital.recorded_at,
+                          language
+                        )
+                      : residentText(
+                          language,
+                          "shell.noVitals"
+                        )}
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-px bg-[#D7DFDB] sm:grid-cols-5">
+                <HeaderVital
+                  label={residentText(language, "shell.bp")}
+                  value={
+                    latestVital
+                      ?.systolic !==
+                      null &&
+                    latestVital
+                      ?.systolic !==
+                      undefined &&
+                    latestVital
+                      ?.diastolic !==
+                      null &&
+                    latestVital
+                      ?.diastolic !==
+                      undefined
+                      ? `${latestVital.systolic}/${latestVital.diastolic}`
+                      : "—"
+                  }
+                />
+
+                <HeaderVital
+                  label={residentText(language, "shell.temp")}
+                  value={displayVital(
+                    latestVital
+                      ?.temperature,
+                    "°C"
+                  )}
+                />
+
+                <HeaderVital
+                  label={residentText(language, "shell.pulse")}
+                  value={displayVital(
+                    latestVital
+                      ?.pulse,
+                    ""
+                  )}
+                />
+
+                <HeaderVital
+                  label={residentText(language, "shell.oxygen")}
+                  value={displayVital(
+                    latestVital
+                      ?.oxygen_saturation,
+                    "%"
+                  )}
+                />
+
+                <HeaderVital
+                  label={residentText(language, "shell.pain")}
+                  value={displayVital(
+                    latestVital
+                      ?.pain_score,
+                    "/10"
+                  )}
+                />
+              </div>
+            </div>
+          </div>
+
+
+          {/* ALLERGY / SPECIAL INSTRUCTIONS */}
+
+          <div
+            className={`
+              grid border-t
+              text-[11px]
+              md:grid-cols-2
+
+              ${
+                hasRecordedAllergy
+                  ? "border-red-200"
+                  : "border-[#CBD6D0]"
+              }
+            `}
+          >
+            <div
+              className={`
+                flex min-w-0
+                items-start gap-2
+                border-b px-3 py-2
+                md:border-b-0
+                md:border-r
+
+                ${
+                  hasRecordedAllergy
+                    ? "border-red-200 bg-red-50"
+                    : "border-[#D5DDD9] bg-[#F3F7F4]"
+                }
+              `}
+            >
+              <span
+                className={`
+                  shrink-0 font-bold
+                  uppercase
+
+                  ${
+                    hasRecordedAllergy
+                      ? "text-red-700"
+                      : "text-[#365C4C]"
+                  }
+                `}
+              >
+                {residentText(
+                  language,
+                  "shell.allergies"
+                )}
+              </span>
+
+              <span
+                className={`
+                  min-w-0 break-words
+                  font-semibold
+
+                  ${
+                    hasRecordedAllergy
+                      ? "text-red-800"
+                      : "text-[#40564D]"
+                  }
+                `}
+              >
+                {hasRecordedAllergy
+                  ? allergies
+                  : residentText(
+                      language,
+                      "shell.noKnownAllergies"
+                    )}
+              </span>
+            </div>
+
+            <div className="flex min-w-0 items-start gap-2 bg-[#FFFDF8] px-3 py-2">
+              <span className="shrink-0 font-bold uppercase text-[#796429]">
+                {residentText(
+                  language,
+                  "shell.specialInstructions"
+                )}
+              </span>
+
+              <span className="min-w-0 break-words text-[#4C5E56]">
+                {cleanText(
+                  resident.notes

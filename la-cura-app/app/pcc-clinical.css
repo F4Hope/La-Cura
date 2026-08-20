@@ -1,0 +1,239 @@
+/* ============================================================
+   LA-CURA PCC CLINICAL MODE
+   PointClickCare inspired dense EMR workspace
+   ============================================================ */
+
+
+.lacura-auth-app {
+  background: #efeee8;
+  color: #202020;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+
+/* ------------------------------------------------------------
+   GLOBAL DENSITY
+------------------------------------------------------------ */
+
+.lacura-auth-app * {
+  border-radius: 0 !important;
+}
+
+
+.lacura-auth-app {
+  font-size: 12px;
+}
+
+
+/* ------------------------------------------------------------
+   HEADER
+------------------------------------------------------------ */
+
+.lacura-auth-app header {
+  background: #ffffff !important;
+  border-color: #cfcfcf !important;
+  box-shadow: none !important;
+}
+
+
+.lacura-auth-app header p {
+  letter-spacing: normal !important;
+}
+
+
+
+/* ------------------------------------------------------------
+   MAIN WORK AREA
+------------------------------------------------------------ */
+
+.lacura-auth-app main {
+  max-width: none !important;
+  padding: 8px !important;
+}
+
+
+
+/* ------------------------------------------------------------
+   PANELS
+------------------------------------------------------------ */
+
+.lacura-auth-app section {
+  background:#ffffff;
+  border:1px solid #bfc4bf !important;
+  box-shadow:none !important;
+}
+
+
+.lacura-auth-app section > div {
+  box-shadow:none !important;
+}
+
+
+
+/* ------------------------------------------------------------
+   REMOVE CARD FEEL
+------------------------------------------------------------ */
+
+.lacura-auth-app .shadow,
+.lacura-auth-app .shadow-sm,
+.lacura-auth-app .shadow-md,
+.lacura-auth-app .shadow-lg,
+.lacura-auth-app .shadow-xl,
+.lacura-auth-app .shadow-2xl {
+  box-shadow:none !important;
+}
+
+
+
+/* ------------------------------------------------------------
+   TYPOGRAPHY
+------------------------------------------------------------ */
+
+.lacura-auth-app h1 {
+  font-size:18px !important;
+  font-weight:700 !important;
+}
+
+
+.lacura-auth-app h2 {
+  font-size:13px !important;
+}
+
+
+.lacura-auth-app h3 {
+  font-size:12px !important;
+}
+
+
+.lacura-auth-app p,
+.lacura-auth-app td,
+.lacura-auth-app th {
+  font-size:11px;
+}
+
+
+
+/* ------------------------------------------------------------
+   TABLES
+------------------------------------------------------------ */
+
+.lacura-auth-app table {
+  border-collapse:collapse;
+}
+
+
+.lacura-auth-app th {
+  background:#ecece8 !important;
+  border:1px solid #c8ccc8 !important;
+  font-size:10px !important;
+  font-weight:bold !important;
+}
+
+
+.lacura-auth-app td {
+  border:1px solid #d7dad7 !important;
+  padding:5px 7px !important;
+}
+
+
+.lacura-auth-app tr:nth-child(even) {
+  background:#fafaf8;
+}
+
+
+
+/* ------------------------------------------------------------
+   RESIDENT TABS
+------------------------------------------------------------ */
+
+.resident-clinical-tabs {
+  background:#eeeeeb !important;
+  border:1px solid #c6cbc7 !important;
+}
+
+
+.resident-clinical-tabs a {
+
+  height:32px !important;
+
+  padding-left:10px !important;
+  padding-right:10px !important;
+
+  font-size:11px !important;
+
+  font-weight:600 !important;
+
+  color:#333 !important;
+
+  background:#eeeeeb !important;
+
+  border-right:
+    1px solid #c7cbc7 !important;
+}
+
+
+.resident-clinical-tabs a[aria-current="page"] {
+
+  background:white !important;
+
+  color:#073b2f !important;
+
+  border-top:
+    3px solid #073b2f !important;
+
+  box-shadow:none !important;
+
+}
+
+
+
+/* ------------------------------------------------------------
+   BUTTONS
+------------------------------------------------------------ */
+
+.lacura-auth-app button,
+.lacura-auth-app a {
+
+  transition:none !important;
+
+}
+
+
+.lacura-auth-app button {
+  font-size:11px !important;
+}
+
+
+
+/* ------------------------------------------------------------
+   INPUTS
+------------------------------------------------------------ */
+
+
+.lacura-auth-app input,
+.lacura-auth-app select,
+.lacura-auth-app textarea {
+
+  min-height:28px;
+
+  border:1px solid #bfc5c0 !important;
+
+}
+
+
+
+/* ------------------------------------------------------------
+   REMOVE MODERN COLORS
+------------------------------------------------------------ */
+
+.lacura-auth-app .bg-white {
+  background:white !important;
+}
+
+
+.lacura-auth-app .bg-\[\#F3F2ED\] {
+  background:#efeee8 !important;
+}
