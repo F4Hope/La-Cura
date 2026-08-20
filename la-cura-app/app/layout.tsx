@@ -10,6 +10,7 @@ import {
 } from "next/font/google";
 
 import "./globals.css";
+import "./la-cura-clinical-polish.css";
 import "./pcc-clinical.css";
 
 import {

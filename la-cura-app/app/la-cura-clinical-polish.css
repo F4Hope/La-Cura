@@ -1,0 +1,529 @@
+/* ==========================================================
+   LA CURA — CLINICAL PRODUCT POLISH
+   Final authenticated-app presentation layer.
+
+   Goals:
+   - dense EMR information architecture
+   - flatter clinical surfaces
+   - restrained borders and shadows
+   - consistent controls
+   - reduced SaaS/card aesthetic
+   - preserve La Cura role theming
+   ========================================================== */
+
+
+/* ==========================================================
+   GLOBAL CLINICAL TOKENS
+   ========================================================== */
+
+:root {
+  color-scheme: light;
+
+  --lc-canvas: #f3f2ed;
+  --lc-surface: #ffffff;
+  --lc-surface-muted: #f7f7f4;
+  --lc-surface-header: #e7ebe7;
+
+  --lc-border: #c7cfca;
+  --lc-border-strong: #adb8b2;
+  --lc-border-soft: #d9dfdb;
+
+  --lc-text: #20312a;
+  --lc-text-muted: #64736c;
+  --lc-text-faint: #849089;
+
+  --lc-green: #073b2f;
+  --lc-green-hover: #0a4a3a;
+  --lc-green-soft: #eaf1ed;
+
+  --lc-gold: #b58b2f;
+  --lc-danger: #a53030;
+
+  --lc-radius: 3px;
+  --lc-control-height: 30px;
+}
+
+
+/* ==========================================================
+   APP CANVAS / TYPOGRAPHY
+   ========================================================== */
+
+html {
+  background: var(--lc-canvas);
+}
+
+body {
+  margin: 0;
+  background: var(--lc-canvas) !important;
+  color: var(--lc-text) !important;
+
+  font-family:
+    var(--font-la-cura-sans),
+    "IBM Plex Sans",
+    Arial,
+    Helvetica,
+    sans-serif !important;
+
+  font-size: 13px;
+  line-height: 1.35;
+
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+.role-theme-shell {
+  min-height: 100vh;
+  background: var(--lc-canvas);
+  color: var(--lc-text);
+}
+
+
+/* ==========================================================
+   SELECTION / FOCUS
+   ========================================================== */
+
+::selection {
+  background: #d9e6df;
+  color: #073b2f;
+}
+
+.role-theme-shell :focus-visible {
+  outline: 2px solid #527766;
+  outline-offset: 1px;
+}
+
+
+/* ==========================================================
+   REMOVE GENERIC SAAS VISUAL LANGUAGE
+   ========================================================== */
+
+.role-theme-shell .rounded-xl,
+.role-theme-shell .rounded-2xl,
+.role-theme-shell .rounded-3xl {
+  border-radius: var(--lc-radius) !important;
+}
+
+.role-theme-shell .rounded-lg {
+  border-radius: 4px !important;
+}
+
+.role-theme-shell .shadow,
+.role-theme-shell .shadow-sm,
+.role-theme-shell .shadow-md,
+.role-theme-shell .shadow-lg,
+.role-theme-shell .shadow-xl,
+.role-theme-shell .shadow-2xl {
+  box-shadow: none !important;
+}
+
+
+/* ==========================================================
+   CLINICAL PANELS
+   ========================================================== */
+
+.role-theme-shell section {
+  scroll-margin-top: 110px;
+}
+
+.role-theme-shell .clinical-panel,
+.role-theme-shell .record-panel,
+.role-theme-shell .dashboard-panel {
+  border: 1px solid var(--lc-border);
+  border-radius: var(--lc-radius);
+  background: var(--lc-surface);
+  box-shadow: none;
+}
+
+
+/* ==========================================================
+   PAGE HEADINGS
+   ========================================================== */
+
+.role-theme-shell h1 {
+  letter-spacing: -0.018em;
+}
+
+.role-theme-shell h2,
+.role-theme-shell h3 {
+  letter-spacing: -0.008em;
+}
+
+.role-theme-shell h1,
+.role-theme-shell h2,
+.role-theme-shell h3,
+.role-theme-shell h4 {
+  text-wrap: balance;
+}
+
+
+/* ==========================================================
+   FORM CONTROLS
+   ========================================================== */
+
+.role-theme-shell input:not([type="checkbox"]):not([type="radio"]),
+.role-theme-shell select,
+.role-theme-shell textarea {
+  border-color: var(--lc-border-strong);
+  border-radius: var(--lc-radius) !important;
+  background: #ffffff;
+  color: var(--lc-text);
+  box-shadow: none !important;
+
+  font-family:
+    var(--font-la-cura-sans),
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  font-size: 12px;
+}
+
+.role-theme-shell input:not([type="checkbox"]):not([type="radio"]),
+.role-theme-shell select {
+  min-height: var(--lc-control-height);
+}
+
+.role-theme-shell input::placeholder,
+.role-theme-shell textarea::placeholder {
+  color: #909b95;
+}
+
+.role-theme-shell input:not([type="checkbox"]):not([type="radio"]):focus,
+.role-theme-shell select:focus,
+.role-theme-shell textarea:focus {
+  border-color: #537568 !important;
+  outline: none;
+  box-shadow: 0 0 0 1px #537568 !important;
+}
+
+
+/* ==========================================================
+   BUTTON NORMALIZATION
+   ========================================================== */
+
+.role-theme-shell button {
+  font-family:
+    var(--font-la-cura-sans),
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+.role-theme-shell button[class*="rounded-xl"],
+.role-theme-shell button[class*="rounded-2xl"],
+.role-theme-shell a[class*="rounded-xl"],
+.role-theme-shell a[class*="rounded-2xl"] {
+  border-radius: var(--lc-radius) !important;
+}
+
+
+/* ==========================================================
+   TABLE SYSTEM
+   ========================================================== */
+
+.role-theme-shell table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.role-theme-shell thead {
+  background: #edf0ec;
+}
+
+.role-theme-shell th {
+  border-bottom: 1px solid var(--lc-border-strong);
+
+  color: #4e5d56;
+
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.role-theme-shell td {
+  border-bottom-color: var(--lc-border-soft);
+  vertical-align: top;
+}
+
+.role-theme-shell tbody tr {
+  transition: background-color 80ms ease;
+}
+
+.role-theme-shell tbody tr:hover {
+  background-color: #fafbf9;
+}
+
+
+/* ==========================================================
+   CLINICAL NUMBERS
+   ========================================================== */
+
+.role-theme-shell
+:is(
+  [data-clinical-number],
+  .clinical-number,
+  .vital-value
+) {
+  font-family:
+    var(--font-la-cura-mono),
+    "IBM Plex Mono",
+    ui-monospace,
+    monospace;
+
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ==========================================================
+   RESIDENT WORKSPACE
+   ========================================================== */
+
+.resident-workspace-shell {
+  background: var(--lc-canvas);
+}
+
+
+/* Resident record toolbar */
+
+.resident-workspace-shell
+> div
+> div:first-child {
+  box-shadow: none !important;
+}
+
+
+/* Main resident banner */
+
+.resident-banner {
+  overflow: hidden;
+  border-color: var(--lc-border-strong) !important;
+  border-radius: 2px !important;
+  background: #ffffff !important;
+  box-shadow: none !important;
+}
+
+
+/* Resident identity */
+
+.resident-details-panel {
+  background: #ffffff;
+}
+
+
+/* Allergy / instruction strip */
+
+.resident-allergy-panel {
+  font-size: 11px;
+}
+
+
+/* ==========================================================
+   RESIDENT VIEW MODES
+   ========================================================== */
+
+
+/* ---------- COMPACT ---------- */
+
+[data-resident-mode="compact"] .resident-details-panel {
+  min-height: 58px;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+[data-resident-mode="compact"] .resident-details-panel img {
+  width: 42px !important;
+  height: 48px !important;
+}
+
+[data-resident-mode="compact"] .resident-allergy-panel {
+  display: none !important;
+}
+
+
+/* ---------- STANDARD ---------- */
+
+[data-resident-mode="standard"] .resident-details-panel {
+  min-height: 96px;
+}
+
+
+/* ---------- EXPANDED ---------- */
+
+[data-resident-mode="expanded"] .resident-details-panel {
+  min-height: 96px;
+}
+
+
+/* ==========================================================
+   PCC-STYLE RECORD TABS
+   ========================================================== */
+
+.pcc-resident-tabs {
+  border-top-color: #afb7b2 !important;
+  border-bottom-color: #aab2ad !important;
+  background: #dadeda !important;
+}
+
+.pcc-resident-tabs-scroll {
+  min-height: 29px;
+}
+
+.pcc-resident-tab {
+  border-right-color: #b8bfba !important;
+
+  font-size: 10px !important;
+  font-weight: 600 !important;
+
+  box-shadow: none !important;
+}
+
+.pcc-resident-tab-active {
+  background: #68772f !important;
+  color: #ffffff !important;
+}
+
+
+/* ==========================================================
+   VITAL TILES
+   ========================================================== */
+
+.resident-banner button {
+  border-radius: 0;
+}
+
+.resident-banner button:hover {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ==========================================================
+   ACTIVE RECORD / MODULE AREA
+   ========================================================== */
+
+.resident-workspace-shell main > section {
+  box-shadow: none !important;
+}
+
+.resident-workspace-shell main > section:not(.resident-banner) {
+  border-radius: 2px !important;
+}
+
+
+/* ==========================================================
+   BADGES / PILLS
+   ========================================================== */
+
+.role-theme-shell span[class*="rounded-full"],
+.role-theme-shell div[class*="rounded-full"] {
+  border-radius: 999px;
+}
+
+.role-theme-shell
+:is(
+  span,
+  div
+)[class*="uppercase"][class*="tracking"] {
+  letter-spacing: 0.035em;
+}
+
+
+/* ==========================================================
+   DIVIDERS
+   ========================================================== */
+
+.role-theme-shell hr {
+  border: 0;
+  border-top: 1px solid var(--lc-border);
+}
+
+
+/* ==========================================================
+   SCROLLBARS
+   ========================================================== */
+
+.role-theme-shell * {
+  scrollbar-width: thin;
+  scrollbar-color: #aeb8b2 #eceeeb;
+}
+
+.role-theme-shell *::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.role-theme-shell *::-webkit-scrollbar-track {
+  background: #eceeeb;
+}
+
+.role-theme-shell *::-webkit-scrollbar-thumb {
+  border: 2px solid #eceeeb;
+  background: #aeb8b2;
+}
+
+
+/* ==========================================================
+   RESPONSIVE DENSITY
+   ========================================================== */
+
+@media (max-width: 900px) {
+  .role-theme-shell {
+    font-size: 12px;
+  }
+
+  .pcc-resident-tab {
+    min-height: 31px;
+  }
+}
+
+
+/* ==========================================================
+   PRINT
+   ========================================================== */
+
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .role-theme-shell {
+    background: #ffffff !important;
+  }
+
+  nav,
+  header,
+  button,
+  [data-print-hide="true"] {
+    display: none !important;
+  }
+
+  .role-theme-shell section,
+  .role-theme-shell table,
+  .role-theme-shell div {
+    box-shadow: none !important;
+  }
+
+  .role-theme-shell table {
+    width: 100%;
+    page-break-inside: auto;
+  }
+
+  .role-theme-shell tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  .role-theme-shell thead {
+    display: table-header-group;
+  }
+
+  .role-theme-shell a {
+    color: #000000 !important;
+    text-decoration: none !important;
+  }
+}
