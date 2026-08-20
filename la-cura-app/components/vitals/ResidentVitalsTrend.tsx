@@ -41,34 +41,27 @@ export default function ResidentVitalsTrend({
     useState<VitalCard | null>(null);
 
   const [range, setRange] =
-    useState("7");
+    useState(7);
 
 
-  const filteredHistory =
+  const rows =
     useMemo(() => {
-
-      const days =
-        Number(range);
-
       return history.slice(
         0,
-        days === 30
-          ? 30
-          : days
+        range
       );
-
     }, [
       history,
       range,
     ]);
 
 
-  function getValue(
+  function valueFor(
     vital: VitalCard,
     row: VitalRecord
   ) {
 
-    switch(vital.key){
+    switch(vital.key) {
 
       case "bp":
         return row.systolic &&
@@ -76,28 +69,22 @@ export default function ResidentVitalsTrend({
           ? `${row.systolic}/${row.diastolic}`
           : "—";
 
-
       case "temperature":
         return row.temperature
           ? `${row.temperature}°C`
           : "—";
 
-
       case "pulse":
         return row.pulse ?? "—";
-
 
       case "oxygen":
         return row.oxygen_saturation
           ? `${row.oxygen_saturation}%`
           : "—";
 
-
       case "pain":
         return row.pain_score ?? "—";
-
     }
-
   }
 
 
@@ -109,23 +96,23 @@ export default function ResidentVitalsTrend({
           grid
           grid-cols-5
           gap-px
-          bg-[#CBD6D1]
+          bg-[#C9D3CE]
         "
       >
 
-        {vitals.map((v)=>(
+        {vitals.map((vital)=>(
 
           <button
-            key={v.label}
+            key={vital.label}
             onClick={() =>
-              setSelected(v)
+              setSelected(vital)
             }
             className="
               bg-white
-              p-3
+              px-3
+              py-3
               text-left
-              transition
-              hover:bg-[#EEF4F0]
+              hover:bg-[#F2F6F3]
             "
           >
 
@@ -134,12 +121,11 @@ export default function ResidentVitalsTrend({
                 text-[10px]
                 font-bold
                 uppercase
-                text-[#6A7B73]
+                text-[#687970]
               "
             >
-              {v.label}
+              {vital.label}
             </div>
-
 
             <div
               className="
@@ -149,7 +135,7 @@ export default function ResidentVitalsTrend({
                 text-[#073B2F]
               "
             >
-              {v.value || "—"}
+              {vital.value || "—"}
             </div>
 
           </button>
@@ -165,7 +151,7 @@ export default function ResidentVitalsTrend({
           className="
             fixed
             inset-0
-            z-[100]
+            z-50
             flex
             items-center
             justify-center
@@ -178,9 +164,10 @@ export default function ResidentVitalsTrend({
 
           <div
             className="
-              w-[650px]
+              w-[720px]
+              max-w-[95vw]
               bg-white
-              shadow-2xl
+              shadow-xl
             "
             onClick={(e)=>
               e.stopPropagation()
@@ -190,23 +177,36 @@ export default function ResidentVitalsTrend({
             <div
               className="
                 flex
-                items-center
                 justify-between
                 border-b
+                bg-[#073B2F]
                 px-5
                 py-4
+                text-white
               "
             >
 
-              <h2
-                className="
-                  text-lg
-                  font-bold
-                  text-[#073B2F]
-                "
-              >
-                {selected.label} Trend
-              </h2>
+              <div>
+
+                <h2
+                  className="
+                    text-lg
+                    font-bold
+                  "
+                >
+                  {selected.label} Trend
+                </h2>
+
+                <p
+                  className="
+                    text-xs
+                    opacity-80
+                  "
+                >
+                  Vital history review
+                </p>
+
+              </div>
 
 
               <button
@@ -229,12 +229,12 @@ export default function ResidentVitalsTrend({
               "
             >
 
-              {["1","7","30"].map((x)=>(
+              {[1,7,30].map((days)=>(
 
                 <button
-                  key={x}
+                  key={days}
                   onClick={() =>
-                    setRange(x)
+                    setRange(days)
                   }
                   className={`
                     border
@@ -242,21 +242,19 @@ export default function ResidentVitalsTrend({
                     py-1
                     text-xs
                     ${
-                      range===x
-                      ? "bg-[#073B2F] text-white"
-                      : "bg-white"
+                      range === days
+                      ? "bg-[#D5A437] font-bold"
+                      : ""
                     }
                   `}
                 >
-                  {x} Days
+                  {days} Days
                 </button>
 
               ))}
 
+
               <button
-                onClick={() =>
-                  window.print()
-                }
                 className="
                   ml-auto
                   border
@@ -264,6 +262,9 @@ export default function ResidentVitalsTrend({
                   py-1
                   text-xs
                 "
+                onClick={() =>
+                  window.print()
+                }
               >
                 Print
               </button>
@@ -273,56 +274,28 @@ export default function ResidentVitalsTrend({
 
             <div
               className="
-                m-5
-                flex
-                h-44
-                items-end
-                gap-4
-                border
-                bg-[#F7F8F5]
-                p-5
+                max-h-[420px]
+                overflow-auto
               "
             >
 
-              {filteredHistory.map(
-                (row,index)=>(
+              {rows.length === 0 && (
 
                 <div
-                  key={index}
                   className="
-                    flex
-                    h-full
-                    flex-1
-                    items-end
+                    p-8
+                    text-center
+                    text-sm
+                    text-[#65756D]
                   "
                 >
-
-                  <div
-                    className="
-                      w-full
-                      bg-[#073B2F]
-                    "
-                    style={{
-                      height:
-                        `${30 + index * 12}px`,
-                    }}
-                  />
-
+                  No vital history available
                 </div>
 
-              ))}
-
-            </div>
+              )}
 
 
-            <div
-              className="
-                border-t
-              "
-            >
-
-              {filteredHistory.map(
-                (row,index)=>(
+              {rows.map((row,index)=>(
 
                 <div
                   key={index}
@@ -331,7 +304,7 @@ export default function ResidentVitalsTrend({
                     grid-cols-3
                     border-b
                     px-5
-                    py-2
+                    py-3
                     text-xs
                   "
                 >
@@ -340,12 +313,12 @@ export default function ResidentVitalsTrend({
                     {row.recorded_at || "—"}
                   </span>
 
-                  <span>
-                    {getValue(
+                  <strong>
+                    {valueFor(
                       selected,
                       row
                     )}
-                  </span>
+                  </strong>
 
                   <span>
                     Clinical Record
@@ -356,7 +329,6 @@ export default function ResidentVitalsTrend({
               ))}
 
             </div>
-
 
           </div>
 
