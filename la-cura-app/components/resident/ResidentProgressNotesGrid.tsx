@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { Fragment } from "react";
 
 
 type Note = {
@@ -285,10 +286,9 @@ export default function ResidentProgressNotesGrid({
 
           {filtered.map((note)=>(
 
-            <>
+            <Fragment key={note.id}>
 
               <tr
-                key={note.id}
                 className="
                   border-t
                   hover:bg-[#FAFBF8]
@@ -387,7 +387,7 @@ export default function ResidentProgressNotesGrid({
 
               )}
 
-            </>
+            </Fragment>
 
           ))}
 

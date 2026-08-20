@@ -809,6 +809,7 @@ export default async function DashboardPage() {
 }
 
 
+
 function ClinicalPanel({
   title,
   right,
@@ -819,14 +820,48 @@ function ClinicalPanel({
   children: ReactNode;
 }) {
   return (
-    <section className="min-w-0 border border-[#C7D1CC] bg-white">
-      <div className="flex min-h-[34px] items-center justify-between gap-3 border-b border-[#D4DDD8] bg-[#E7EDE9] px-3 py-1.5">
-        <h2 className="text-[11px] font-bold uppercase tracking-[0.035em] text-[#30463C]">
+    <section
+      className="
+        min-w-0
+        border
+        border-[#BFCAC4]
+        bg-white
+      "
+    >
+      <div
+        className="
+          flex
+          min-h-[32px]
+          items-center
+          justify-between
+          gap-3
+          border-b
+          border-[#CDD6D1]
+          bg-[#E3E8E3]
+          px-3
+          py-1.5
+        "
+      >
+        <h2
+          className="
+            text-[10px]
+            font-bold
+            uppercase
+            tracking-[0.045em]
+            text-[#30463C]
+          "
+        >
           {title}
         </h2>
 
         {right && (
-          <div className="text-[10px] text-[#6B7B74]">
+          <div
+            className="
+              text-[10px]
+              font-medium
+              text-[#65766E]
+            "
+          >
             {right}
           </div>
         )}
@@ -849,48 +884,91 @@ function MetricCell({
   href?: string;
   icon: ReactNode;
 }) {
+
   const content = (
     <div
-      className={`
-        flex min-h-[76px]
-        items-center gap-3
+      className="
+        flex
+        min-h-[62px]
+        items-center
+        gap-3
         border-b
-        border-[#D8DFDB]
-        px-4 py-3
+        border-[#D7DEDA]
+        px-3
+        py-2
+        transition
         sm:border-r
         xl:border-b-0
         xl:last:border-r-0
-
-        ${
-          href
-            ? "transition-colors hover:bg-[#FBFAF7]"
-            : ""
-        }
-      `}
+      "
     >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center border border-[#CAD5CF] bg-[#EEF3EF] text-[#073B2F]">
+
+      <span
+        className="
+          flex
+          h-7
+          w-7
+          shrink-0
+          items-center
+          justify-center
+          border
+          border-[#C6D1CB]
+          bg-[#EEF3EF]
+          text-[#073B2F]
+        "
+      >
         {icon}
       </span>
 
+
       <div>
-        <p className="text-[21px] font-bold leading-none text-[#073B2F]">
+
+        <p
+          className="
+            font-mono
+            text-[18px]
+            font-bold
+            leading-none
+            tabular-nums
+            text-[#073B2F]
+          "
+        >
           {value}
         </p>
 
-        <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.035em] text-[#687970]">
+        <p
+          className="
+            mt-1
+            text-[9px]
+            font-bold
+            uppercase
+            tracking-[0.04em]
+            text-[#687970]
+          "
+        >
           {label}
         </p>
+
       </div>
+
     </div>
   );
+
 
   if (!href) {
     return content;
   }
 
+
   return (
     <Link href={href}>
-      {content}
+      <div
+        className="
+          hover:bg-[#FBFCF9]
+        "
+      >
+        {content}
+      </div>
     </Link>
   );
 }
@@ -909,17 +987,19 @@ function DashboardAction({
     <Link
       href={href}
       className={`
-        inline-flex h-7
+        inline-flex
+        h-7
         items-center
-        border px-2.5
+        justify-center
+        border
+        px-3
         text-[10px]
         font-bold
-        transition
 
         ${
           primary
             ? "border-[#073B2F] bg-[#073B2F] text-white hover:bg-[#0D4A3A]"
-            : "border-[#AEBDB5] bg-white text-[#30483E] hover:bg-[#F2F5F3]"
+            : "border-[#AAB7B1] bg-white text-[#30483E] hover:bg-[#F3F5F2]"
         }
       `}
     >
@@ -935,7 +1015,21 @@ function ClinicalHead({
   children: ReactNode;
 }) {
   return (
-    <th className="border-r border-[#D2DBD6] px-3 py-2 text-left last:border-r-0">
+    <th
+      className="
+        border-r
+        border-[#D0D9D4]
+        px-3
+        py-2
+        text-left
+        text-[9px]
+        font-bold
+        uppercase
+        tracking-[0.03em]
+        text-[#40544B]
+        last:border-r-0
+      "
+    >
       {children}
     </th>
   );
@@ -947,22 +1041,18 @@ function StatusBadge({
 }: {
   value: string;
 }) {
+
   const normalized =
     value.toLowerCase();
 
+
   const danger =
-    normalized.includes(
-      "refus"
-    ) ||
-    normalized.includes(
-      "miss"
-    ) ||
-    normalized.includes(
-      "held"
-    ) ||
-    normalized.includes(
-      "error"
-    );
+    normalized.includes("refus") ||
+    normalized.includes("miss") ||
+    normalized.includes("held") ||
+    normalized.includes("error") ||
+    normalized.includes("critical");
+
 
   return (
     <span

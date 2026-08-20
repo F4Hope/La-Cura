@@ -555,6 +555,8 @@ export default async function ResidentPage({
   params,
   searchParams,
 }: Props) {
+
+  const mode: string = "standard";
   const { id } =
     await params;
 
@@ -746,9 +748,7 @@ export default async function ResidentPage({
   const residentQuery =
     `?residentId=${resident.id}`;
 
-  const {
-    mode,
-  } = useResidentWorkspace();
+
 
   return (
     <ResidentWorkspaceShell>
