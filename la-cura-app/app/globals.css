@@ -1740,3 +1740,79 @@ pre {
 }
 
 /* LA-CURA PRODUCT POLISH V7 END */
+
+/* =====================================================
+   Resident Workspace Modes
+   PointClickCare style adaptive workspace
+===================================================== */
+
+
+/* COMPACT MODE */
+[data-resident-mode="compact"] .resident-details-panel,
+[data-resident-mode="compact"] .resident-summary-panel,
+[data-resident-mode="compact"] .resident-allergy-panel {
+  display: none !important;
+}
+
+
+[data-resident-mode="compact"] .resident-banner {
+  min-height: 70px;
+}
+
+
+/* STANDARD MODE */
+[data-resident-mode="standard"] .resident-summary-panel {
+  display: none !important;
+}
+
+
+/* EXPANDED MODE */
+[data-resident-mode="expanded"] .resident-summary-panel {
+  display: block;
+}
+
+
+/* Clinical workspace density */
+[data-resident-mode="compact"] main {
+  padding-top: 4px !important;
+}
+
+[data-resident-mode="expanded"] main {
+  padding-top: 12px;
+}
+
+
+
+/* =====================================================
+   Resident EMR View Modes
+===================================================== */
+
+
+/* COMPACT MODE */
+[data-mode="compact"] .resident-details-panel {
+  min-height: 55px;
+}
+
+[data-mode="compact"] .resident-details-panel > div:not(:first-child) {
+  display: none !important;
+}
+
+
+[data-mode="compact"] .resident-summary-panel,
+[data-mode="compact"] .resident-allergy-panel {
+  display: none !important;
+}
+
+
+/* STANDARD MODE */
+[data-mode="standard"] .resident-summary-panel {
+  display: none !important;
+}
+
+
+/* EXPANDED MODE */
+[data-mode="expanded"] .resident-summary-panel {
+  display: block;
+}
+
+

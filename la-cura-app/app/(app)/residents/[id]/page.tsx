@@ -24,6 +24,15 @@ import ResidentResultsTab from "@/components/results/ResidentResultsTab";
 import ResidentImmunizationsTab from "@/components/immunizations/ResidentImmunizationsTab";
 
 import ResidentVitalsTab from "@/components/vitals/ResidentVitalsTab";
+import ResidentModeSelector from "@/components/resident/ResidentModeSelector";
+import ResidentWorkspaceShell from "@/components/resident/ResidentWorkspaceShell";
+import {
+  useResidentWorkspace,
+} from "@/components/resident/ResidentWorkspaceMode";
+import ResidentClinicalSummary from "@/components/resident/ResidentClinicalSummary";
+import ResidentProgressNotesTable from "@/components/resident/ResidentProgressNotesTable";
+import ResidentProgressNotesGrid from "@/components/resident/ResidentProgressNotesGrid";
+import ResidentVitalsTrend from "@/components/vitals/ResidentVitalsTrend";
 
 import ResidentDiagnosesTab from "@/components/diagnoses/ResidentDiagnosesTab";
 
@@ -737,8 +746,13 @@ export default async function ResidentPage({
   const residentQuery =
     `?residentId=${resident.id}`;
 
+  const {
+    mode,
+  } = useResidentWorkspace();
+
   return (
-    <div className="min-h-[calc(100vh-119px)] bg-[#F3F2ED] text-[#1A2923]">
+    <ResidentWorkspaceShell>
+      <div className="min-h-[calc(100vh-119px)] bg-[#F3F2ED] text-[#1A2923]">
       {/* BREADCRUMB / RECORD TOOLBAR */}
 
       <div className="border-b border-[#C9D3CE] bg-white">
@@ -764,6 +778,7 @@ export default async function ResidentPage({
           </div>
 
           <div className="flex flex-wrap items-center gap-1.5">
+            <ResidentModeSelector />
             <ClinicalAction
               href={`/add-vitals${residentQuery}`}
               label={residentText(language, "shell.recordVitals")}
@@ -793,11 +808,28 @@ export default async function ResidentPage({
       <main className="mx-auto max-w-[1800px] p-3 sm:p-4 lg:px-5">
         {/* RESIDENT BANNER */}
 
-        <section className="border border-[#BFCBC5] bg-white">
+        <section className="resident-banner border border-[#BFCBC5] bg-white">
           <div className="grid lg:grid-cols-[minmax(0,1fr)_560px]">
             {/* RESIDENT IDENTITY */}
 
-            <div className="flex min-w-0 gap-3 border-b border-[#D1DAD5] p-3 lg:border-b-0 lg:border-r">
+            <div
+              className={`
+                resident-details-panel
+                flex
+                min-w-0
+                gap-3
+                border-b
+                border-[#D1DAD5]
+                p-3
+                lg:border-b-0
+                lg:border-r
+                ${
+                  mode === "compact"
+                    ? "items-center"
+                    : ""
+                }
+              `}
+            >
               {resident.photo_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -855,6 +887,7 @@ export default async function ResidentPage({
                   {resident.id}
                 </p>
 
+                {mode !== "compact" && (
                 <div className="mt-3 grid gap-x-6 gap-y-1.5 text-[11px] sm:grid-cols-2 xl:grid-cols-4">
                   <ResidentBannerField
                     label={residentText(language, "shell.dobAge")}
@@ -906,12 +939,14 @@ export default async function ResidentPage({
                     }
                   />
                 </div>
+                )}
               </div>
             </div>
 
 
             {/* LATEST VITALS */}
 
+            {mode !== "compact" && (
             <div className="bg-[#FBFAF7]">
               <div className="border-b border-[#D4DDD8] px-2.5 py-1.5">
                 <div className="flex items-center justify-between gap-2">
@@ -994,13 +1029,15 @@ export default async function ResidentPage({
                 />
               </div>
             </div>
+            )}
           </div>
 
 
           {/* ALLERGY / SPECIAL INSTRUCTIONS */}
 
           <div
-            className={`
+            className={`resident-allergy-panel
+              
               grid border-t
               text-[11px]
               md:grid-cols-2
@@ -1087,6 +1124,46 @@ export default async function ResidentPage({
           </div>
 
 
+
+          {mode === "expanded" && (
+            <div
+              className="
+                grid
+                border-t
+                border-[#D4DDD8]
+                bg-white
+                md:grid-cols-4
+              "
+            >
+              <ResidentBannerField
+                label="Diagnosis"
+                value={
+                  resident.diagnosis ||
+                  "Not recorded"
+                }
+              />
+
+              <ResidentBannerField
+                label="Admission"
+                value={
+                  resident.date_admitted ||
+                  "Not recorded"
+                }
+              />
+
+              <ResidentBannerField
+                label="Diet"
+                value="Not recorded"
+              />
+
+              <ResidentBannerField
+                label="Medical Record"
+                value={String(resident.id)}
+              />
+
+            </div>
+          )}
+
           {/* PCC SUB-TABS */}
 
           <ResidentClinicalTabs
@@ -1169,7 +1246,8 @@ export default async function ResidentPage({
           />
         </section>
       </main>
-    </div>
+      </div>
+    </ResidentWorkspaceShell>
   );
 }
 
@@ -1642,16 +1720,33 @@ function DashboardTab({
           />
         </RecordPanel>
 
-        <RecordPanel title={ui("Recent Clinical Activity")}>
-          <TimelineTable
-            items={
-              latestActivity
-            }
-            language={
-              language
-            }
-          />
-        </RecordPanel>
+        <ResidentProgressNotesGrid
+          notes={
+            progressNotes.map(
+              (note, index) => ({
+                id: index,
+
+                date:
+                  note.date,
+
+                type:
+                  note.type,
+
+                author:
+                  "Clinical Staff",
+
+                department:
+                  note.icon,
+
+                title:
+                  note.title,
+
+                subtitle:
+                  note.subtitle,
+              })
+            )
+          }
+/>
       </div>
 
 
