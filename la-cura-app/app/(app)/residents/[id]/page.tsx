@@ -971,63 +971,9 @@ export default async function ResidentPage({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-px bg-[#D7DFDB] sm:grid-cols-5">
-                <HeaderVital
-                  label={residentText(language, "shell.bp")}
-                  value={
-                    latestVital
-                      ?.systolic !==
-                      null &&
-                    latestVital
-                      ?.systolic !==
-                      undefined &&
-                    latestVital
-                      ?.diastolic !==
-                      null &&
-                    latestVital
-                      ?.diastolic !==
-                      undefined
-                      ? `${latestVital.systolic}/${latestVital.diastolic}`
-                      : "—"
-                  }
-                />
-
-                <HeaderVital
-                  label={residentText(language, "shell.temp")}
-                  value={displayVital(
-                    latestVital
-                      ?.temperature,
-                    "°C"
-                  )}
-                />
-
-                <HeaderVital
-                  label={residentText(language, "shell.pulse")}
-                  value={displayVital(
-                    latestVital
-                      ?.pulse,
-                    ""
-                  )}
-                />
-
-                <HeaderVital
-                  label={residentText(language, "shell.oxygen")}
-                  value={displayVital(
-                    latestVital
-                      ?.oxygen_saturation,
-                    "%"
-                  )}
-                />
-
-                <HeaderVital
-                  label={residentText(language, "shell.pain")}
-                  value={displayVital(
-                    latestVital
-                      ?.pain_score,
-                    "/10"
-                  )}
-                />
-              </div>
+              <ResidentVitalsTrend
+                vitals={recentVitals}
+              />
             </div>
             )}
           </div>

@@ -2,16 +2,55 @@
 
 import { useState } from "react";
 
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
-type Vital = {
-  label: string;
-  value?: string | number | null;
+
+type VitalRecord = {
+  temperature?: string | number | null;
+  pulse?: string | number | null;
+  systolic?: string | number | null;
+  diastolic?: string | number | null;
+  oxygen_saturation?: string | number | null;
+  pain_score?: string | number | null;
+  recorded_at?: string | null;
 };
 
 
 type Props = {
-  vitals: Vital[];
+  vitals: VitalRecord[];
 };
+
+
+const metrics = [
+  {
+    key: "blood_pressure",
+    label: "BP",
+  },
+  {
+    key: "temperature",
+    label: "Temp",
+  },
+  {
+    key: "pulse",
+    label: "Pulse",
+  },
+  {
+    key: "oxygen",
+    label: "O2",
+  },
+  {
+    key: "pain",
+    label: "Pain",
+  },
+];
 
 
 export default function ResidentVitalsTrend({
@@ -19,147 +58,122 @@ export default function ResidentVitalsTrend({
 }: Props) {
 
   const [selected, setSelected] =
-    useState<Vital | null>(null);
+    useState("blood_pressure");
+
+
+  const data =
+    [...vitals]
+      .reverse()
+      .map((item) => ({
+        date: item.recorded_at
+          ? new Date(
+              item.recorded_at
+            ).toLocaleDateString(
+              "en",
+              {
+                month: "short",
+                day: "numeric",
+              }
+            )
+          : "—",
+
+        systolic:
+          item.systolic,
+
+        diastolic:
+          item.diastolic,
+
+        temperature:
+          item.temperature,
+
+        pulse:
+          item.pulse,
+
+        oxygen:
+          item.oxygen_saturation,
+
+        pain:
+          item.pain_score,
+      }));
 
 
   return (
-    <>
-      <div
-        className="
-          grid
-          grid-cols-5
-          border
-          border-[#D3DCD7]
-          bg-white
-        "
-      >
+    <div className="border border-[#D3DCD7] bg-white p-3">
 
-        {vitals.map((vital) => (
+      <div className="flex gap-2 border-b pb-2">
 
+        {metrics.map((metric) => (
           <button
-            key={vital.label}
+            key={metric.key}
             onClick={() =>
-              setSelected(vital)
+              setSelected(metric.key)
             }
-            className="
-              border-r
-              border-[#D3DCD7]
-              px-3
-              py-3
-              text-left
-              hover:bg-[#F2F6F3]
-            "
+            className={
+              selected === metric.key
+                ? "bg-[#073B2F] px-2 py-1 text-[10px] font-bold text-white"
+                : "bg-[#F1F4F2] px-2 py-1 text-[10px] font-bold"
+            }
           >
-
-            <div
-              className="
-                text-[10px]
-                font-bold
-                uppercase
-                text-[#718078]
-              "
-            >
-              {vital.label}
-            </div>
-
-
-            <div
-              className="
-                mt-1
-                text-sm
-                font-bold
-                text-[#073B2F]
-              "
-            >
-              {vital.value || "—"}
-            </div>
-
+            {metric.label}
           </button>
-
         ))}
 
       </div>
 
 
-      {selected && (
+      <div className="mt-4 h-[260px]">
 
-        <div
-          className="
-            fixed
-            inset-0
-            z-50
-            flex
-            items-center
-            justify-center
-            bg-black/30
-          "
-          onClick={() =>
-            setSelected(null)
-          }
+        <ResponsiveContainer
+          width="100%"
+          height="100%"
         >
 
-          <div
-            className="
-              w-[420px]
-              border
-              border-[#C9D3CE]
-              bg-white
-              p-5
-              shadow-xl
-            "
-            onClick={(e)=>e.stopPropagation()}
-          >
+          <LineChart data={data}>
 
-            <h2
-              className="
-                text-lg
-                font-bold
-                text-[#073B2F]
-              "
-            >
-              {selected.label} Trend
-            </h2>
+            <CartesianGrid
+              strokeDasharray="3 3"
+            />
+
+            <XAxis
+              dataKey="date"
+            />
+
+            <YAxis />
+
+            <Tooltip />
 
 
-            <div
-              className="
-                mt-4
-                h-32
-                border
-                border-dashed
-                border-[#BFCBC5]
-                flex
-                items-center
-                justify-center
-                text-xs
-                text-[#64756D]
-              "
-            >
-              Trend graph will display here
-            </div>
+            {selected === "blood_pressure" ? (
+              <>
+                <Line
+                  dataKey="systolic"
+                  stroke="#073B2F"
+                  strokeWidth={2}
+                  dot
+                />
 
+                <Line
+                  dataKey="diastolic"
+                  stroke="#64748B"
+                  strokeWidth={2}
+                  dot
+                />
+              </>
+            ) : (
+              <Line
+                dataKey={selected}
+                stroke="#073B2F"
+                strokeWidth={2}
+                dot
+              />
+            )}
 
-            <button
-              onClick={() =>
-                setSelected(null)
-              }
-              className="
-                mt-4
-                border
-                px-4
-                py-2
-                text-xs
-              "
-            >
-              Close
-            </button>
+          </LineChart>
 
-          </div>
+        </ResponsiveContainer>
 
-        </div>
+      </div>
 
-      )}
-
-    </>
+    </div>
   );
 }
